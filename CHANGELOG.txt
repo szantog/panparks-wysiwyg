@@ -8,3 +8,8 @@ Wysiwyg 6.x-1.x, xxxx-xx-xx
 ---------------------------
 
 
+Wysiwyg 6.x-0.x, xxxx-xx-xx
+---------------------------
+#118747 by nedjo, sun: Upgraded code for jQuery.
+Initial fork of TinyMCE module (2008-05-30).
+

@@ -10,6 +10,7 @@ Wysiwyg 6.x-1.x, xxxx-xx-xx
 
 Wysiwyg 6.x-0.x, xxxx-xx-xx
 ---------------------------
+#264411 by sun: Moved admin functions into separate include file.
 #264411 by sun: Added TinyMCE data import upon installation.
 #264411 by sun: Renamed module to Wysiwyg Editor.
 #118747 by nedjo, sun: Upgraded code for jQuery.

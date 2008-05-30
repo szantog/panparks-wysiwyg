@@ -12,7 +12,7 @@ Currently supported editors:
 For a full description visit the project page:
   http://drupal.org/project/wysiwyg
 Bug reports, feature suggestions and latest developments:
-  http://drupal.org/project/wysiwyg (category "Wysiwyg Editor")
+  http://drupal.org/project/wysiwyg (component "Wysiwyg Editor")
 
 
 -- REQUIREMENTS --

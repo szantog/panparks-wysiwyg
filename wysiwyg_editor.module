@@ -1,25 +1,23 @@
 <?php
 // $Id$
-// A collaborative project by Matt Westgate <drupal at asitis dot org>,
-// Richard Bennett <richard.b@ at ritechnologies dot com> and Jeff Robbins <robbins at jjeff dot com>
 
 /**
  * @file
- * Integrate the TinyMCE editor (http://tinymce.moxiecode.com/) into Drupal.
+ * Integrate Wysiwyg editors into Drupal.
  */
 
 /**
  * Implementation of hook_menu().
  */
-function tinymce_menu($may_cache) {
+function wysiwyg_editor_menu($may_cache) {
   $items = array();
   if ($may_cache) {
     $items[] = array(
-      'path' => 'admin/settings/tinymce',
-      'title' => t('TinyMCE'),
-      'callback' => 'tinymce_admin',
+      'path' => 'admin/settings/wysiwyg/profile',
+      'title' => t('Wysiwyg Editor'),
+      'callback' => 'wysiwyg_editor_admin',
       'description' => t('Configure the rich editor.'),
-      'access' => user_access('administer tinymce'),
+      'access' => user_access('administer site configuration'),
     );
   }
   return $items;
@@ -28,16 +26,16 @@ function tinymce_menu($may_cache) {
 /**
  * Implementation of hook_help().
  */
-function tinymce_help($section) {
+function wysiwyg_editor_help($section) {
   switch ($section) {
-    case 'admin/settings/tinymce#pages':
+    case 'admin/settings/wysiwyg/profile#pages':
       return "node/*\nuser/*\ncomment/*";
-    case 'admin/settings/tinymce':
-    case 'admin/help#tinymce' :
+    case 'admin/settings/wysiwyg/profile':
+    case 'admin/help#wysiwyg_editor':
       return t('<p style="font-size:x-small">$Revision$ $Date$</p>' .
-               '<p>TinyMCE adds what-you-see-is-what-you-get (WYSIWYG) html editing to textareas. This editor can be enabled/disabled without reloading the page by clicking a link below each textarea.</p>
-                <p>Profiles can be defined based on user roles. A TinyMCE profile can define which pages receive this TinyMCE capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions.</p>
-                <p>Lastly, only users with the <code>access tinymce</code> <a href="!url">permission</a> will be able to use TinyMCE.</p>', array('!url' => url('admin/user/access'))
+               '<p>Wysiwyg Editor adds what-you-see-is-what-you-get (WYSIWYG) html editing to textareas. This editor can be enabled/disabled without reloading the page by clicking a link below each textarea.</p>
+                <p>Profiles can be defined based on user roles. A Wysiwyg Editor profile can define which pages receive this Wysiwyg Editor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions.</p>
+                <p>Lastly, only users with the <code>access wysiwyg editor</code> <a href="!url">permission</a> will be able to use Wysiwyg Editor.</p>', array('!url' => url('admin/user/access'))
               );
   }
 }
@@ -45,14 +43,14 @@ function tinymce_help($section) {
 /**
  * Implementation of hook_perm().
  */
-function tinymce_perm() {
-  $array = array('administer tinymce', 'access tinymce');
-  $tinymce_mod_path = drupal_get_path('module', 'tinymce');
+function wysiwyg_editor_perm() {
+  $array = array('access wysiwyg editor');
+  $wysiwyg_editor_mod_path = drupal_get_path('module', 'wysiwyg_editor');
 
-  if (is_dir($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/')) {
+  if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/')) {
     $array[] = 'access tinymce imagemanager';
   }
-  if (is_dir($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/')) {
+  if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/')) {
     $array[] = 'access tinymce filemanager';
   }
 
@@ -62,62 +60,62 @@ function tinymce_perm() {
 /**
  * Implementation of hook_elements().
  */
-function tinymce_elements() {
+function wysiwyg_editor_elements() {
   $type = array();
 
-  if (user_access('access tinymce')) {
-    // Let TinyMCE potentially process each textarea.
-    $type['textarea'] = array('#process' => array('tinymce_process_textarea' => array()), '#wysiwyg' => TRUE, '#wysiwyg_style' => 'advanced');
+  if (user_access('access wysiwyg editor')) {
+    // Let Wysiwyg Editor potentially process each textarea.
+    $type['textarea'] = array('#process' => array('wysiwyg_editor_process_textarea' => array()), '#wysiwyg' => TRUE, '#wysiwyg_style' => 'advanced');
   }
 
   return $type;
 }
 
 /**
- * Load tinymce files and send configuration data.
+ * Load Wysiwyg Editor files and send configuration data.
  */
-function tinymce_load() {
+function wysiwyg_editor_load() {
   global $user;
   static $loaded = FALSE;
 
-  // We only load the TinyMCE js file once per page request.
+  // We only load the Wysiwyg Editor js file once per page request.
   if (!$loaded) {
-    $profile = tinymce_profile_load(tinymce_current_profile());
+    $profile = wysiwyg_editor_profile_load(wysiwyg_editor_current_profile());
 
     $enable  = t('enable rich-text');
     $disable = t('disable rich-text');
 
-    $status = tinymce_user_get_status($user, $profile);
+    $status = wysiwyg_editor_user_get_status($user, $profile);
 
     $no_wysiwyg = t('Your current web browser does not support WYSIWYG editing.');
 
-    $tinymce_mod_path = drupal_get_path('module', 'tinymce');
+    $wysiwyg_editor_mod_path = drupal_get_path('module', 'wysiwyg_editor');
 
-    if (is_dir($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/') && user_access('access tinymce imagemanager') ) {
+    if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/') && user_access('access tinymce imagemanager') ) {
       // if tinymce imagemanager is installed
-      drupal_add_js($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/jscripts/mcimagemanager.js');
+      drupal_add_js($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/jscripts/mcimagemanager.js');
     }
 
-    if (is_dir($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/') && user_access('access tinymce filemanager') ) {
+    if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/') && user_access('access tinymce filemanager') ) {
       // if tinymce filemanager is installed
-      drupal_add_js($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/jscripts/mcfilemanager.js');
+      drupal_add_js($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/jscripts/mcfilemanager.js');
     }
 
     // TinyMCE Compressor >= 1.0.9
-    if (file_exists($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.js')) {
-      drupal_add_js($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.js');
+    if (file_exists($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.js')) {
+      drupal_add_js($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.js');
     }
     // TinyMCE Compressor < 1.0.9
-    elseif (file_exists($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.php')) {
-      drupal_add_js($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.php');
+    elseif (file_exists($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.php')) {
+      drupal_add_js($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.php');
     }
     else {
       // For some crazy reason IE will only load this JS file if the absolute reference is given to it.
-      drupal_add_js($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce.js');
+      drupal_add_js($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce.js');
     }
-    // Add tinyme.js to the footer to ensure it's executed after the Drupal.settings array has been rendered and populated.
-    drupal_add_js($tinymce_mod_path .'/tinymce.js', 'footer');
-    drupal_add_js(array('tinymce' => array('configs' => array(), 'showToggle' => ($profile->settings['show_toggle'] == 'true'), 'disable' => $disable, 'enable' => $enable, 'noWysiwyg' => $no_wysiwyg, 'linkText' => $link_text, 'status' => $status)), 'setting');
+    // Add wysiwyg_editor.js to the footer to ensure it's executed after the Drupal.settings array has been rendered and populated.
+    drupal_add_js($wysiwyg_editor_mod_path .'/wysiwyg_editor.js', 'footer');
+    drupal_add_js(array('wysiwygEditor' => array('configs' => array(), 'showToggle' => ($profile->settings['show_toggle'] == 'true'), 'disable' => $disable, 'enable' => $enable, 'noWysiwyg' => $no_wysiwyg, 'linkText' => $link_text, 'status' => $status)), 'setting');
     // We have to do this because of some unfocused CSS in certain themes. See http://drupal.org/node/18879 for details
     drupal_set_html_head('<style type="text/css" media="all">.mceEditor img { display: inline; }</style>');
     $loaded = TRUE;
@@ -125,31 +123,31 @@ function tinymce_load() {
 }
 
 /**
- * Process a textarea for tinyMCE.
+ * Process a textarea for Wysiwyg Editor.
  */
-function tinymce_process_textarea($element) {
-  tinymce_filter_elements($element);
+function wysiwyg_editor_process_textarea($element) {
+  wysiwyg_editor_filter_elements($element);
 
   if ($element['#wysiwyg']) {
-    $profile = tinymce_profile_load(tinymce_current_profile());
-    if (_tinymce_page_match($profile)) {
+    $profile = wysiwyg_editor_profile_load(wysiwyg_editor_current_profile());
+    if (_wysiwyg_editor_page_match($profile)) {
 
       // Default to advanced theme if the requested one is not installed.
-      $themes = _tinymce_get_themes();
+      $themes = _wysiwyg_editor_get_themes();
       if (!isset($themes[$element['#wysiwyg_style']])) {
         $element['#wysiwyg_style'] = 'advanced';
       }
 
-      tinymce_load();
-      _tinymce_set_config($element['#wysiwyg_style']);
+      wysiwyg_editor_load();
+      _wysiwyg_editor_set_config($element['#wysiwyg_style']);
       if (!isset($element['#attributes'])) {
         $element['#attributes'] = array();
       }
       if (!isset($element['#attributes']['class'])) {
-        $element['#attributes']['class'] = 'tinymce tinymce-'. $element['#wysiwyg_style'];
+        $element['#attributes']['class'] = 'wysiwyg wysiwyg-'. $element['#wysiwyg_style'];
       }
       else {
-        $element['#attributes']['class'] .= ' tinymce tinymce-'. $element['#wysiwyg_style'];
+        $element['#attributes']['class'] .= ' wysiwyg wysiwyg-'. $element['#wysiwyg_style'];
       }
       // Set resizable to false to avoid drupal.js resizable function from
       // taking control of the textarea
@@ -163,13 +161,13 @@ function tinymce_process_textarea($element) {
 /**
  * Register a theme.
  */
-function _tinymce_set_config($theme) {
+function _wysiwyg_editor_set_config($theme) {
   static $themes = array();
   // Only sent a theme's configuration data once.
   if (!in_array($theme, $themes)) {
-    $profile = tinymce_profile_load(tinymce_current_profile());
-    $config = tinymce_config($profile, $theme);
-    // Convert the config values into the form expected by tinyMCE.
+    $profile = wysiwyg_editor_profile_load(wysiwyg_editor_current_profile());
+    $config = wysiwyg_editor_config($profile, $theme);
+    // Convert the config values into the form expected by Wysiwyg Editor.
     foreach ($config as $key => $value) {
       switch($value) {
         case 'true':
@@ -183,7 +181,7 @@ function _tinymce_set_config($theme) {
         $config[$key] = implode(',', $config[$key]);
       }
     }
-    drupal_add_js('Drupal.settings.tinymce.configs["'. $theme .'"] = '. drupal_to_js($config) .';', 'inline');
+    drupal_add_js('Drupal.settings.wysiwygEditor.configs["'. $theme .'"] = '. drupal_to_js($config) .';', 'inline');
     $themes[] = $theme;
   }
 }
@@ -191,33 +189,33 @@ function _tinymce_set_config($theme) {
 /**
  * Implementation of hook_user().
  */
-function tinymce_user($type, &$edit, &$user, $category = NULL) {
-  if ($type == 'form' && $category == 'account' && user_access('access tinymce')) {
-    $profile = tinymce_user_get_profile($user);
+function wysiwyg_editor_user($type, &$edit, &$user, $category = NULL) {
+  if ($type == 'form' && $category == 'account' && user_access('access wysiwyg editor')) {
+    $profile = wysiwyg_editor_user_get_profile($user);
 
     // because the settings are saved as strings we need to test for the string 'true'
     if ($profile->settings['user_choose'] == 'true') {
-      $form['tinymce'] = array(
+      $form['wysiwyg'] = array(
         '#type' => 'fieldset',
-        '#title' => t('TinyMCE rich-text settings'),
+        '#title' => t('Wysiwyg Editor rich-text settings'),
         '#weight' => 10,
         '#collapsible' => TRUE,
         '#collapsed' => TRUE
       );
 
-      $form['tinymce']['tinymce_status'] = array(
+      $form['wysiwyg']['wysiwyg_status'] = array(
         '#type' => 'select',
         '#title' => t('Default state'),
-        '#default_value' => isset($user->tinymce_status) ? $user->tinymce_status : (isset($profile->settings['default']) ? $profile->settings['default'] : 'false'),
+        '#default_value' => isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($profile->settings['default']) ? $profile->settings['default'] : 'false'),
         '#options' => array('false' => t('disabled'), 'true' => t('enabled')),
         '#description' => t('Should rich-text editing be enabled or disabled by default in textarea fields?')
       );
 
-      return array('tinymce' => $form);
+      return array('wysiwyg_editor' => $form);
     }
   }
   if ($type == 'validate') {
-    return array('tinymce_status' => $edit['tinymce_status']);
+    return array('wysiwyg_editor_status' => $edit['wysiwyg_editor_status']);
   }
 }
 
@@ -227,14 +225,14 @@ function tinymce_user($type, &$edit, &$user, $category = NULL) {
  * @param $element
  *   The textarea element to be filtered.
  */
-function tinymce_filter_elements(&$element) {
+function wysiwyg_editor_filter_elements(&$element) {
   switch ($element['#name']) {
-    // Disable tinymce for these textareas.
+    // Disable Wysiwyg Editor for these textareas.
     case 'log': // book and page log
     case 'img_assist_pages':
     case 'caption': // signature
     case 'pages':
-    case 'access_pages': //TinyMCE profile settings.
+    case 'access_pages': //Wysiwyg Editor profile settings.
     case 'user_mail_welcome_body': // user config settings
     case 'user_mail_approval_body': // user config settings
     case 'user_mail_pass_body': // user config settings
@@ -257,19 +255,19 @@ function tinymce_filter_elements(&$element) {
 }
 
 /**
- * Grab the themes available to TinyMCE.
+ * Grab the themes available to Wysiwyg Editor.
  *
- * TinyMCE themes control the functionality and buttons that are available to a
- * user. Themes are only looked for within the default TinyMCE theme directory.
+ * Wysiwyg Editor themes control the functionality and buttons that are available to a
+ * user. Themes are only looked for within the default Wysiwyg Editor theme directory.
  *
  * @return
  *   An array of theme names.
  */
-function _tinymce_get_themes() {
+function _wysiwyg_editor_get_themes() {
   static $themes = array();
 
   if (!$themes) {
-    $theme_loc = drupal_get_path('module', 'tinymce') .'/tinymce/jscripts/tiny_mce/themes/';
+    $theme_loc = drupal_get_path('module', 'wysiwyg_editor') .'/tinymce/jscripts/tiny_mce/themes/';
     if (is_dir($theme_loc) && $dh = opendir($theme_loc)) {
       while (($file = readdir($dh)) !== false) {
         if (!in_array($file, array('.', '..', 'CVS')) && is_dir($theme_loc . $file)) {
@@ -293,13 +291,13 @@ function _tinymce_get_themes() {
  * @return
  *   An array for each plugin.
  */
-function _tinymce_get_buttons($skip_metadata = TRUE) {
-  include_once drupal_get_path('module', 'tinymce'). '/wysiwyg_editor.plugins.inc';
-  $plugins = _tinymce_plugins();
+function _wysiwyg_editor_get_buttons($skip_metadata = TRUE) {
+  include_once drupal_get_path('module', 'wysiwyg_editor'). '/wysiwyg_editor.plugins.inc';
+  $plugins = _wysiwyg_editor_plugins();
 
   if ($skip_metadata == FALSE && is_array($plugins)) {
     foreach ($plugins as $name => $plugin) {
-      $file = drupal_get_path('module', 'tinymce'). '/tinymce/jscripts/tiny_mce/plugins/'. $name .'/editor_plugin_src.js';
+      $file = drupal_get_path('module', 'wysiwyg_editor'). '/tinymce/jscripts/tiny_mce/plugins/'. $name .'/editor_plugin_src.js';
       // Grab the plugin metadata by scanning the *.js file.
       if (file_exists($file)) {
         $lines = file($file);
@@ -339,64 +337,64 @@ function _tinymce_get_buttons($skip_metadata = TRUE) {
  ********************************************************************/
 
 /**
- * Controller for tinymce administrative settings.
+ * Controller for Wysiwyg Editor administrative settings.
  */
-function tinymce_admin($arg = NULL) {
+function wysiwyg_editor_admin($arg = NULL) {
 
   $edit = $_POST;
   $op = isset($_POST['op']) ? $_POST['op'] : NULL;
 
-  $op = $arg && !$op ? $arg : $op;
+  $op = ($arg && !$op ? $arg : $op);
 
   switch ($op) {
     case 'add':
       $breadcrumb[] = array('path' => 'admin', 'title' => t('administer'));
-      $breadcrumb[] = array('path' => 'admin/settings/tinymce', 'title' => t('tinymce'));
-      $breadcrumb[] = array('path' => 'admin/settings/tinymce/add', 'title' => t('Add new TinyMCE profile'));
+      $breadcrumb[] = array('path' => 'admin/settings/wysiwyg/profile', 'title' => t('Wysiwyg Editor'));
+      $breadcrumb[] = array('path' => 'admin/settings/wysiwyg/profile/add', 'title' => t('Add new Wysiwyg Editor profile'));
       menu_set_location($breadcrumb);
-      $output = tinymce_profile_form($edit);
+      $output = wysiwyg_editor_profile_form($edit);
       break;
 
     case 'edit':
-      drupal_set_title(t('Edit tinymce profile'));
-      $output = tinymce_profile_form(tinymce_profile_load(urldecode(arg(4))));
+      drupal_set_title(t('Edit Wysiwyg Editor profile'));
+      $output = wysiwyg_editor_profile_form(wysiwyg_editor_profile_load(urldecode(arg(5))));
       break;
 
     case 'delete':
-      tinymce_profile_delete(urldecode(arg(4)));
+      wysiwyg_editor_profile_delete(urldecode(arg(5)));
       drupal_set_message(t('Deleted profile'));
-      drupal_goto('admin/settings/tinymce');
+      drupal_goto('admin/settings/wysiwyg/profile');
       break;
 
     case t('Create profile');
     case t('Update profile');
-      if (tinymce_profile_validate($edit)) {
-        tinymce_profile_save($edit);
-        $edit['old_name'] ? drupal_set_message(t('Your TinyMCE profile has been updated.')) : drupal_set_message(t('Your TinyMCE profile has been created.'));
-        drupal_goto('admin/settings/tinymce');
+      if (wysiwyg_editor_profile_validate($edit)) {
+        wysiwyg_editor_profile_save($edit);
+        $edit['old_name'] ? drupal_set_message(t('Your Wysiwyg Editor profile has been updated.')) : drupal_set_message(t('Your Wysiwyg Editor profile has been created.'));
+        drupal_goto('admin/settings/wysiwyg/profile');
       }
       else {
-        $output = tinymce_profile_form($edit);
+        $output = wysiwyg_editor_profile_form($edit);
       }
       break;
 
     default:
-      drupal_set_title(t('TinyMCE settings'));
-      //Check if TinyMCE is installed.
-      $tinymce_loc = drupal_get_path('module', 'tinymce') .'/tinymce/';
+      drupal_set_title(t('Wysiwyg Editor settings'));
+      //Check if Wysiwyg Editor is installed.
+      $tinymce_loc = drupal_get_path('module', 'wysiwyg_editor') .'/tinymce/';
       if (!is_dir($tinymce_loc)) {
-        drupal_set_message(t('Could not find the TinyMCE engine installed at <strong>!tinymce-directory</strong>. Please <a href="http://tinymce.moxiecode.com/">download TinyMCE</a>, uncompress it and copy the folder into !tinymce-path.', array('!tinymce-path' => drupal_get_path('module', 'tinymce'), '!tinymce-directory' => $tinymce_loc)), 'error');
+        drupal_set_message(t('Could not find the TinyMCE engine installed at <strong>!tinymce-directory</strong>. Please <a href="http://tinymce.moxiecode.com/">download TinyMCE</a>, uncompress it and copy the folder into !tinymce-path.', array('!tinymce-path' => drupal_get_path('module', 'wysiwyg_editor'), '!tinymce-directory' => $tinymce_loc)), 'error');
       }
-      $output = tinymce_profile_overview();
+      $output = wysiwyg_editor_profile_overview();
   }
 
   return $output;
 }
 
 /**
- * Return an array of initial tinymce config options from the current role.
+ * Return an array of initial Wysiwyg Editor config options from the current role.
  */
-function tinymce_config($profile, $theme) {
+function wysiwyg_editor_config($profile, $theme) {
   global $user;
 
   // Drupal theme path.
@@ -405,7 +403,7 @@ function tinymce_config($profile, $theme) {
 
   $settings = $profile->settings;
 
-  // Build a default list of TinyMCE settings.
+  // Build a default list of Wysiwyg Editor settings.
 
   $init = array();
   $init['mode']               = 'none';
@@ -424,12 +422,12 @@ function tinymce_config($profile, $theme) {
   $init['theme_advanced_resizing_use_cookie'] = 'false';
 
 
-  $tinymce_mod_path = drupal_get_path('module', 'tinymce');
-  if (is_dir($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/') && user_access('access tinymce imagemanager')) {
+  $wysiwyg_editor_mod_path = drupal_get_path('module', 'wysiwyg_editor');
+  if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/') && user_access('access tinymce imagemanager')) {
     // we probably need more security than this
     $init['file_browser_callback'] = "mcImageManager.filebrowserCallBack";
   }
-  if (is_dir($tinymce_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/') && user_access('access tinymce filemanager')) {
+  if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/') && user_access('access tinymce filemanager')) {
     // we probably need more security than this
     $init['file_browser_callback'] = "mcImageManager.filebrowserCallBack";
   }
@@ -461,13 +459,13 @@ function tinymce_config($profile, $theme) {
 
       if (is_array($settings['buttons'])) {
         // This gives us the $plugins variable.
-        $plugins = _tinymce_get_buttons();
+        $plugins = _wysiwyg_editor_get_buttons();
 
         // Find the enabled buttons and the mce row they belong on. Also map the
         // plugin metadata for each button.
         $plugin_tracker = array();
         foreach ($plugins as $rname => $rplugin) { // Plugin name
-          foreach ($rplugin as $mce_key => $mce_value) { // TinyMCE key
+          foreach ($rplugin as $mce_key => $mce_value) { // Wysiwyg Editor key
             foreach ($mce_value as $k => $v) { // Buttons
               if (isset($settings['buttons'][$rname .'-'. $v])) {
                 // Font isn't a true plugin, rather it's buttons made available by the advanced theme
@@ -482,7 +480,7 @@ function tinymce_config($profile, $theme) {
           }
         }
 
-        // Add the rest of the TinyMCE config options to the $init array for each button.
+        // Add the rest of the Wysiwyg Editor config options to the $init array for each button.
         if (is_array($plugin_tracker)) {
           foreach ($plugin_tracker as $pname) {
             if ($pname != 'default') $init['plugins'][] = $pname;
@@ -507,7 +505,7 @@ function tinymce_config($profile, $theme) {
 
         // Shuffle buttons around so that row 1 always has the most buttons,
         // followed by row 2, etc. Note: These rows need to be set to NULL otherwise
-        // TinyMCE loads its own buttons inherited from the theme.
+        // Wysiwyg Editor loads its own buttons inherited from the theme.
         if (!isset($init['theme_advanced_buttons1'])) $init['theme_advanced_buttons1'] = array();
         if (!isset($init['theme_advanced_buttons2'])) $init['theme_advanced_buttons2'] = array();
         if (!isset($init['theme_advanced_buttons3'])) $init['theme_advanced_buttons3'] = array();
@@ -546,36 +544,36 @@ function tinymce_config($profile, $theme) {
 /**
  * Remove a profile from the database.
  */
-function tinymce_profile_delete($name) {
-  db_query("DELETE FROM {tinymce_settings} WHERE name = '%s'", $name);
-  db_query("DELETE FROM {tinymce_role} WHERE name = '%s'", $name);
+function wysiwyg_editor_profile_delete($name) {
+  db_query("DELETE FROM {wysiwyg_editor_profile} WHERE name = '%s'", $name);
+  db_query("DELETE FROM {wysiwyg_editor_role} WHERE name = '%s'", $name);
 }
 
 /**
  * Return an HTML form for profile configuration.
  */
-function tinymce_profile_form_build($edit) {
+function wysiwyg_editor_profile_form_build($edit) {
   $edit = (object) $edit;
 
-  // Only display the roles that currently don't have a tinymce profile. One
+  // Only display the roles that currently don't have a Wysiwyg Editor profile. One
   // profile per role.
-  $orig_roles = user_roles(FALSE, 'access tinymce');
+  $orig_roles = user_roles(FALSE, 'access wysiwyg editor');
   $roles = $orig_roles;
   if (arg(3) == 'add') {
-    $result = db_query('SELECT DISTINCT(rid) FROM {tinymce_role}');
+    $result = db_query('SELECT DISTINCT(rid) FROM {wysiwyg_editor_role}');
     while ($data = db_fetch_object($result)) {
       if (!in_array($data->rid, array_keys((array) $edit->rids)) && !form_get_errors()) {
         unset($roles[$data->rid]);
       }
     }
     if (!$orig_roles) {
-      drupal_set_message(t('You must <a href="!access-control-url">assign</a> at least one role with the \'access tinymce\' permission before creating a profile.', array('!access-control-url' => url('admin/user/access'))), 'error');
+      drupal_set_message(t('You must <a href="!access-control-url">assign</a> at least one role with the \'access wysiwyg editor\' permission before creating a profile.', array('!access-control-url' => url('admin/user/access'))), 'error');
     }
     else if (!$roles) {
-      drupal_set_message(t('You will not be allowed to create a new profile since all user roles have already been assigned profiles. Either remove an existing tinymce profile from at least one role or assign another role the \'access tinymce\' permission.'), 'error');
+      drupal_set_message(t('You will not be allowed to create a new profile since all user roles have already been assigned profiles. Either remove an existing Wysiwyg Editor profile from at least one role or assign another role the \'access wysiwyg editor\' permission.'), 'error');
     }
     else if (count($orig_roles) != count($roles)) {
-      drupal_set_message(t('Not all user roles are shown since they already have tinymce profiles. You must first unassign profiles in order to add them to a new one.'));
+      drupal_set_message(t('Not all user roles are shown since they already have Wysiwyg Editor profiles. You must first unassign profiles in order to add them to a new one.'));
     }
     $btn = t('Create profile');
   }
@@ -597,7 +595,7 @@ function tinymce_profile_form_build($edit) {
     '#default_value' => isset($edit->name) ? $edit->name : NULL,
     '#size' => 40,
     '#maxlength' => 128,
-    '#description' => t('Enter a name for this profile. This name is only visible within the tinymce administration page.'),
+    '#description' => t('Enter a name for this profile. This name is only visible within the Wysiwyg Editor administration page.'),
     '#required' => TRUE
   );
 
@@ -606,7 +604,7 @@ function tinymce_profile_form_build($edit) {
     '#title' => t('Roles allowed to use this profile'),
     '#default_value' => isset($edit->rids) ? array_keys((array)$edit->rids) : NULL,
     '#options' => $roles,
-    '#description' =>  t('Check at least one role. Only roles with \'access tinymce\' permission will be shown here.'),
+    '#description' =>  t('Check at least one role. Only roles with \'access wysiwyg editor\' permission will be shown here.'),
     '#required' => TRUE
   );
 
@@ -623,7 +621,7 @@ function tinymce_profile_form_build($edit) {
     '#title' => t('Allow users to choose default'),
     '#default_value' => isset($edit->settings['user_choose']) ? $edit->settings['user_choose'] : 'false',
     '#options' => array('false' => t('false'), 'true' => t('true')),
-    '#description' => t('If allowed, users will be able to choose their own TinyMCE default state by visiting their profile page.'),
+    '#description' => t('If allowed, users will be able to choose their own Wysiwyg Editor default state by visiting their profile page.'),
   );
 
   $form['basic']['show_toggle'] = array(
@@ -634,7 +632,7 @@ function tinymce_profile_form_build($edit) {
     '#description' => t('Whether or not to show the disable/enable rich text editor toggle below the textarea. If false, editor defaults to the global default or user default (see above).'),
   );
 
-  // This line upgrades previous versions of TinyMCE for user who previously selected a theme other than advanced.
+  // This line upgrades previous versions of Wysiwyg Editor for user who previously selected a theme other than advanced.
   if (isset($edit->settings['theme']) && $edit->settings['theme'] != 'advanced')
     $edit->settings['theme'] = 'advanced';
 
@@ -648,7 +646,7 @@ function tinymce_profile_form_build($edit) {
     '#title' => t('Language'),
     '#default_value' => isset($edit->settings['language']) ? $edit->settings['language'] : 'en',
     '#options' => drupal_map_assoc(array('ar', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'es', 'fa', 'fi', 'fr', 'fr_ca', 'he', 'hu', 'is', 'it', 'ja', 'ko', 'nb', 'nl', 'nn', 'pl', 'pt', 'pt_br', 'ru', 'ru_KOI8-R', 'ru_UTF-8', 'si', 'sk', 'sv', 'th', 'zh_cn', 'zh_tw', 'zh_tw_utf8')),
-    '#description' => t('The language for the TinyMCE interface. Language codes based on the <a href="http://www.loc.gov/standards/iso639-2/englangn.html">ISO-639-2</a> format.')
+    '#description' => t('The language for the Wysiwyg Editor interface. Language codes based on the <a href="http://www.loc.gov/standards/iso639-2/englangn.html">ISO-639-2</a> format.')
   );
 
   $form['basic']['safari_message'] = array(
@@ -691,14 +689,14 @@ function tinymce_profile_form_build($edit) {
     }
     $form['visibility']['access'] = array(
       '#type' => 'radios',
-      '#title' => t('Show tinymce on specific pages'),
+      '#title' => t('Show Wysiwyg Editor on specific pages'),
       '#default_value' => isset($edit->settings['access']) ? $edit->settings['access'] : 1,
       '#options' => $options
     );
     $form['visibility']['access_pages'] = array(
       '#type' => 'textarea',
       '#title' => t('Pages'),
-      '#default_value' => isset($edit->settings['access_pages']) ? $edit->settings['access_pages'] : tinymce_help('admin/settings/tinymce#pages'),
+      '#default_value' => isset($edit->settings['access_pages']) ? $edit->settings['access_pages'] : wysiwyg_editor_help('admin/settings/wysiwyg/profile#pages'),
       '#description' => $description
     );
   }
@@ -709,24 +707,24 @@ function tinymce_profile_form_build($edit) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
-    '#theme' => 'tinymce_admin_button_table'
+    '#theme' => 'wysiwyg_editor_admin_button_table'
   );
 
-  $metadata = _tinymce_get_buttons(FALSE);
+  $metadata = _wysiwyg_editor_get_buttons(FALSE);
   // Generate the button list.
   foreach ($metadata as $name => $meta) {
     if (isset($meta['buttons']) && is_array($meta['buttons'])) {
       foreach ($meta['buttons'] as $button) {
         if ($name != 'default') {
-          $img_src = drupal_get_path('module', 'tinymce') ."/tinymce/jscripts/tiny_mce/plugins/$name/images/$name.gif";
+          $img_src = drupal_get_path('module', 'wysiwyg_editor') ."/tinymce/jscripts/tiny_mce/plugins/$name/images/$name.gif";
 
           //correct for plugins that have more than one button
           if (!file_exists($img_src)) {
-            $img_src = drupal_get_path('module', 'tinymce') ."/tinymce/jscripts/tiny_mce/plugins/$name/images/$button.gif";
+            $img_src = drupal_get_path('module', 'wysiwyg_editor') ."/tinymce/jscripts/tiny_mce/plugins/$name/images/$button.gif";
           }
         }
         else {
-          $img_src = drupal_get_path('module', 'tinymce') ."/tinymce/jscripts/tiny_mce/themes/advanced/images/$button.gif";
+          $img_src = drupal_get_path('module', 'wysiwyg_editor') ."/tinymce/jscripts/tiny_mce/themes/advanced/images/$button.gif";
         }
 
         $b = file_exists($img_src) ? '<img src="'. base_path() . $img_src .'" title="'. $button .'" style="border: 1px solid grey; vertical-align: middle;" />' : $button;
@@ -861,8 +859,8 @@ function tinymce_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Editor CSS'),
     '#default_value' => isset($edit->settings['css_setting']) ? $edit->settings['css_setting'] : 'theme',
-    '#options' => array('theme' => t('use theme css'), 'self' => t('define css'), 'none' => t('tinyMCE default')),
-    '#description' => t('Defines the CSS to be used in the editor area.<br />use theme css - load style.css from current site theme.<br/>define css - enter path for css file below.<br />tinyMCE default - uses default CSS from editor.')
+    '#options' => array('theme' => t('use theme css'), 'self' => t('define css'), 'none' => t('TinyMCE default')),
+    '#description' => t('Defines the CSS to be used in the editor area.<br />use theme css - load style.css from current site theme.<br/>define css - enter path for css file below.<br />TinyMCE default - uses default CSS from editor.')
   );
 
   $form['css']['css_path'] = array(
@@ -894,17 +892,17 @@ function tinymce_profile_form_build($edit) {
 /**
  * Return an HTML form for profile configuration.
  */
-function tinymce_profile_form($edit) {
+function wysiwyg_editor_profile_form($edit) {
 
-  $output .= drupal_get_form('tinymce_profile_form_build', $edit);
+  $output .= drupal_get_form('wysiwyg_editor_profile_form_build', $edit);
 
   return $output;
 }
 
 /**
- * Layout for the buttons in the tinymce profile form
+ * Layout for the buttons in the Wysiwyg Editor profile form
  */
-function theme_tinymce_admin_button_table($form) {
+function theme_wysiwyg_editor_admin_button_table($form) {
   $buttons = array();
 
   // Flatten forms array
@@ -931,11 +929,11 @@ function theme_tinymce_admin_button_table($form) {
 /**
  * Return the name of the current user's default profile.
  */
-function tinymce_current_profile() {
+function wysiwyg_editor_current_profile() {
   static $profile_name;
   if (!$profile_name) {
     global $user;
-    $profile_name = db_result(db_query('SELECT s.name FROM {tinymce_settings} s INNER JOIN {tinymce_role} r ON r.name = s.name WHERE r.rid IN (%s)', implode(',', array_keys($user->roles))));
+    $profile_name = db_result(db_query('SELECT s.name FROM {wysiwyg_editor_profile} s INNER JOIN {wysiwyg_editor_role} r ON r.name = s.name WHERE r.rid IN (%s)', implode(',', array_keys($user->roles))));
   }
   return $profile_name;
 }
@@ -943,15 +941,15 @@ function tinymce_current_profile() {
 /**
  * Load all profiles. Just load one profile if $name is passed in.
  */
-function tinymce_profile_load($name = '') {
+function wysiwyg_editor_profile_load($name = '') {
   static $profiles = array();
 
   if (!$profiles) {
     $roles = user_roles();
-    $result = db_query('SELECT * FROM {tinymce_settings}');
+    $result = db_query('SELECT * FROM {wysiwyg_editor_profile}');
     while ($data = db_fetch_object($result)) {
       $data->settings = unserialize($data->settings);
-      $result2 = db_query("SELECT rid FROM {tinymce_role} WHERE name = '%s'", $data->name);
+      $result2 = db_query("SELECT rid FROM {wysiwyg_editor_role} WHERE name = '%s'", $data->name);
       $role = array();
       while ($r = db_fetch_object($result2)) {
         $role[$r->rid] = $roles[$r->rid];
@@ -966,23 +964,23 @@ function tinymce_profile_load($name = '') {
 }
 
 /**
- * Controller for tinymce profiles.
+ * Controller for Wysiwyg Editor profiles.
  */
-function tinymce_profile_overview() {
+function wysiwyg_editor_profile_overview() {
   $output = '';
 
-  $profiles = tinymce_profile_load();
+  $profiles = wysiwyg_editor_profile_load();
   if ($profiles) {
     $roles = user_roles();
     $header = array(t('Profile'), t('Roles'), t('Operations'));
     foreach ($profiles as $p) {
-      $rows[] = array(array('data' => $p->name, 'valign' => 'top'), array('data' => implode("<br />\n", $p->rids)), array('data' => l(t('edit'), 'admin/settings/tinymce/edit/'. urlencode($p->name)) .' '. l(t('delete'), 'admin/settings/tinymce/delete/'. urlencode($p->name)), 'valign' => 'top'));
+      $rows[] = array(array('data' => $p->name, 'valign' => 'top'), array('data' => implode("<br />\n", $p->rids)), array('data' => l(t('edit'), 'admin/settings/wysiwyg/profile/edit/'. urlencode($p->name)) .' '. l(t('delete'), 'admin/settings/wysiwyg/profile/delete/'. urlencode($p->name)), 'valign' => 'top'));
     }
     $output .= theme('table', $header, $rows);
-    $output .= t('<p><a href="!create-profile-url">Create new profile</a></p>', array('!create-profile-url' => url('admin/settings/tinymce/add')));
+    $output .= t('<p><a href="!create-profile-url">Create new profile</a></p>', array('!create-profile-url' => url('admin/settings/wysiwyg/profile/add')));
   }
   else {
-    drupal_set_message(t('No profiles found. Click here to <a href="!create-profile-url">create a new profile</a>.', array('!create-profile-url' => url('admin/settings/tinymce/add'))));
+    drupal_set_message(t('No profiles found. Click here to <a href="!create-profile-url">create a new profile</a>.', array('!create-profile-url' => url('admin/settings/wysiwyg/profile/add'))));
   }
 
   return $output;
@@ -991,25 +989,25 @@ function tinymce_profile_overview() {
 /**
  * Save a profile to the database.
  */
-function tinymce_profile_save($edit) {
-  db_query("DELETE FROM {tinymce_settings} WHERE name = '%s' or name = '%s'", $edit['name'], $edit['old_name']);
-  db_query("DELETE FROM {tinymce_role} WHERE name = '%s' or name = '%s'", $edit['name'], $edit['old_name']);
-  db_query("INSERT INTO {tinymce_settings} (name, settings) VALUES ('%s', '%s')", $edit['name'], serialize($edit));
+function wysiwyg_editor_profile_save($edit) {
+  db_query("DELETE FROM {wysiwyg_editor_profile} WHERE name = '%s' or name = '%s'", $edit['name'], $edit['old_name']);
+  db_query("DELETE FROM {wysiwyg_editor_role} WHERE name = '%s' or name = '%s'", $edit['name'], $edit['old_name']);
+  db_query("INSERT INTO {wysiwyg_editor_profile} (name, settings) VALUES ('%s', '%s')", $edit['name'], serialize($edit));
   foreach ($edit['rids'] as $rid => $value) {
-    db_query("INSERT INTO {tinymce_role} (name, rid) VALUES ('%s', %d)", $edit['name'], $rid);
+    db_query("INSERT INTO {wysiwyg_editor_role} (name, rid) VALUES ('%s', %d)", $edit['name'], $rid);
   }
 
-  // if users can't set their own defaults, make sure to remove $user->tinymce_status so their default doesn't override the main default
+  // if users can't set their own defaults, make sure to remove $user->wysiwyg_editor_status so their default doesn't override the main default
   if ($edit['user_choose'] == 'false') {
     global $user;
-    user_save($user, array('tinymce_status' => NULL));
+    user_save($user, array('wysiwyg_editor_status' => NULL));
   }
 }
 
 /**
  * Profile validation.
  */
-function tinymce_profile_validate($edit) {
+function wysiwyg_editor_profile_validate($edit) {
   $errors = array();
 
   if (!isset($edit['name'])) {
@@ -1028,15 +1026,15 @@ function tinymce_profile_validate($edit) {
 }
 
 /**
- * Determine if TinyMCE has permission to be used on the current page.
+ * Determine if Wysiwyg Editor has permission to be used on the current page.
  *
  * @return
  *   TRUE if can render, FALSE if not allowed.
  */
-function _tinymce_page_match($edit) {
+function _wysiwyg_editor_page_match($edit) {
   $page_match = FALSE;
 
-  // Kill TinyMCE if we're editing a textarea with PHP in it!
+  // Kill Wysiwyg Editor if we're editing a textarea with PHP in it!
   // PHP input formats are #2 in the filters table.
   if (is_numeric(arg(1)) && arg(2) == 'edit') {
     $node = node_load(arg(1));
@@ -1064,21 +1062,21 @@ function _tinymce_page_match($edit) {
   return $page_match;
 }
 
-function tinymce_user_get_profile($account) {
-  $profile_name = db_result(db_query('SELECT s.name FROM {tinymce_settings} s INNER JOIN {tinymce_role} r ON r.name = s.name WHERE r.rid IN (%s)', implode(',', array_keys($account->roles))));
+function wysiwyg_editor_user_get_profile($account) {
+  $profile_name = db_result(db_query('SELECT s.name FROM {wysiwyg_editor_profile} s INNER JOIN {wysiwyg_editor_role} r ON r.name = s.name WHERE r.rid IN (%s)', implode(',', array_keys($account->roles))));
   if ($profile_name){
-    return tinymce_profile_load($profile_name);
+    return wysiwyg_editor_profile_load($profile_name);
   }
   else {
     return FALSE;
   }
 }
 
-function tinymce_user_get_status($user, $profile){
+function wysiwyg_editor_user_get_status($user, $profile){
   $settings = $profile->settings;
 
   if ($settings['user_choose']) {
-    $status = isset($user->tinymce_status) ? $user->tinymce_status : (isset($settings['default']) ? $settings['default'] : 'false');
+    $status = isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($settings['default']) ? $settings['default'] : 'false');
   }
   else {
     $status = isset($settings['default']) ? $settings['default'] : 'false';

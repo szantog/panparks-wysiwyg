@@ -7,7 +7,7 @@
  * can be overridden by each Drupal theme.
  */
 
-function _tinymce_plugins() {
+function _wysiwyg_editor_plugins() {
 
 /**
  * A couple of notes about adding plugins.
@@ -88,7 +88,7 @@ $plugins['searchreplace'] = array();
 $plugins['searchreplace']['theme_advanced_buttons2'] = array('search', 'replace');
 
  
-if (is_dir(drupal_get_path('module', 'tinymce') . '/tinymce/jscripts/tiny_mce/plugins/spellchecker/')) {
+if (is_dir(drupal_get_path('module', 'wysiwyg_editor') . '/tinymce/jscripts/tiny_mce/plugins/spellchecker/')) {
   $plugins['spellchecker'] = array();
   $plugins['spellchecker']['theme_advanced_buttons3'] = array('spellchecker');
 }

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: German translation of WYSIWYG editor\n"
 "POT-Creation-Date: 2008-05-30 21:31+0200\n"
-"PO-Revision-Date: 2008-05-30 21:32+0100\n"
+"PO-Revision-Date: 2008-05-30 21:40+0100\n"
 "Last-Translator: Alexander Hass\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
@@ -26,7 +26,7 @@ msgstr "Verwalten"
 #: wysiwyg_editor.module:18
 #: wysiwyg_editor.info:0
 msgid "Wysiwyg Editor"
-msgstr "Wysiwyg Editor"
+msgstr "WYSIWYG-Editor"
 
 #: wysiwyg_editor.admin.inc:19
 msgid "Add new Wysiwyg Editor profile"
@@ -184,7 +184,7 @@ msgstr "Falls der PHP-Modus gewählt ist, geben Sie bitte PHP-Code zwischen !php
 
 #: wysiwyg_editor.admin.inc:213
 msgid "Show Wysiwyg Editor on specific pages"
-msgstr "WYSIWYG auf bestimmten Seiten anzeigen"
+msgstr "WYSIWYG-Editor auf bestimmten Seiten anzeigen"
 
 #: wysiwyg_editor.admin.inc:219
 msgid "Pages"
@@ -425,7 +425,7 @@ msgstr "Einstellungen für WYSIWYG-Rich-Text-Editor"
 
 #: wysiwyg_editor.module:224
 msgid "Should rich-text editing be enabled or disabled by default in textarea fields?"
-msgstr "Sollte die Rich-Text-Bearbeitung in Textfeldern standardmässig aktiviert oder deaktiviert sein?"
+msgstr "Soll die Rich-Text-Bearbeitung in Textfeldern standardmässig aktiviert oder deaktiviert sein?"
 
 #: wysiwyg_editor.module:49
 msgid "access wysiwyg editor"
@@ -454,11 +454,4 @@ msgstr "Um vorhandene TinyMCE-Einstellungen zum WYSIWYG-Editor zu migrieren, sol
 #: wysiwyg_editor.info:0
 msgid "Allows users to edit contents with client-side editors."
 msgstr "Ermöglicht Benutzern die Bearbeitung von Inhalten mit clientseitigen Editoren."
-
-#~ msgid "TinyMCE"
-#~ msgstr "TinyMCE"
-#~ msgid "Add new TinyMCE profile"
-#~ msgstr "Neues TinyMCE Profil hinzufügen"
-#~ msgid "The most popular WYSIWYG editor for advanced content editing."
-#~ msgstr "Der populärste WYSIWYG Editor für erweiterte Inhaltsbearbeitung."
 

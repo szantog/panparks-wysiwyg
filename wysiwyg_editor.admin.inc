@@ -1,6 +1,7 @@
 <?php
 // $Id$
 
+
 /**
  * @file
  * Integrate Wysiwyg editors into Drupal.
@@ -31,11 +32,16 @@ function _wysiwyg_editor_admin($op = NULL) {
       drupal_goto('admin/settings/wysiwyg/profile');
       break;
 
-    case t('Create profile');
-    case t('Update profile');
+    case t('Create profile'):
+    case t('Update profile'):
       if (wysiwyg_editor_profile_validate($edit)) {
         wysiwyg_editor_profile_save($edit);
-        $edit['old_name'] ? drupal_set_message(t('Your Wysiwyg Editor profile has been updated.')) : drupal_set_message(t('Your Wysiwyg Editor profile has been created.'));
+        if (isset($edit['old_name'])) {
+          drupal_set_message(t('Your Wysiwyg Editor profile has been updated.'));
+        }
+        else {
+          drupal_set_message(t('Your Wysiwyg Editor profile has been created.'));
+        }
         drupal_goto('admin/settings/wysiwyg/profile');
       }
       else {
@@ -100,7 +106,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'fieldset',
     '#title' => t('Basic setup'),
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE
+    '#collapsed' => TRUE,
   );
 
   $form['basic']['name'] = array(
@@ -110,7 +116,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#size' => 40,
     '#maxlength' => 128,
     '#description' => t('Enter a name for this profile. This name is only visible within the Wysiwyg Editor administration page.'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
 
   $form['basic']['rids'] = array(
@@ -118,8 +124,8 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#title' => t('Roles allowed to use this profile'),
     '#default_value' => isset($edit->rids) ? array_keys((array)$edit->rids) : NULL,
     '#options' => $roles,
-    '#description' =>  t('Check at least one role. Only roles with \'access wysiwyg editor\' permission will be shown here.'),
-    '#required' => TRUE
+    '#description' => t('Check at least one role. Only roles with \'access wysiwyg editor\' permission will be shown here.'),
+    '#required' => TRUE,
   );
 
   $form['basic']['default'] = array(
@@ -147,12 +153,13 @@ function wysiwyg_editor_profile_form_build($edit) {
   );
 
   // This line upgrades previous versions of Wysiwyg Editor for user who previously selected a theme other than advanced.
-  if (isset($edit->settings['theme']) && $edit->settings['theme'] != 'advanced')
+  if (isset($edit->settings['theme']) && $edit->settings['theme'] != 'advanced') {
     $edit->settings['theme'] = 'advanced';
+  }
 
   $form['basic']['theme'] = array(
     '#type' => 'hidden',
-    '#value' => isset($edit->settings['theme']) ? $edit->settings['theme'] : 'advanced'
+    '#value' => isset($edit->settings['theme']) ? $edit->settings['theme'] : 'advanced',
   );
 
   $form['basic']['language'] = array(
@@ -160,7 +167,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#title' => t('Language'),
     '#default_value' => isset($edit->settings['language']) ? $edit->settings['language'] : 'en',
     '#options' => drupal_map_assoc(array('ar', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'es', 'fa', 'fi', 'fr', 'fr_ca', 'he', 'hu', 'is', 'it', 'ja', 'ko', 'nb', 'nl', 'nn', 'pl', 'pt', 'pt_br', 'ru', 'ru_KOI8-R', 'ru_UTF-8', 'si', 'sk', 'sv', 'th', 'zh_cn', 'zh_tw', 'zh_tw_utf8')),
-    '#description' => t('The language for the Wysiwyg Editor interface. Language codes based on the <a href="http://www.loc.gov/standards/iso639-2/englangn.html">ISO-639-2</a> format.')
+    '#description' => t('The language for the Wysiwyg Editor interface. Language codes based on the <a href="http://www.loc.gov/standards/iso639-2/englangn.html">ISO-639-2</a> format.'),
   );
 
   $form['basic']['safari_message'] = array(
@@ -168,14 +175,14 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#title' => t('Safari browser warning'),
     '#default_value' => isset($edit->settings['safari_message']) ? $edit->settings['safari_message'] : 'false',
     '#options' => array('false' => t('false'), 'true' => t('true')),
-    '#description' => t('TinyMCE support for the Safari web browser is experimental and a warning message is displayed when that browser is detected. You can disable this message here.')
+    '#description' => t('TinyMCE support for the Safari web browser is experimental and a warning message is displayed when that browser is detected. You can disable this message here.'),
   );
 
   $form['visibility'] = array(
     '#type' => 'fieldset',
     '#title' => t('Visibility'),
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE
+    '#collapsed' => TRUE,
   );
 
   $access = user_access('use PHP for block visibility');
@@ -185,7 +192,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     $form['visibility'] = array();
     $form['visibility']['access'] = array(
       '#type' => 'value',
-      '#value' => 2
+      '#value' => 2,
     );
     $form['visibility']['access_pages'] = array(
       '#type' => 'value',
@@ -195,7 +202,7 @@ function wysiwyg_editor_profile_form_build($edit) {
   }
   else {
     $options = array(t('Show on every page except the listed pages.'), t('Show on only the listed pages.'));
-    $description = t("Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are '!blog' for the blog page and !blog-wildcard for every personal blog. !front is the front page.", array('!blog' => theme('placeholder', 'blog'), '!blog-wildcard' =>  theme('placeholder', 'blog/*'), '!front' => theme('placeholder', '<front>')));
+    $description = t("Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are '!blog' for the blog page and !blog-wildcard for every personal blog. !front is the front page.", array('!blog' => theme('placeholder', 'blog'), '!blog-wildcard' => theme('placeholder', 'blog/*'), '!front' => theme('placeholder', '<front>')));
 
     if ($access) {
       $options[] = t('Show if the following PHP code returns <code>TRUE</code> (PHP-mode, experts only).');
@@ -205,13 +212,13 @@ function wysiwyg_editor_profile_form_build($edit) {
       '#type' => 'radios',
       '#title' => t('Show Wysiwyg Editor on specific pages'),
       '#default_value' => isset($edit->settings['access']) ? $edit->settings['access'] : 1,
-      '#options' => $options
+      '#options' => $options,
     );
     $form['visibility']['access_pages'] = array(
       '#type' => 'textarea',
       '#title' => t('Pages'),
       '#default_value' => isset($edit->settings['access_pages']) ? $edit->settings['access_pages'] : wysiwyg_editor_help('admin/settings/wysiwyg/profile#pages'),
-      '#description' => $description
+      '#description' => $description,
     );
   }
 
@@ -221,7 +228,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
-    '#theme' => 'wysiwyg_editor_admin_button_table'
+    '#theme' => 'wysiwyg_editor_admin_button_table',
   );
 
   $metadata = _wysiwyg_editor_get_buttons(FALSE);
@@ -271,7 +278,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'fieldset',
     '#title' => t('Editor appearance'),
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE
+    '#collapsed' => TRUE,
   );
 
   $form['appearance']['toolbar_loc'] = array(
@@ -279,7 +286,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#title' => t('Toolbar location'),
     '#default_value' => isset($edit->settings['toolbar_loc']) ? $edit->settings['toolbar_loc'] : NULL,
     '#options' => array('bottom' => t('bottom'), 'top' => t('top')),
-    '#description' => t('Show toolbar at the top or bottom of the editor area?')
+    '#description' => t('Show toolbar at the top or bottom of the editor area?'),
   );
 
   $form['appearance']['toolbar_align'] = array(
@@ -287,7 +294,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#title' => t('Toolbar alignment'),
     '#default_value' => isset($edit->settings['toolbar_align']) ? $edit->settings['toolbar_align'] : NULL,
     '#options' => array('center' => t('center'), 'left' => t('left'), 'right' => t('right')),
-    '#description' => t('Align tool icons left, center, or right within the toolbar.')
+    '#description' => t('Align tool icons left, center, or right within the toolbar.'),
   );
 
   $form['appearance']['path_loc'] = array(
@@ -295,7 +302,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#title' => t('Path location'),
     '#default_value' => isset($edit->settings['path_loc']) ? $edit->settings['path_loc'] : 'bottom',
     '#options' => array('none' => t('none'), 'top' => t('top'), 'bottom' => t('bottom')),
-    '#description' => t('Path to html elements (i.e. "body>table>tr>td"). Show at top, bottom, or not at all.')
+    '#description' => t('Path to html elements (i.e. "body>table>tr>td"). Show at top, bottom, or not at all.'),
   );
 
   $form['appearance']['resizing'] = array(
@@ -303,7 +310,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#title' => t('Enable resizing button'),
     '#default_value' => isset($edit->settings['resizing']) ? $edit->settings['resizing'] : 'true',
     '#options' => array('false' => t('false'), 'true' => t('true')),
-    '#description' => t(' This option gives you the ability to enable/disable the resizing button. If enabled the <strong>Path location toolbar</strong> must be set to "top" or "bottom" in order to display the resize icon.')
+    '#description' => t(' This option gives you the ability to enable/disable the resizing button. If enabled the <strong>Path location toolbar</strong> must be set to "top" or "bottom" in order to display the resize icon.'),
   );
 
   $form['appearance']['block_formats'] = array(
@@ -312,14 +319,14 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#default_value' => isset($edit->settings['block_formats']) ? $edit->settings['block_formats'] : 'p,address,pre,h1,h2,h3,h4,h5,h6',
     '#size' => 40,
     '#maxlength' => 250,
-    '#description' => t('Comma separated list of HTML block formats. You can only remove elements, not add.')
+    '#description' => t('Comma separated list of HTML block formats. You can only remove elements, not add.'),
   );
 
   $form['output'] = array(
     '#type' => 'fieldset',
     '#title' => t('Cleanup and output'),
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE
+    '#collapsed' => TRUE,
   );
 
   $form['output']['verify_html'] = array(
@@ -327,7 +334,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#title' => t('Verify HTML'),
     '#default_value' => isset($edit->settings['verify_html']) ? $edit->settings['verify_html'] : NULL,
     '#options' => array('false' => t('false'), 'true' => t('true')),
-    '#description' => t('Should the HTML contents be verified or not? Verifying will strip &lt;head&gt tags, so choose false if you will be editing full page HTML.')
+    '#description' => t('Should the HTML contents be verified or not? Verifying will strip &lt;head&gt tags, so choose false if you will be editing full page HTML.'),
   );
 
   $form['output']['preformatted'] = array(
@@ -335,7 +342,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#title' => t('Preformatted'),
     '#default_value' => isset($edit->settings['preformatted']) ? $edit->settings['preformatted'] : NULL,
     '#options' => array('false' => t('false'), 'true' => t('true')),
-    '#description' => t('If this option is set to true, the editor will insert TAB characters on tab and preserve other whitespace characters just like a PRE HTML element does.')
+    '#description' => t('If this option is set to true, the editor will insert TAB characters on tab and preserve other whitespace characters just like a PRE HTML element does.'),
   );
 
   $form['output']['convert_fonts_to_spans'] = array(
@@ -343,30 +350,30 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#title' => t('Convert &lt;font&gt; tags to styles'),
     '#default_value' => isset($edit->settings['convert_fonts_to_spans']) ? $edit->settings['convert_fonts_to_spans'] : NULL,
     '#options' => array('true' => t('true'), 'false' => t('false')),
-    '#description' => t('If you set this option to true, font size, font family, font color and font background color will be replaced by inline styles.')
+    '#description' => t('If you set this option to true, font size, font family, font color and font background color will be replaced by inline styles.'),
   );
 
   $form['output']['remove_linebreaks'] = array(
-     '#type' => 'select',
-     '#title' => t('Remove linebreaks'),
-     '#default_value' => isset($edit->settings['remove_linebreaks']) ? $edit->settings['remove_linebreaks'] : NULL,
-     '#options' => array('true' => 'true', 'false' => 'false'),
-     '#description' => t('Set this option to false to prevent TinyMCE from removing linebreaks from existing nodes.  True avoids conflicts with some filters.')
+    '#type' => 'select',
+    '#title' => t('Remove linebreaks'),
+    '#default_value' => isset($edit->settings['remove_linebreaks']) ? $edit->settings['remove_linebreaks'] : NULL,
+    '#options' => array('true' => 'true', 'false' => 'false'),
+    '#description' => t('Set this option to false to prevent TinyMCE from removing linebreaks from existing nodes.  True avoids conflicts with some filters.'),
   );
 
   $form['output']['apply_source_formatting'] = array(
-     '#type' => 'select',
-     '#title' => t('Apply source formatting'),
-     '#default_value' => isset($edit->settings['apply_source_formatting']) ? $edit->settings['apply_source_formatting'] : NULL,
-     '#options' => array('true' => 'true', 'false' => 'false'),
-     '#description' => t('This option makes TinyMCE apply source formatting.  Set this to true for a cleaner HTML source.  Choose false to avoid conflicts with some filters.')
+    '#type' => 'select',
+    '#title' => t('Apply source formatting'),
+    '#default_value' => isset($edit->settings['apply_source_formatting']) ? $edit->settings['apply_source_formatting'] : NULL,
+    '#options' => array('true' => 'true', 'false' => 'false'),
+    '#description' => t('This option makes TinyMCE apply source formatting.  Set this to true for a cleaner HTML source.  Choose false to avoid conflicts with some filters.'),
   );
 
   $form['css'] = array(
     '#type' => 'fieldset',
     '#title' => t('CSS'),
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE
+    '#collapsed' => TRUE,
   );
 
   $form['css']['css_setting'] = array(
@@ -374,7 +381,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#title' => t('Editor CSS'),
     '#default_value' => isset($edit->settings['css_setting']) ? $edit->settings['css_setting'] : 'theme',
     '#options' => array('theme' => t('use theme css'), 'self' => t('define css'), 'none' => t('TinyMCE default')),
-    '#description' => t('Defines the CSS to be used in the editor area.<br />use theme css - load style.css from current site theme.<br/>define css - enter path for css file below.<br />TinyMCE default - uses default CSS from editor.')
+    '#description' => t('Defines the CSS to be used in the editor area.<br />use theme css - load style.css from current site theme.<br/>define css - enter path for css file below.<br />TinyMCE default - uses default CSS from editor.'),
   );
 
   $form['css']['css_path'] = array(
@@ -383,7 +390,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#default_value' => isset($edit->settings['css_path']) ? $edit->settings['css_path'] : NULL,
     '#size' => 40,
     '#maxlength' => 255,
-    '#description' => t('Enter path to CSS file (<em>example: "css/editor.css"</em>) or a list of css files seperated by a comma (<em>example: /themes/garland/style.css,http://domain.com/customMCE.css</em>).<br />Macros: %h (host name: http://www.example.com/), %t (path to theme: theme/yourtheme/)<br />Be sure to select "define css" above.')
+    '#description' => t('Enter path to CSS file (<em>example: "css/editor.css"</em>) or a list of css files seperated by a comma (<em>example: /themes/garland/style.css,http://domain.com/customMCE.css</em>).<br />Macros: %h (host name: http://www.example.com/), %t (path to theme: theme/yourtheme/)<br />Be sure to select "define css" above.'),
   );
 
   $form['css']['css_classes'] = array(
@@ -392,12 +399,12 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#default_value' => isset($edit->settings['css_classes']) ? $edit->settings['css_classes'] : NULL,
     '#size' => 40,
     '#maxlength' => 255,
-    '#description' => t('Adds CSS classes to the "styles" droplist. Format is: &lt;title&gt;=&lt;class&gt;;<br/> Example: Header 1=header1;Header 2=header2;Header 3=header3 (note: no trailing \';\')<br />Leave blank to automatically import list of CSS classes from style sheet.')
+    '#description' => t('Adds CSS classes to the "styles" droplist. Format is: &lt;title&gt;=&lt;class&gt;;<br/> Example: Header 1=header1;Header 2=header2;Header 3=header3 (note: no trailing \';\')<br />Leave blank to automatically import list of CSS classes from style sheet.'),
   );
 
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => $btn
+    '#value' => $btn,
   );
 
   return $form;
@@ -418,10 +425,10 @@ function theme_wysiwyg_editor_admin_button_table($form) {
   $total = count($buttons);
   $rows = array();
   for ($i = 0; $i < $total; $i++) {
-    $row = array();
-    $row[] = array('data' => $buttons[$i]);
-    $row[] = array('data' => $buttons[++$i]);
-    $row[] = array('data' => $buttons[++$i]);
+    $row    = array();
+    $row[]  = array('data' => $buttons[$i]);
+    $row[]  = array('data' => $buttons[++$i]);
+    $row[]  = array('data' => $buttons[++$i]);
     $rows[] = $row;
   }
 

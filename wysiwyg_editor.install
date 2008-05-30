@@ -1,6 +1,7 @@
 <?php
 // $Id$
 
+
 /**
  * Implementation of hook_install().
  */
@@ -32,9 +33,9 @@ function wysiwyg_editor_install() {
         PRIMARY KEY (name,rid)
       )");
       break;
-   }
-   // Import data from old editor modules.
-   wysiwyg_editor_migrate_tinymce();
+  }
+  // Import data from old editor modules.
+  wysiwyg_editor_migrate_tinymce();
 }
 
 /**
@@ -56,7 +57,7 @@ function wysiwyg_editor_migrate_tinymce() {
       db_query('INSERT INTO {wysiwyg_editor_profile} SELECT * FROM {tinymce_settings}');
       // Import TinyMCE profile role assignments.
       db_query('INSERT INTO {wysiwyg_editor_role} SELECT * FROM {tinymce_role}');
-      
+
       // Disable TinyMCE module.
       module_disable(array('tinymce'));
     }

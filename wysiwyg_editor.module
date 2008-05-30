@@ -1,6 +1,7 @@
 <?php
 // $Id$
 
+
 /**
  * @file
  * Integrate Wysiwyg editors into Drupal.
@@ -30,13 +31,14 @@ function wysiwyg_editor_help($section) {
   switch ($section) {
     case 'admin/settings/wysiwyg/profile#pages':
       return "node/*\nuser/*\ncomment/*";
+
     case 'admin/settings/wysiwyg/profile':
     case 'admin/help#wysiwyg_editor':
-      return t('<p style="font-size:x-small">$Revision$ $Date$</p>' .
-               '<p>Wysiwyg Editor adds what-you-see-is-what-you-get (WYSIWYG) html editing to textareas. This editor can be enabled/disabled without reloading the page by clicking a link below each textarea.</p>
+      return t('<p style="font-size:x-small">$Revision$ $Date$</p>'.
+        '<p>Wysiwyg Editor adds what-you-see-is-what-you-get (WYSIWYG) html editing to textareas. This editor can be enabled/disabled without reloading the page by clicking a link below each textarea.</p>
                 <p>Profiles can be defined based on user roles. A Wysiwyg Editor profile can define which pages receive this Wysiwyg Editor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions.</p>
                 <p>Lastly, only users with the <code>access wysiwyg editor</code> <a href="!url">permission</a> will be able to use Wysiwyg Editor.</p>', array('!url' => url('admin/user/access'))
-              );
+      );
   }
 }
 
@@ -47,10 +49,10 @@ function wysiwyg_editor_perm() {
   $array = array('access wysiwyg editor');
   $wysiwyg_editor_mod_path = drupal_get_path('module', 'wysiwyg_editor');
 
-  if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/')) {
+  if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/imagemanager/')) {
     $array[] = 'access tinymce imagemanager';
   }
-  if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/')) {
+  if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/filemanager/')) {
     $array[] = 'access tinymce filemanager';
   }
 
@@ -101,27 +103,27 @@ function wysiwyg_editor_load() {
 
     $wysiwyg_editor_mod_path = drupal_get_path('module', 'wysiwyg_editor');
 
-    if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/') && user_access('access tinymce imagemanager') ) {
+    if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/imagemanager/') && user_access('access tinymce imagemanager')) {
       // if tinymce imagemanager is installed
-      drupal_add_js($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/jscripts/mcimagemanager.js');
+      drupal_add_js($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/imagemanager/jscripts/mcimagemanager.js');
     }
 
-    if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/') && user_access('access tinymce filemanager') ) {
+    if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/filemanager/') && user_access('access tinymce filemanager')) {
       // if tinymce filemanager is installed
-      drupal_add_js($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/jscripts/mcfilemanager.js');
+      drupal_add_js($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/filemanager/jscripts/mcfilemanager.js');
     }
 
     // TinyMCE Compressor >= 1.0.9
-    if (file_exists($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.js')) {
-      drupal_add_js($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.js');
+    if (file_exists($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/tiny_mce_gzip.js')) {
+      drupal_add_js($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/tiny_mce_gzip.js');
     }
     // TinyMCE Compressor < 1.0.9
-    elseif (file_exists($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.php')) {
-      drupal_add_js($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce_gzip.php');
+    elseif (file_exists($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/tiny_mce_gzip.php')) {
+      drupal_add_js($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/tiny_mce_gzip.php');
     }
     else {
       // For some crazy reason IE will only load this JS file if the absolute reference is given to it.
-      drupal_add_js($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/tiny_mce.js');
+      drupal_add_js($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/tiny_mce.js');
     }
     // Add wysiwyg_editor.js to the footer to ensure it's executed after the Drupal.settings array has been rendered and populated.
     drupal_add_js($wysiwyg_editor_mod_path .'/wysiwyg_editor.js', 'footer');
@@ -179,10 +181,11 @@ function _wysiwyg_editor_set_config($theme) {
     $config = wysiwyg_editor_config($profile, $theme);
     // Convert the config values into the form expected by Wysiwyg Editor.
     foreach ($config as $key => $value) {
-      switch($value) {
+      switch ($value) {
         case 'true':
           $config[$key] = TRUE;
           break;
+
         case 'false':
           $config[$key] = FALSE;
           break;
@@ -210,7 +213,7 @@ function wysiwyg_editor_user($type, &$edit, &$user, $category = NULL) {
         '#title' => t('Wysiwyg Editor rich-text settings'),
         '#weight' => 10,
         '#collapsible' => TRUE,
-        '#collapsed' => TRUE
+        '#collapsed' => TRUE,
       );
 
       $form['wysiwyg']['wysiwyg_status'] = array(
@@ -218,7 +221,7 @@ function wysiwyg_editor_user($type, &$edit, &$user, $category = NULL) {
         '#title' => t('Default state'),
         '#default_value' => isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($profile->settings['default']) ? $profile->settings['default'] : 'false'),
         '#options' => array('false' => t('disabled'), 'true' => t('enabled')),
-        '#description' => t('Should rich-text editing be enabled or disabled by default in textarea fields?')
+        '#description' => t('Should rich-text editing be enabled or disabled by default in textarea fields?'),
       );
 
       return array('wysiwyg_editor' => $form);
@@ -302,19 +305,21 @@ function _wysiwyg_editor_get_themes() {
  *   An array for each plugin.
  */
 function _wysiwyg_editor_get_buttons($skip_metadata = TRUE) {
-  include_once drupal_get_path('module', 'wysiwyg_editor'). '/wysiwyg_editor.plugins.inc';
+  include_once drupal_get_path('module', 'wysiwyg_editor') .'/wysiwyg_editor.plugins.inc';
   $plugins = _wysiwyg_editor_plugins();
 
   if ($skip_metadata == FALSE && is_array($plugins)) {
     foreach ($plugins as $name => $plugin) {
-      $file = drupal_get_path('module', 'wysiwyg_editor'). '/tinymce/jscripts/tiny_mce/plugins/'. $name .'/editor_plugin_src.js';
+      $file = drupal_get_path('module', 'wysiwyg_editor') .'/tinymce/jscripts/tiny_mce/plugins/'. $name .'/editor_plugin_src.js';
       // Grab the plugin metadata by scanning the *.js file.
       if (file_exists($file)) {
-        $lines = file($file);
+        $lines        = file($file);
         $has_longname = FALSE;
-        $has_infourl = FALSE;
+        $has_infourl  = FALSE;
         foreach ($lines as $line) {
-          if ($has_longname && $has_infourl) break;
+          if ($has_longname && $has_infourl) {
+            break;
+          }
           if (strstr($line, 'longname')) {
             $start = strpos($line, "'") + 1;
             $end = strrpos($line, "'") - $start;
@@ -350,7 +355,7 @@ function wysiwyg_editor_config($profile, $theme) {
   global $user;
 
   // Drupal theme path.
-  $themepath = path_to_theme() . '/';
+  $themepath = path_to_theme() .'/';
   $host = base_path();
 
   $settings = $profile->settings;
@@ -358,15 +363,15 @@ function wysiwyg_editor_config($profile, $theme) {
   // Build a default list of Wysiwyg Editor settings.
 
   $init = array();
-  $init['mode']               = 'none';
-  $init['theme']              = $theme;
-  $init['relative_urls']      = 'false';
-  $init['document_base_url']  = "$host";
-  $init['language']           = $settings['language'] ? $settings['language'] : 'en';
-  $init['safari_warning']     = $settings['safari_message'] ?  $settings['safari_message'] : 'false';
-  $init['entity_encoding']    = 'raw';
-  $init['verify_html']        = $settings['verify_html'] ? $settings['verify_html'] : 'false';
-  $init['preformatted']       = $settings['preformatted'] ? $settings['preformatted'] : 'false';
+  $init['mode'] = 'none';
+  $init['theme'] = $theme;
+  $init['relative_urls'] = 'false';
+  $init['document_base_url'] = "$host";
+  $init['language'] = $settings['language'] ? $settings['language'] : 'en';
+  $init['safari_warning'] = $settings['safari_message'] ? $settings['safari_message'] : 'false';
+  $init['entity_encoding'] = 'raw';
+  $init['verify_html'] = $settings['verify_html'] ? $settings['verify_html'] : 'false';
+  $init['preformatted'] = $settings['preformatted'] ? $settings['preformatted'] : 'false';
   $init['convert_fonts_to_spans'] = $settings['convert_fonts_to_spans'] ? $settings['convert_fonts_to_spans'] : 'false';
   $init['remove_linebreaks'] = $settings['remove_linebreaks'] ? $settings['remove_linebreaks'] : 'true';
   $init['apply_source_formatting'] = $settings['apply_source_formatting'] ? $settings['apply_source_formatting'] : 'true';
@@ -375,16 +380,18 @@ function wysiwyg_editor_config($profile, $theme) {
 
 
   $wysiwyg_editor_mod_path = drupal_get_path('module', 'wysiwyg_editor');
-  if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/imagemanager/') && user_access('access tinymce imagemanager')) {
+  if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/imagemanager/') && user_access('access tinymce imagemanager')) {
     // we probably need more security than this
     $init['file_browser_callback'] = "mcImageManager.filebrowserCallBack";
   }
-  if (is_dir($wysiwyg_editor_mod_path . '/tinymce/jscripts/tiny_mce/plugins/filemanager/') && user_access('access tinymce filemanager')) {
+  if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/filemanager/') && user_access('access tinymce filemanager')) {
     // we probably need more security than this
     $init['file_browser_callback'] = "mcImageManager.filebrowserCallBack";
   }
 
-  if ($settings['css_classes']) $init['theme_advanced_styles'] = $settings['css_classes'];
+  if ($settings['css_classes']) {
+    $init['theme_advanced_styles'] = $settings['css_classes'];
+  }
 
   if ($settings['css_setting'] == 'theme') {
     $css = $themepath .'style.css';
@@ -403,11 +410,11 @@ function wysiwyg_editor_config($profile, $theme) {
       $init['theme_advanced_resize_horizontal'] = 'false';
       $init['theme_advanced_resizing_use_cookie'] = 'false';
       $init['plugins'] = array();
-      $init['theme_advanced_toolbar_location']  = $settings['toolbar_loc'] ? $settings['toolbar_loc'] : 'bottom';
-      $init['theme_advanced_toolbar_align']     = $settings['toolbar_align'] ? $settings['toolbar_align'] : 'left';
-      $init['theme_advanced_path_location']     = $settings['path_loc'] ? $settings['path_loc'] : 'bottom';
-      $init['theme_advanced_resizing']          = $settings['resizing'] ? $settings['resizing'] : 'true';
-      $init['theme_advanced_blockformats']      = $settings['block_formats'] ? $settings['block_formats'] : 'p,address,pre,h1,h2,h3,h4,h5,h6';
+      $init['theme_advanced_toolbar_location'] = $settings['toolbar_loc'] ? $settings['toolbar_loc'] : 'bottom';
+      $init['theme_advanced_toolbar_align'] = $settings['toolbar_align'] ? $settings['toolbar_align'] : 'left';
+      $init['theme_advanced_path_location'] = $settings['path_loc'] ? $settings['path_loc'] : 'bottom';
+      $init['theme_advanced_resizing'] = $settings['resizing'] ? $settings['resizing'] : 'true';
+      $init['theme_advanced_blockformats'] = $settings['block_formats'] ? $settings['block_formats'] : 'p,address,pre,h1,h2,h3,h4,h5,h6';
 
       if (is_array($settings['buttons'])) {
         // This gives us the $plugins variable.
@@ -416,26 +423,35 @@ function wysiwyg_editor_config($profile, $theme) {
         // Find the enabled buttons and the mce row they belong on. Also map the
         // plugin metadata for each button.
         $plugin_tracker = array();
-        foreach ($plugins as $rname => $rplugin) { // Plugin name
-          foreach ($rplugin as $mce_key => $mce_value) { // Wysiwyg Editor key
-            foreach ($mce_value as $k => $v) { // Buttons
+        // Plugin name
+        foreach ($plugins as $rname => $rplugin) {
+          // Wysiwyg Editor key
+          foreach ($rplugin as $mce_key => $mce_value) {
+            // Buttons
+            foreach ($mce_value as $k => $v) {
               if (isset($settings['buttons'][$rname .'-'. $v])) {
                 // Font isn't a true plugin, rather it's buttons made available by the advanced theme
-                if (!in_array($rname, $plugin_tracker) && $rname != 'font') $plugin_tracker[] = $rname;
+                if (!in_array($rname, $plugin_tracker) && $rname != 'font') {
+                  $plugin_tracker[] = $rname;
+                }
                 $init[$mce_key][] = $v;
               }
             }
           }
           // Some advanced plugins only have an $rname and no buttons
           if (isset($settings['buttons'][$rname])) {
-            if (!in_array($rname, $plugin_tracker)) $plugin_tracker[] = $rname;
+            if (!in_array($rname, $plugin_tracker)) {
+              $plugin_tracker[] = $rname;
+            }
           }
         }
 
         // Add the rest of the Wysiwyg Editor config options to the $init array for each button.
         if (is_array($plugin_tracker)) {
           foreach ($plugin_tracker as $pname) {
-            if ($pname != 'default') $init['plugins'][] = $pname;
+            if ($pname != 'default') {
+              $init['plugins'][] = $pname;
+            }
             foreach ($plugins[$pname] as $mce_key => $mce_value) {
               // Don't overwrite buttons or extended_valid_elements
               if ($mce_key == 'extended_valid_elements') {
@@ -451,21 +467,30 @@ function wysiwyg_editor_config($profile, $theme) {
 
         // Cleanup
         foreach ($init as $mce_key => $mce_value) {
-          if (is_array($mce_value)) $mce_value = array_unique($mce_value);
+          if (is_array($mce_value)) {
+            $mce_value = array_unique($mce_value);
+          }
           $init[$mce_key] = $mce_value;
         }
 
         // Shuffle buttons around so that row 1 always has the most buttons,
         // followed by row 2, etc. Note: These rows need to be set to NULL otherwise
         // Wysiwyg Editor loads its own buttons inherited from the theme.
-        if (!isset($init['theme_advanced_buttons1'])) $init['theme_advanced_buttons1'] = array();
-        if (!isset($init['theme_advanced_buttons2'])) $init['theme_advanced_buttons2'] = array();
-        if (!isset($init['theme_advanced_buttons3'])) $init['theme_advanced_buttons3'] = array();
+        if (!isset($init['theme_advanced_buttons1'])) {
+          $init['theme_advanced_buttons1'] = array();
+        }
+        if (!isset($init['theme_advanced_buttons2'])) {
+          $init['theme_advanced_buttons2'] = array();
+        }
+        if (!isset($init['theme_advanced_buttons3'])) {
+          $init['theme_advanced_buttons3'] = array();
+        }
 
-        $min_btns = 5; // Minimum number of buttons per row.
-        $num1 = count($init['theme_advanced_buttons1']);
-        $num2 = count($init['theme_advanced_buttons2']);
-        $num3 = count($init['theme_advanced_buttons3']);
+        // Minimum number of buttons per row.
+        $min_btns = 5;
+        $num1     = count($init['theme_advanced_buttons1']);
+        $num2     = count($init['theme_advanced_buttons2']);
+        $num3     = count($init['theme_advanced_buttons3']);
 
         if ($num3 < $min_btns) {
           $init['theme_advanced_buttons2'] = array_merge($init['theme_advanced_buttons2'], $init['theme_advanced_buttons3']);
@@ -485,9 +510,7 @@ function wysiwyg_editor_config($profile, $theme) {
           $init['theme_advanced_buttons2'] = $init['theme_advanced_buttons3'];
           $init['theme_advanced_buttons3'] = array();
         }
-
       }
-
       break;
   }
   return $init;
@@ -569,7 +592,7 @@ function _wysiwyg_editor_page_match($edit) {
 
 function wysiwyg_editor_user_get_profile($account) {
   $profile_name = db_result(db_query('SELECT s.name FROM {wysiwyg_editor_profile} s INNER JOIN {wysiwyg_editor_role} r ON r.name = s.name WHERE r.rid IN (%s)', implode(',', array_keys($account->roles))));
-  if ($profile_name){
+  if ($profile_name) {
     return wysiwyg_editor_profile_load($profile_name);
   }
   else {
@@ -577,7 +600,7 @@ function wysiwyg_editor_user_get_profile($account) {
   }
 }
 
-function wysiwyg_editor_user_get_status($user, $profile){
+function wysiwyg_editor_user_get_status($user, $profile) {
   $settings = $profile->settings;
 
   if ($settings['user_choose']) {

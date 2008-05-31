@@ -34,10 +34,8 @@ function wysiwyg_editor_help($section) {
 
     case 'admin/settings/wysiwyg/profile':
     case 'admin/help#wysiwyg_editor':
-      return t('<p style="font-size:x-small">$Revision$ $Date$</p>'.
-        '<p>Wysiwyg Editor adds what-you-see-is-what-you-get (WYSIWYG) html editing to textareas. This editor can be enabled/disabled without reloading the page by clicking a link below each textarea.</p>
-                <p>Profiles can be defined based on user roles. A Wysiwyg Editor profile can define which pages receive this Wysiwyg Editor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions.</p>
-                <p>Lastly, only users with the <code>access wysiwyg editor</code> <a href="!url">permission</a> will be able to use Wysiwyg Editor.</p>', array('!url' => url('admin/user/access'))
+      return t('<p>Profiles can be defined based on user roles. A Wysiwyg Editor profile can define which pages receive this Wysiwyg Editor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions.</p>
+        <p>Lastly, only users with the <code>access wysiwyg editor</code> <a href="!url">permission</a> will be able to use Wysiwyg Editor.</p>', array('!url' => url('admin/user/access'))
       );
   }
 }

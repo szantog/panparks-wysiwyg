@@ -10,6 +10,7 @@ Wysiwyg 6.x-1.x, xxxx-xx-xx
 
 Wysiwyg 6.x-0.x, xxxx-xx-xx
 ---------------------------
+#264739 by hass, sun: Fixed potx error due to wrong t() string.
 #264411 by sun: Cleaned coding-style using coder_format script.
 #264411 by sun: Moved admin functions into separate include file.
 #264411 by sun: Added TinyMCE data import upon installation.

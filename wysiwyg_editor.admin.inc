@@ -132,7 +132,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Default state'),
     '#default_value' => isset($edit->settings['default']) ? $edit->settings['default'] : 'false',
-    '#options' => array('false' => t('disabled'), 'true' => t('enabled')),
+    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('Default editor state for users in this profile. Users will be able to override this state if the next option is enabled.'),
   );
 
@@ -140,7 +140,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Allow users to choose default'),
     '#default_value' => isset($edit->settings['user_choose']) ? $edit->settings['user_choose'] : 'false',
-    '#options' => array('false' => t('false'), 'true' => t('true')),
+    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('If allowed, users will be able to choose their own Wysiwyg Editor default state by visiting their profile page.'),
   );
 
@@ -148,7 +148,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Show disable/enable rich text editor toggle'),
     '#default_value' => isset($edit->settings['show_toggle']) ? $edit->settings['show_toggle'] : 'true',
-    '#options' => array('false' => t('false'), 'true' => t('true')),
+    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('Whether or not to show the disable/enable rich text editor toggle below the textarea. If false, editor defaults to the global default or user default (see above).'),
   );
 
@@ -174,7 +174,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Safari browser warning'),
     '#default_value' => isset($edit->settings['safari_message']) ? $edit->settings['safari_message'] : 'false',
-    '#options' => array('false' => t('false'), 'true' => t('true')),
+    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('TinyMCE support for the Safari web browser is experimental and a warning message is displayed when that browser is detected. You can disable this message here.'),
   );
 
@@ -285,7 +285,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Toolbar location'),
     '#default_value' => isset($edit->settings['toolbar_loc']) ? $edit->settings['toolbar_loc'] : NULL,
-    '#options' => array('bottom' => t('bottom'), 'top' => t('top')),
+    '#options' => array('bottom' => t('Bottom'), 'top' => t('Top')),
     '#description' => t('Show toolbar at the top or bottom of the editor area?'),
   );
 
@@ -293,7 +293,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Toolbar alignment'),
     '#default_value' => isset($edit->settings['toolbar_align']) ? $edit->settings['toolbar_align'] : NULL,
-    '#options' => array('center' => t('center'), 'left' => t('left'), 'right' => t('right')),
+    '#options' => array('center' => t('Center'), 'left' => t('Left'), 'right' => t('Right')),
     '#description' => t('Align tool icons left, center, or right within the toolbar.'),
   );
 
@@ -301,7 +301,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Path location'),
     '#default_value' => isset($edit->settings['path_loc']) ? $edit->settings['path_loc'] : 'bottom',
-    '#options' => array('none' => t('none'), 'top' => t('top'), 'bottom' => t('bottom')),
+    '#options' => array('none' => t('None'), 'top' => t('Top'), 'bottom' => t('Bottom')),
     '#description' => t('Path to html elements (i.e. "body>table>tr>td"). Show at top, bottom, or not at all.'),
   );
 
@@ -309,7 +309,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Enable resizing button'),
     '#default_value' => isset($edit->settings['resizing']) ? $edit->settings['resizing'] : 'true',
-    '#options' => array('false' => t('false'), 'true' => t('true')),
+    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t(' This option gives you the ability to enable/disable the resizing button. If enabled the <strong>Path location toolbar</strong> must be set to "top" or "bottom" in order to display the resize icon.'),
   );
 
@@ -333,7 +333,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Verify HTML'),
     '#default_value' => isset($edit->settings['verify_html']) ? $edit->settings['verify_html'] : NULL,
-    '#options' => array('false' => t('false'), 'true' => t('true')),
+    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('Should the HTML contents be verified or not? Verifying will strip &lt;head&gt tags, so choose false if you will be editing full page HTML.'),
   );
 
@@ -341,7 +341,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Preformatted'),
     '#default_value' => isset($edit->settings['preformatted']) ? $edit->settings['preformatted'] : NULL,
-    '#options' => array('false' => t('false'), 'true' => t('true')),
+    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('If this option is set to true, the editor will insert TAB characters on tab and preserve other whitespace characters just like a PRE HTML element does.'),
   );
 
@@ -349,7 +349,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Convert &lt;font&gt; tags to styles'),
     '#default_value' => isset($edit->settings['convert_fonts_to_spans']) ? $edit->settings['convert_fonts_to_spans'] : NULL,
-    '#options' => array('true' => t('true'), 'false' => t('false')),
+    '#options' => array('true' => t('Enabled'), 'false' => t('Disabled')),
     '#description' => t('If you set this option to true, font size, font family, font color and font background color will be replaced by inline styles.'),
   );
 
@@ -357,7 +357,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Remove linebreaks'),
     '#default_value' => isset($edit->settings['remove_linebreaks']) ? $edit->settings['remove_linebreaks'] : NULL,
-    '#options' => array('true' => 'true', 'false' => 'false'),
+    '#options' => array('true' => 'Enabled', 'false' => 'Disabled'),
     '#description' => t('Set this option to false to prevent TinyMCE from removing linebreaks from existing nodes.  True avoids conflicts with some filters.'),
   );
 
@@ -365,7 +365,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Apply source formatting'),
     '#default_value' => isset($edit->settings['apply_source_formatting']) ? $edit->settings['apply_source_formatting'] : NULL,
-    '#options' => array('true' => 'true', 'false' => 'false'),
+    '#options' => array('true' => 'Enabled', 'false' => 'Disabled'),
     '#description' => t('This option makes TinyMCE apply source formatting.  Set this to true for a cleaner HTML source.  Choose false to avoid conflicts with some filters.'),
   );
 
@@ -380,7 +380,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Editor CSS'),
     '#default_value' => isset($edit->settings['css_setting']) ? $edit->settings['css_setting'] : 'theme',
-    '#options' => array('theme' => t('use theme css'), 'self' => t('define css'), 'none' => t('TinyMCE default')),
+    '#options' => array('theme' => t('Use theme CSS'), 'self' => t('Define CSS'), 'none' => t('TinyMCE default CSS')),
     '#description' => t('Defines the CSS to be used in the editor area.<br />use theme css - load style.css from current site theme.<br/>define css - enter path for css file below.<br />TinyMCE default - uses default CSS from editor.'),
   );
 
@@ -448,7 +448,7 @@ function wysiwyg_editor_profile_overview() {
     $roles = user_roles();
     $header = array(t('Profile'), t('Roles'), t('Operations'));
     foreach ($profiles as $p) {
-      $rows[] = array(array('data' => $p->name, 'valign' => 'top'), array('data' => implode("<br />\n", $p->rids)), array('data' => l(t('edit'), 'admin/settings/wysiwyg/profile/edit/'. urlencode($p->name)) .' '. l(t('delete'), 'admin/settings/wysiwyg/profile/delete/'. urlencode($p->name)), 'valign' => 'top'));
+      $rows[] = array(array('data' => $p->name, 'valign' => 'top'), array('data' => implode("<br />\n", $p->rids)), array('data' => l(t('Edit'), 'admin/settings/wysiwyg/profile/edit/'. urlencode($p->name)) .' '. l(t('Delete'), 'admin/settings/wysiwyg/profile/delete/'. urlencode($p->name)), 'valign' => 'top'));
     }
     $output .= theme('table', $header, $rows);
     $output .= t('<p><a href="!create-profile-url">Create new profile</a></p>', array('!create-profile-url' => url('admin/settings/wysiwyg/profile/add')));

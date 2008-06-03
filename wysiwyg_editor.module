@@ -34,9 +34,9 @@ function wysiwyg_editor_help($section) {
 
     case 'admin/settings/wysiwyg/profile':
     case 'admin/help#wysiwyg_editor':
-      return t('<p>Profiles can be defined based on user roles. A Wysiwyg Editor profile can define which pages receive this Wysiwyg Editor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions.</p>
-        <p>Lastly, only users with the <code>access wysiwyg editor</code> <a href="!url">permission</a> will be able to use Wysiwyg Editor.</p>', array('!url' => url('admin/user/access'))
-      );
+      $output = '<p>'. t('Profiles can be defined based on user roles. A Wysiwyg Editor profile can define which pages receive this Wysiwyg Editor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions.') .'</p>';
+      $output .= '<p>'. t('Lastly, only users with the <code>access wysiwyg editor</code> <a href="!url">permission</a> will be able to use Wysiwyg Editor.', array('!url' => url('admin/user/access'))) .'</p>';
+      return $output;
   }
 }
 
@@ -92,8 +92,8 @@ function wysiwyg_editor_load() {
   if (!$loaded) {
     $profile = wysiwyg_editor_profile_load(wysiwyg_editor_current_profile());
 
-    $enable  = t('enable rich-text');
-    $disable = t('disable rich-text');
+    $enable  = t('Enable rich-text');
+    $disable = t('Disable rich-text');
 
     $status = wysiwyg_editor_user_get_status($user, $profile);
 

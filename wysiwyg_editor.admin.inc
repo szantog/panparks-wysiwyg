@@ -357,7 +357,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Remove linebreaks'),
     '#default_value' => isset($edit->settings['remove_linebreaks']) ? $edit->settings['remove_linebreaks'] : NULL,
-    '#options' => array('true' => 'Enabled', 'false' => 'Disabled'),
+    '#options' => array('true' => t('Enabled'), 'false' => t('Disabled')),
     '#description' => t('Set this option to false to prevent TinyMCE from removing linebreaks from existing nodes.  True avoids conflicts with some filters.'),
   );
 
@@ -365,7 +365,7 @@ function wysiwyg_editor_profile_form_build($edit) {
     '#type' => 'select',
     '#title' => t('Apply source formatting'),
     '#default_value' => isset($edit->settings['apply_source_formatting']) ? $edit->settings['apply_source_formatting'] : NULL,
-    '#options' => array('true' => 'Enabled', 'false' => 'Disabled'),
+    '#options' => array('true' => t('Enabled'), 'false' => t('Disabled')),
     '#description' => t('This option makes TinyMCE apply source formatting.  Set this to true for a cleaner HTML source.  Choose false to avoid conflicts with some filters.'),
   );
 

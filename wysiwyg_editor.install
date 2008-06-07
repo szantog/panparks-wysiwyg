@@ -12,6 +12,7 @@ function wysiwyg_editor_install() {
       db_query("CREATE TABLE {wysiwyg_editor_profile} (
         name varchar(128) NOT NULL default '',
         settings text,
+        plugin_count tinyint NOT NULL default '0',
         PRIMARY KEY (name)
       ) /*!40100 DEFAULT CHARACTER SET utf8 */");
       db_query("CREATE TABLE {wysiwyg_editor_role} (
@@ -25,6 +26,7 @@ function wysiwyg_editor_install() {
       db_query("CREATE TABLE {wysiwyg_editor_profile} (
         name varchar(128) NOT NULL default '',
         settings text,
+        plugin_count smallint NOT NULL default '0',
         PRIMARY KEY (name)
       )");
       db_query("CREATE TABLE {wysiwyg_editor_role} (
@@ -65,5 +67,23 @@ function wysiwyg_editor_migrate_tinymce() {
       drupal_set_message(t('To migrate your existing TinyMCE settings to Wysiwyg Editor, please update TinyMCE module to the latest official release, and re-install Wysiwyg Editor module.'));
     }
   }
+}
+
+/**
+ * Add plugin_count to editor profiles.
+ */
+function wysiwyg_editor_update_5000() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("ALTER TABLE {wysiwyg_editor_profile} ADD COLUMN plugin_count tinyint NOT NULL default '0'");
+      break;
+
+    case 'pgsql':
+      db_add_column($ret, 'wysiwyg_editor_profile', 'plugin_count', 'smallint', array('not null' => TRUE, 'default' => "'0'"));
+      break;
+  }
+  return $ret;
 }
 

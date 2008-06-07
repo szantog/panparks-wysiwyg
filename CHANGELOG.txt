@@ -6,6 +6,8 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-0.x, xxxx-xx-xx
 ---------------------------
+#60667 by sun: Fixed wrong editor profile is loaded when user is granted access
+  to more than one profile.
 #264739 by sun: Fixed missing t() around some profile settings options.
 #264739 by sun: Improved output strings.
 #264739 by hass, sun: Fixed potx error due to wrong t() string.

@@ -521,7 +521,7 @@ function wysiwyg_editor_current_profile() {
   static $profile_name;
   if (!$profile_name) {
     global $user;
-    $profile_name = db_result(db_query('SELECT s.name FROM {wysiwyg_editor_profile} s INNER JOIN {wysiwyg_editor_role} r ON r.name = s.name WHERE r.rid IN (%s)', implode(',', array_keys($user->roles))));
+    $profile_name = db_result(db_query_range('SELECT p.name FROM {wysiwyg_editor_profile} p INNER JOIN {wysiwyg_editor_role} r ON r.name = p.name WHERE r.rid IN (%s) ORDER BY plugin_count DESC', implode(',', array_keys($user->roles)), 0, 1));
   }
   return $profile_name;
 }

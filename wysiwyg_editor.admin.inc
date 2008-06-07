@@ -9,6 +9,8 @@
 
 /**
  * Controller for Wysiwyg Editor administrative settings.
+ *
+ * @todo Move into hook_menu(), resp. FAPI functions.
  */
 function _wysiwyg_editor_admin($op = NULL) {
   $edit = $_POST;
@@ -18,12 +20,12 @@ function _wysiwyg_editor_admin($op = NULL) {
       $breadcrumb[] = array('path' => 'admin/settings/wysiwyg/profile', 'title' => t('Wysiwyg Editor'));
       $breadcrumb[] = array('path' => 'admin/settings/wysiwyg/profile/add', 'title' => t('Add new Wysiwyg Editor profile'));
       menu_set_location($breadcrumb);
-      $output = wysiwyg_editor_profile_form($edit);
+      $output = drupal_get_form('wysiwyg_editor_profile_form', $edit);
       break;
 
     case 'edit':
       drupal_set_title(t('Edit Wysiwyg Editor profile'));
-      $output = wysiwyg_editor_profile_form(wysiwyg_editor_profile_load(urldecode(arg(5))));
+      $output = drupal_get_form('wysiwyg_editor_profile_form', wysiwyg_editor_profile_load(urldecode(arg(5))));
       break;
 
     case 'delete':
@@ -34,19 +36,7 @@ function _wysiwyg_editor_admin($op = NULL) {
 
     case t('Create profile'):
     case t('Update profile'):
-      if (wysiwyg_editor_profile_validate($edit)) {
-        wysiwyg_editor_profile_save($edit);
-        if (isset($edit['old_name'])) {
-          drupal_set_message(t('Your Wysiwyg Editor profile has been updated.'));
-        }
-        else {
-          drupal_set_message(t('Your Wysiwyg Editor profile has been created.'));
-        }
-        drupal_goto('admin/settings/wysiwyg/profile');
-      }
-      else {
-        $output = wysiwyg_editor_profile_form($edit);
-      }
+      $output = drupal_get_form('wysiwyg_editor_profile_form', $edit);
       break;
 
     default:
@@ -66,14 +56,7 @@ function _wysiwyg_editor_admin($op = NULL) {
  * Return an HTML form for profile configuration.
  */
 function wysiwyg_editor_profile_form($edit) {
-  return drupal_get_form('wysiwyg_editor_profile_form_build', $edit);
-}
-
-/**
- * Return an HTML form for profile configuration.
- */
-function wysiwyg_editor_profile_form_build($edit) {
-  $edit = (object) $edit;
+  $edit = (object)$edit;
 
   // Only display the roles that currently don't have a Wysiwyg Editor profile. One
   // profile per role.
@@ -411,6 +394,37 @@ function wysiwyg_editor_profile_form_build($edit) {
 }
 
 /**
+ * Form submit callback for wysiwyg_editor_profile_form_build().
+ *
+ * @see wysiwyg_editor_profile_form_build()
+ */
+function wysiwyg_editor_profile_form_submit($form_id, &$form_values) {
+  // Count enabled plugins for this profile.
+  $form_values['buttons'] = array_filter($form_values['buttons']);
+  $plugin_count = count($form_values['buttons']);
+  // Filter enabled roles for this profile.
+  $form_values['rids'] = array_filter($form_values['rids']);
+
+  // Delete existing profile(s) with the current profile name.
+  db_query("DELETE FROM {wysiwyg_editor_profile} WHERE name = '%s' OR name = '%s'", $form_values['name'], $form_values['old_name']);
+  db_query("DELETE FROM {wysiwyg_editor_role} WHERE name = '%s' OR name = '%s'", $form_values['name'], $form_values['old_name']);
+
+  // Insert new profile data.
+  db_query("INSERT INTO {wysiwyg_editor_profile} (name, settings, plugin_count) VALUES ('%s', '%s', %d)", $form_values['name'], serialize($form_values), $plugin_count);
+  foreach ($form_values['rids'] as $rid => $value) {
+    db_query("INSERT INTO {wysiwyg_editor_role} (name, rid) VALUES ('%s', %d)", $form_values['name'], $rid);
+  }
+
+  if (isset($form_values['old_name'])) {
+    drupal_set_message(t('Wysiwyg Editor profile has been updated.'));
+  }
+  else {
+    drupal_set_message(t('Wysiwyg Editor profile has been created.'));
+  }
+  drupal_goto('admin/settings/wysiwyg/profile');
+}
+
+/**
  * Layout for the buttons in the Wysiwyg Editor profile form
  */
 function theme_wysiwyg_editor_admin_button_table($form) {
@@ -442,7 +456,6 @@ function theme_wysiwyg_editor_admin_button_table($form) {
  */
 function wysiwyg_editor_profile_overview() {
   $output = '';
-
   $profiles = wysiwyg_editor_profile_load();
   if ($profiles) {
     $roles = user_roles();
@@ -458,45 +471,6 @@ function wysiwyg_editor_profile_overview() {
   }
 
   return $output;
-}
-
-/**
- * Save a profile to the database.
- */
-function wysiwyg_editor_profile_save($edit) {
-  db_query("DELETE FROM {wysiwyg_editor_profile} WHERE name = '%s' or name = '%s'", $edit['name'], $edit['old_name']);
-  db_query("DELETE FROM {wysiwyg_editor_role} WHERE name = '%s' or name = '%s'", $edit['name'], $edit['old_name']);
-  db_query("INSERT INTO {wysiwyg_editor_profile} (name, settings) VALUES ('%s', '%s')", $edit['name'], serialize($edit));
-  foreach ($edit['rids'] as $rid => $value) {
-    db_query("INSERT INTO {wysiwyg_editor_role} (name, rid) VALUES ('%s', %d)", $edit['name'], $rid);
-  }
-
-  // if users can't set their own defaults, make sure to remove $user->wysiwyg_editor_status so their default doesn't override the main default
-  if ($edit['user_choose'] == 'false') {
-    global $user;
-    user_save($user, array('wysiwyg_editor_status' => NULL));
-  }
-}
-
-/**
- * Profile validation.
- */
-function wysiwyg_editor_profile_validate($edit) {
-  $errors = array();
-
-  if (!isset($edit['name'])) {
-    $errors['name'] = t('You must give a profile name.');
-  }
-
-  if (!isset($edit['rids'])) {
-    $errors['rids'] = t('You must select at least one role.');
-  }
-
-  foreach ($errors as $name => $message) {
-    form_set_error($name, $message);
-  }
-
-  return count($errors) == 0;
 }
 
 /**

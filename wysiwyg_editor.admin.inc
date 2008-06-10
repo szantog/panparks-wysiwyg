@@ -228,46 +228,44 @@ function wysiwyg_editor_profile_form($edit) {
     '#theme' => 'wysiwyg_editor_admin_button_table',
   );
 
-  $metadata = _wysiwyg_editor_get_buttons(FALSE);
+  $plugins = _wysiwyg_editor_get_buttons(TRUE);
   // Generate the button list.
-  foreach ($metadata as $name => $meta) {
+  foreach ($plugins as $name => $meta) {
     if (isset($meta['buttons']) && is_array($meta['buttons'])) {
-      foreach ($meta['buttons'] as $button) {
-        if ($name != 'default') {
-          $img_src = drupal_get_path('module', 'wysiwyg_editor') ."/tinymce/jscripts/tiny_mce/plugins/$name/images/$name.gif";
-
-          // Handle plugins that have more than one button.
-          if (!file_exists($img_src)) {
-            $img_src = drupal_get_path('module', 'wysiwyg_editor') ."/tinymce/jscripts/tiny_mce/plugins/$name/images/$button.gif";
-          }
+      foreach ($meta['buttons'] as $button => $title) {
+        $img_src = $meta['path'] ."/images/$name.gif";
+        // Handle plugins that have more than one button.
+        if (!file_exists($img_src)) {
+          $img_src = $meta['path'] ."/images/$button.gif";
+        }
+        $b = file_exists($img_src) ? '<img src="'. base_path() . $img_src .'" title="'. $button .'" style="border: 1px solid grey; vertical-align: middle;" />' : '';
+        if (isset($meta['url'])) {
+          $title = $b .' '. l($title, $meta['url'], array('target' => '_blank'));
         }
         else {
-          $img_src = drupal_get_path('module', 'wysiwyg_editor') ."/tinymce/jscripts/tiny_mce/themes/advanced/images/$button.gif";
+          $title = $b .' '. $title;
         }
-
-        $b = file_exists($img_src) ? '<img src="'. base_path() . $img_src .'" title="'. $button .'" style="border: 1px solid grey; vertical-align: middle;" />' : $button;
-
-        if ($name == 'default') {
-          $title = $b;
-        }
-        else {
-          $title = isset($metadata[$name]['longname']) ? $metadata[$name]['longname'] : $name;
-          if (isset($metadata[$name]['infourl'])) {
-            $title = '<a href="'. $metadata[$name]['infourl'] .'" target="_blank">'. $title .'</a>';
-          }
-          $title = $b .' &#8211; '. $title;
-        }
-        $form_value = isset($edit->settings['buttons'][$name .'-'. $button]) ? $edit->settings['buttons'][$name .'-'. $button] : NULL;
-        $form['buttons'][$name .'-'. $button] = array('#type' => 'checkbox', '#title' => $title, '#default_value' => $form_value);
+        $form['buttons'][$name][$button] = array(
+          '#type' => 'checkbox',
+          '#title' => $title,
+          '#default_value' => isset($edit->settings['buttons'][$name][$button]) ? $edit->settings['buttons'][$name][$button] : NULL,
+        );
       }
     }
-    else {
-      $title = $metadata[$name]['longname'] ? $metadata[$name]['longname'] : $name;
-      if ($metadata[$name]['infourl']) {
-        $title = '<a href="'. $metadata[$name]['infourl'] .'" target="_blank">'. $title .'</a>';
+    else if (isset($meta['extensions']) && is_array($meta['extensions'])) {
+      foreach ($meta['extensions'] as $extension => $title) {
+        if (isset($meta['url'])) {
+          $title = l($title, $meta['url'], array('target' => '_blank'));
+        }
+        else {
+          $title = $title;
+        }
+        $form['buttons'][$name][$extension] = array(
+          '#type' => 'checkbox',
+          '#title' => $title,
+          '#default_value' => isset($edit->settings['buttons'][$name][$extension]) ? $edit->settings['buttons'][$name][$extension] : NULL,
+        );
       }
-      $form_value = isset($edit->settings['buttons'][$name]) ? $edit->settings['buttons'][$name] : NULL;
-      $form['buttons'][$name] = array('#type' => 'checkbox', '#title' => $title, '#default_value' => $form_value);
     }
   }
 
@@ -414,8 +412,13 @@ function wysiwyg_editor_profile_form($edit) {
  */
 function wysiwyg_editor_profile_form_submit($form_id, &$form_values) {
   // Count enabled plugins for this profile.
+  $plugin_count = 0;
+  foreach ($form_values['buttons'] as $plugin => $buttons) {
+    $form_values['buttons'][$plugin] = array_filter($form_values['buttons'][$plugin]);
+    $plugin_count += count($form_values['buttons'][$plugin]);
+  }
   $form_values['buttons'] = array_filter($form_values['buttons']);
-  $plugin_count = count($form_values['buttons']);
+
   // Filter enabled roles for this profile.
   $form_values['rids'] = array_filter($form_values['rids']);
 
@@ -449,8 +452,10 @@ function theme_wysiwyg_editor_admin_button_table($form) {
   $buttons = array();
 
   // Flatten forms array.
-  foreach (element_children($form) as $key) {
-    $buttons[] = drupal_render($form[$key]);
+  foreach (element_children($form) as $name) {
+    foreach (element_children($form[$name]) as $button) {
+      $buttons[] = drupal_render($form[$name][$button]);
+    }
   }
 
   // Split checkboxes into rows with 3 columns.

@@ -13,6 +13,9 @@ Drupal.wysiwygEditorInit = function () {
     var config = Drupal.wysiwygEditorCloneObject(Drupal.settings.wysiwygEditor.configs[theme]);
     tinyMCE.init(config);
   }
+  for (var plugin in Drupal.settings.wysiwygEditor.plugins) {
+    tinyMCE.loadPlugin(plugin, Drupal.settings.wysiwygEditor.plugins[plugin]);
+  }
 }
 
 /**

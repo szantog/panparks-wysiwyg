@@ -8,101 +8,181 @@
  * can be overridden by each Drupal theme.
  */
 
-function _wysiwyg_editor_plugins() {
-
-  /**
-   * A couple of notes about adding plugins.
-   *
-   * 1) Don't use any of the *_add or *_add_before hooks for theme button placement.
-   *    Stick with theme_advanced_buttons1, theme_advanced_buttons2,
-   *    theme_advanced_buttons3 only.
-   *
-   * 2) You can change the order of the buttons by moving the plugins around in
-   * this code. You can also change the order of the button array for each plugin.
-   */
-
-  $plugins['advhr'] = array();
-  $plugins['advhr']['theme_advanced_buttons3'] = array('advhr');
-  $plugins['advhr']['extended_valid_elements'] = array('hr[class|width|size|noshade]');
-
-  $plugins['advimage'] = array();
-  $plugins['advimage']['extended_valid_elements'] = array('img[class|src|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]');
-
-  $plugins['advlink'] = array();
-  $plugins['advlink']['extended_valid_elements'] = array('a[name|href|target|title|onclick]');
-
-  $plugins['autosave'] = array();
-
-  $plugins['contextmenu'] = array();
-
-  // Note this isn't a true plugin, rather it's buttons made available by the advanced theme.
-  $plugins['default'] = array();
-  $plugins['default']['theme_advanced_buttons1'] = array('bold', 'italic', 'underline', 'strikethrough', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', 'bullist', 'numlist', 'outdent', 'indent', 'undo', 'redo', 'link', 'unlink', 'anchor');
-  $plugins['default']['theme_advanced_buttons2'] = array('image', 'cleanup', 'forecolor', 'backcolor', 'sup', 'sub', 'code', 'hr');
-  $plugins['default']['theme_advanced_buttons3'] = array('cut', 'copy', 'paste', 'visualaid', 'removeformat', 'charmap', 'help');
-
-  $plugins['directionality'] = array();
-  $plugins['directionality']['theme_advanced_buttons3'] = array('ltr', 'rtl');
-
-  $plugins['emotions'] = array();
-  $plugins['emotions']['theme_advanced_buttons3'] = array('emotions');
-
-  $plugins['filemanager'] = array();
-
-  $plugins['flash'] = array();
-  $plugins['flash']['theme_advanced_buttons3'] = array('flash');
-  $plugins['flash']['extended_valid_elements'] = array('img[class|src|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name|obj|param|embed]');
-
-  // Note this isn't a true plugin, rather it's buttons made available by the advanced theme.
-  $plugins['font'] = array();
-  $plugins['font']['theme_advanced_buttons1'] = array('formatselect', 'fontselect', 'fontsizeselect', 'styleselect');
-  $plugins['font']['extended_valid_elements'] = array('font[face|size|color|style],span[class|align|style]');
-
-  $plugins['fullscreen'] = array();
-  $plugins['fullscreen']['theme_advanced_buttons3'] = array('fullscreen');
-
-  $plugins['iespell'] = array();
-  $plugins['iespell']['theme_advanced_buttons3'] = array('iespell');
-
-  $plugins['imagemanager'] = array();
-
-  $plugins['inlinepopups'] = array();
-
-  $plugins['insertdatetime'] = array();
-  $plugins['insertdatetime']['theme_advanced_buttons2'] = array('insertdate', 'inserttime');
-  $plugins['insertdatetime']['plugin_insertdate_dateFormat'] = array('%Y-%m-%d');
-  $plugins['insertdatetime']['plugin_insertdate_timeFormat'] = array('%H:%M:%S');
-
-  $plugins['layer'] = array();
-  $plugins['layer']['theme_advanced_buttons3'] = array('insertlayer', 'moveforward', 'movebackward', 'absolute');
-
-  $plugins['paste'] = array();
-  $plugins['paste']['theme_advanced_buttons3'] = array('pastetext', 'pasteword', 'selectall');
-
-  $plugins['preview'] = array();
-  $plugins['preview']['theme_advanced_buttons2'] = array('preview');
-
-  $plugins['print'] = array();
-  $plugins['print']['theme_advanced_buttons3'] = array('print');
-
-  $plugins['searchreplace'] = array();
-  $plugins['searchreplace']['theme_advanced_buttons2'] = array('search', 'replace');
-
-
-  if (is_dir(drupal_get_path('module', 'wysiwyg_editor') .'/tinymce/jscripts/tiny_mce/plugins/spellchecker/')) {
-    $plugins['spellchecker'] = array();
-    $plugins['spellchecker']['theme_advanced_buttons3'] = array('spellchecker');
+/**
+ * Implementation of hook_wysiwyg_plugin().
+ */
+function wysiwyg_editor_wysiwyg_plugin($editor) {
+  $path_wysiwyg = drupal_get_path('module', 'wysiwyg_editor');
+  switch ($editor) {
+    case 'tinymce':
+      $path_editor = $path_wysiwyg .'/tinymce/jscripts/tiny_mce';
+      return array(
+        'default' => array(
+          'path' => $path_editor .'/themes/advanced',
+          'buttons' => array('bold' => t('Bold'), 'italic' => t('Italic'), 'underline' => t('Underline'), 'strikethrough' => t('Strike-through'), 'justifyleft' => t('Justify left'), 'justifycenter' => t('Justify center'), 'justifyright' => t('Justify right'), 'justifyfull' => t('Justify full'), 'bullist' => t('Bullet list'), 'numlist' => t('Numbered list'), 'outdent' => t('Outdent'), 'indent' => t('Indent'), 'undo' => t('Undo'), 'redo' => t('Redo'), 'link' => t('Link'), 'unlink' => t('Unlink'), 'anchor' => t('Anchor'), 'image' => t('Image'), 'cleanup' => t('Clean-up'), 'forecolor' => t('Forecolor'), 'backcolor' => t('Backcolor'), 'sup' => t('Sup'), 'sub' => t('Sub'), 'code' => t('Code'), 'hr' => t('Horizontal rule'), 'cut' => t('Cut'), 'copy' => t('Copy'), 'paste' => t('Paste'), 'visualaid' => t('Visual aid'), 'removeformat' => t('Remove format'), 'charmap' => t('Char map'), 'help' => t('Help')),
+          'internal' => TRUE,
+        ),
+        'advhr' => array(
+          'path' => $path_editor .'/plugins/advhr',
+          'buttons' => array('advhr' => t('Advanced horizontal rule')),
+          'extended_valid_elements' => array('hr[class|width|size|noshade]'),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/advhr',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'advimage' => array(
+          'path' => $path_editor .'/plugins/advimage',
+          'extensions' => array('advimage' => t('Advanced image')),
+          'extended_valid_elements' => array('img[class|src|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]'),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/advimage',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'advlink' => array(
+          'path' => $path_editor .'/plugins/advlink',
+          'extensions' => array('advlink' => t('Advanced link')),
+          'extended_valid_elements' => array('a[name|href|target|title|onclick]'),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/advlink',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'autosave' => array(
+          'path' => $path_editor .'/plugins/autosave',
+          'extensions' => array('autosave' => t('Auto save')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/autosave',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'contextmenu' => array(
+          'path' => $path_editor .'/plugins/contextmenu',
+          'extensions' => array('contextmenu' => t('Context menu')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/contextmenu',
+          'internal' => TRUE,
+        ),
+        'directionality' => array(
+          'path' => $path_editor .'/plugins/directionality',
+          'buttons' => array('ltr' => t('Left-to-right'), 'rtl' => t('Right-to-left')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/directionality',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'emotions' => array(
+          'path' => $path_editor .'/plugins/emotions',
+          'buttons' => array('emotions' => t('Emotions')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/emotions',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+//        'filemanager' => array(
+//          'path' => $path_editor .'/plugins/filemanager',
+//          'extensions' => array('filemanager' => t('File manager')),
+//          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/filemanager',
+//          'internal' => TRUE,
+//        ),
+        'flash' => array(
+          'path' => $path_editor .'/plugins/flash',
+          'buttons' => array('flash' => t('Flash')),
+          'extended_valid_elements' => array('img[class|src|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name|obj|param|embed]'),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/flash',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'font' => array(
+          'path' => $path_editor .'/plugins/font',
+          'buttons' => array('formatselect' => t('Font format'), 'fontselect' => t('Font'), 'fontsizeselect' => t('Font size'), 'styleselect' => t('Font style')),
+          'extended_valid_elements' => array('font[face|size|color|style],span[class|align|style]'),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/font',
+          'internal' => TRUE,
+        ),
+        'fullscreen' => array(
+          'path' => $path_editor .'/plugins/fullscreen',
+          'buttons' => array('fullscreen' => t('Fullscreen')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/fullscreen',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+//        'imagemanager' => array(
+//          'path' => $path_editor .'/plugins/imagemanager',
+//          'extensions' => array('imagemanager' => t('Image manager')),
+//          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/imagemanager',
+//          'internal' => TRUE,
+//        ),
+        'inlinepopups' => array(
+          'path' => $path_editor .'/plugins/inlinepopups',
+          'extensions' => array('inlinepopups' => t('Inline popups')),
+          'options' => array(
+            'dialog_type' => array('modal'),
+          ),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/inlinepopups',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'insertdatetime' => array(
+          'path' => $path_editor .'/plugins/insertdatetime',
+          'buttons' => array('insertdate' => t('Insert date'), 'inserttime' => t('Insert time')),
+          'options' => array(
+            'plugin_insertdate_dateFormat' => array('%Y-%m-%d'),
+            'plugin_insertdate_timeFormat' => array('%H:%M:%S'),
+          ),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/insertdatetime',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'layer' => array(
+          'path' => $path_editor .'/plugins/layer',
+          'buttons' => array('insertlayer' => t('Insert layer'), 'moveforward' => t('Move forward'), 'movebackward' => t('Move backward'), 'absolute' => t('Absolute')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/layer',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'paste' => array(
+          'path' => $path_editor .'/plugins/paste',
+          'buttons' => array('pastetext' => t('Paste text'), 'pasteword' => t('Paste from Word'), 'selectall' => t('Select all')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/paste',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'preview' => array(
+          'path' => $path_editor .'/plugins/preview',
+          'buttons' => array('preview' => t('Preview')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/preview',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'print' => array(
+          'path' => $path_editor .'/plugins/print',
+          'buttons' => array('print' => t('Print')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/print',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'searchreplace' => array(
+          'path' => $path_editor .'/plugins/searchreplace',
+          'buttons' => array('search' => t('Search'), 'replace' => t('Replace')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/searchreplace',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'style' => array(
+          'path' => $path_editor .'/plugins/style',
+          'buttons' => array('styleprops' => t('Style properties')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/style',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'table' => array(
+          'path' => $path_editor .'/plugins/table',
+          'buttons' => array('tablecontrols' => t('Table')),
+          'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/table',
+          'internal' => TRUE,
+          'load' => TRUE,
+        ),
+        'wysiwyg' => array(
+          'path' => $path_wysiwyg .'/plugins/break',
+          'buttons' => array('break' => t('Teaser break')),
+          'url' => 'http://drupal.org/project/wysiwyg',
+        ),
+      );
   }
-
-  $plugins['style'] = array();
-  $plugins['style']['theme_advanced_buttons3'] = array('styleprops');
-
-  $plugins['table'] = array();
-  $plugins['table']['theme_advanced_buttons3'] = array('tablecontrols');
-
-  $plugins['zoom'] = array();
-  $plugins['zoom']['theme_advanced_buttons2'] = array('zoom');
-
-  return $plugins;
 }
 

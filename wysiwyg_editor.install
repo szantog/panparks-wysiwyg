@@ -62,6 +62,9 @@ function wysiwyg_editor_migrate_tinymce() {
 
       // Disable TinyMCE module.
       module_disable(array('tinymce'));
+
+      // Update configuration.
+      wysiwyg_editor_update_5001();
     }
     else {
       drupal_set_message(t('To migrate your existing TinyMCE settings to Wysiwyg Editor, please update TinyMCE module to the latest official release, and re-install Wysiwyg Editor module.'));
@@ -83,6 +86,31 @@ function wysiwyg_editor_update_5000() {
     case 'pgsql':
       db_add_column($ret, 'wysiwyg_editor_profile', 'plugin_count', 'smallint', array('not null' => TRUE, 'default' => "'0'"));
       break;
+  }
+  return $ret;
+}
+
+/**
+ * Convert buttons and plugins into associative array.
+ * Fix plugin count for old profiles.
+ */
+function wysiwyg_editor_update_5001() {
+  $ret = array();
+  $profiles = db_query("SELECT name, settings, plugin_count FROM {wysiwyg_editor_profile}");
+  while ($profile = db_fetch_array($profiles)) {
+    $settings = unserialize($profile['settings']);
+    if (isset($settings['form_id'])) {
+      $old_buttons = $settings['buttons'];
+      $settings['buttons'] = array();
+      $plugin_count = 0;
+      foreach ($old_buttons as $old_button => $enabled) {
+        list($plugin, $button) = explode('-', $old_button, 2);
+        $settings['buttons'][$plugin][$button] = 1;
+        $plugin_count++;
+      }
+      // We can't use update_sql() here because of curly braces in serialized array.
+      db_query("UPDATE {wysiwyg_editor_profile} SET settings = '%s', plugin_count = %d WHERE name = '%s'", serialize($settings), $plugin_count, $profile['name']);
+    }
   }
   return $ret;
 }

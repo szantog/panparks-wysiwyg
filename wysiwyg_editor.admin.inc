@@ -56,28 +56,48 @@ function _wysiwyg_editor_admin($op = NULL) {
  * Return an HTML form for profile configuration.
  */
 function wysiwyg_editor_profile_form($edit) {
+  // Merge in defaults.
+  settype($edit, 'array');
+  $edit += array(
+    'name' => NULL,
+    'rids' => NULL,
+    'settings' => array(
+      'default' => FALSE,
+      'user_choose' => FALSE,
+      'show_toggle' => TRUE,
+      'theme' => 'advanced',
+      'language' => 'en',
+      'safari_message' => FALSE,
+    ),
+    'visibility' => array(
+      'access' => 1,
+      'access_pages' => "node/*\nuser/*\ncomment/*",
+    ),
+    'buttons' => array(
+    ),
+    'appearance' => array(
+      'toolbar_loc' => 'top',
+      'toolbar_align' => 'left',
+      'path_loc' => 'bottom',
+      'resizing' => 'true',
+      'block_formats' => 'p,address,pre,h1,h2,h3,h4,h5,h6',
+    ),
+    'output' => array(
+      'verify_html' => TRUE,
+      'preformatted' => FALSE,
+      'convert_fonts_to_spans' => TRUE,
+      'remove_linebreaks' => TRUE,
+      'apply_source_formatting' => FALSE,
+    ),
+    'css' => array(
+      'css_setting' => 'theme',
+      'css_path' => NULL,
+      'css_classes' => NULL,
+    ),
+  );
   $edit = (object)$edit;
 
-  // Only display the roles that currently don't have a Wysiwyg Editor profile. One
-  // profile per role.
-  $orig_roles = user_roles(FALSE, 'access wysiwyg editor');
-  $roles = $orig_roles;
-  if (arg(3) == 'add') {
-    $result = db_query('SELECT DISTINCT(rid) FROM {wysiwyg_editor_role}');
-    while ($data = db_fetch_object($result)) {
-      if (!in_array($data->rid, array_keys((array) $edit->rids)) && !form_get_errors()) {
-        unset($roles[$data->rid]);
-      }
-    }
-    if (!$orig_roles) {
-      drupal_set_message(t('You must <a href="!access-control-url">assign</a> at least one role with the \'access wysiwyg editor\' permission before creating a profile.', array('!access-control-url' => url('admin/user/access'))), 'error');
-    }
-    else if (!$roles) {
-      drupal_set_message(t('You will not be allowed to create a new profile since all user roles have already been assigned profiles. Either remove an existing Wysiwyg Editor profile from at least one role or assign another role the \'access wysiwyg editor\' permission.'), 'error');
-    }
-    else if (count($orig_roles) != count($roles)) {
-      drupal_set_message(t('Not all user roles are shown since they already have Wysiwyg Editor profiles. You must first unassign profiles in order to add them to a new one.'));
-    }
+  if (arg(4) == 'add') {
     $btn = t('Create profile');
   }
   else {
@@ -95,7 +115,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['basic']['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Profile name'),
-    '#default_value' => isset($edit->name) ? $edit->name : NULL,
+    '#default_value' => $edit->name,
     '#size' => 40,
     '#maxlength' => 128,
     '#description' => t('Enter a name for this profile. This name is only visible within the Wysiwyg Editor administration page.'),
@@ -105,8 +125,8 @@ function wysiwyg_editor_profile_form($edit) {
   $form['basic']['rids'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Roles allowed to use this profile'),
-    '#default_value' => isset($edit->rids) ? array_keys((array)$edit->rids) : NULL,
-    '#options' => $roles,
+    '#default_value' => array_keys((array)$edit->rids),
+    '#options' => user_roles(FALSE, 'access wysiwyg editor'),
     '#description' => t('Check at least one role. Only roles with \'access wysiwyg editor\' permission will be shown here.'),
     '#required' => TRUE,
   );
@@ -114,7 +134,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['basic']['default'] = array(
     '#type' => 'select',
     '#title' => t('Default state'),
-    '#default_value' => isset($edit->settings['default']) ? $edit->settings['default'] : 'false',
+    '#default_value' => $edit->settings['default'],
     '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('Default editor state for users in this profile. Users will be able to override this state if the next option is enabled.'),
   );
@@ -122,7 +142,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['basic']['user_choose'] = array(
     '#type' => 'select',
     '#title' => t('Allow users to choose default'),
-    '#default_value' => isset($edit->settings['user_choose']) ? $edit->settings['user_choose'] : 'false',
+    '#default_value' => $edit->settings['user_choose'],
     '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('If allowed, users will be able to choose their own Wysiwyg Editor default state by visiting their profile page.'),
   );
@@ -130,25 +150,20 @@ function wysiwyg_editor_profile_form($edit) {
   $form['basic']['show_toggle'] = array(
     '#type' => 'select',
     '#title' => t('Show disable/enable rich text editor toggle'),
-    '#default_value' => isset($edit->settings['show_toggle']) ? $edit->settings['show_toggle'] : 'true',
+    '#default_value' => $edit->settings['show_toggle'],
     '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('Whether or not to show the disable/enable rich text editor toggle below the textarea. If false, editor defaults to the global default or user default (see above).'),
   );
 
-  // This line upgrades previous versions of Wysiwyg Editor for user who previously selected a theme other than advanced.
-  if (isset($edit->settings['theme']) && $edit->settings['theme'] != 'advanced') {
-    $edit->settings['theme'] = 'advanced';
-  }
-
   $form['basic']['theme'] = array(
     '#type' => 'hidden',
-    '#value' => isset($edit->settings['theme']) ? $edit->settings['theme'] : 'advanced',
+    '#value' => $edit->settings['theme'],
   );
 
   $form['basic']['language'] = array(
     '#type' => 'select',
     '#title' => t('Language'),
-    '#default_value' => isset($edit->settings['language']) ? $edit->settings['language'] : 'en',
+    '#default_value' => $edit->settings['language'],
     '#options' => drupal_map_assoc(array('ar', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'es', 'fa', 'fi', 'fr', 'fr_ca', 'he', 'hu', 'is', 'it', 'ja', 'ko', 'nb', 'nl', 'nn', 'pl', 'pt', 'pt_br', 'ru', 'ru_KOI8-R', 'ru_UTF-8', 'si', 'sk', 'sv', 'th', 'zh_cn', 'zh_tw', 'zh_tw_utf8')),
     '#description' => t('The language for the Wysiwyg Editor interface. Language codes based on the <a href="http://www.loc.gov/standards/iso639-2/englangn.html">ISO-639-2</a> format.'),
   );
@@ -156,7 +171,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['basic']['safari_message'] = array(
     '#type' => 'select',
     '#title' => t('Safari browser warning'),
-    '#default_value' => isset($edit->settings['safari_message']) ? $edit->settings['safari_message'] : 'false',
+    '#default_value' => $edit->settings['safari_message'],
     '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('TinyMCE support for the Safari web browser is experimental and a warning message is displayed when that browser is detected. You can disable this message here.'),
   );
@@ -168,10 +183,10 @@ function wysiwyg_editor_profile_form($edit) {
     '#collapsed' => TRUE,
   );
 
+  // If the visibility is set to PHP mode but the user doesn't have this block
+  // permission, don't allow them to edit nor see this PHP code
   $access = user_access('use PHP for block visibility');
-
-  // If the visibility is set to PHP mode but the user doesn't have this block permission, don't allow them to edit nor see this PHP code
-  if (isset($edit->settings['access']) && $edit->settings['access'] == 2 && !$access) {
+  if ($edit->settings['access'] == 2 && !$access) {
     $form['visibility'] = array();
     $form['visibility']['access'] = array(
       '#type' => 'value',
@@ -179,29 +194,28 @@ function wysiwyg_editor_profile_form($edit) {
     );
     $form['visibility']['access_pages'] = array(
       '#type' => 'value',
-      '#value' => (isset($edit->settings['access_pages']) ? $edit->settings['access_pages'] : NULL),
-      '#wysiwyg' => FALSE,
+      '#value' => $edit->settings['access_pages'],
     );
   }
   else {
     $options = array(t('Show on every page except the listed pages.'), t('Show on only the listed pages.'));
-    $description = t("Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are '!blog' for the blog page and !blog-wildcard for every personal blog. !front is the front page.", array('!blog' => theme('placeholder', 'blog'), '!blog-wildcard' => theme('placeholder', 'blog/*'), '!front' => theme('placeholder', '<front>')));
-
+    $description = t("Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are '%blog' for the blog page and %blog-wildcard for every personal blog. %front is the front page.", array('%blog' => 'blog', '%blog-wildcard' => 'blog/*', '%front' => '<front>'));
     if ($access) {
       $options[] = t('Show if the following PHP code returns <code>TRUE</code> (PHP-mode, experts only).');
-      $description .= t('If the PHP-mode is chosen, enter PHP code between !php. Note that executing incorrect PHP-code can break your Drupal site.', array('!php' => theme('placeholder', '<?php ?>')));
+      $description .= ' '. t('If the PHP-mode is chosen, enter PHP code between %php. Note that executing incorrect PHP-code can break your Drupal site.', array('%php' => '<?php ?>'));
     }
     $form['visibility']['access'] = array(
       '#type' => 'radios',
       '#title' => t('Show Wysiwyg Editor on specific pages'),
-      '#default_value' => isset($edit->settings['access']) ? $edit->settings['access'] : 1,
+      '#default_value' => $edit->visibility['access'],
       '#options' => $options,
     );
     $form['visibility']['access_pages'] = array(
       '#type' => 'textarea',
       '#title' => t('Pages'),
-      '#default_value' => isset($edit->settings['access_pages']) ? $edit->settings['access_pages'] : wysiwyg_editor_help('admin/settings/wysiwyg/profile#pages'),
+      '#default_value' => $edit->visibility['access_pages'],
       '#description' => $description,
+      '#wysiwyg' => FALSE,
     );
   }
 
@@ -267,7 +281,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['appearance']['toolbar_loc'] = array(
     '#type' => 'select',
     '#title' => t('Toolbar location'),
-    '#default_value' => isset($edit->settings['toolbar_loc']) ? $edit->settings['toolbar_loc'] : NULL,
+    '#default_value' => $edit->settings['toolbar_loc'],
     '#options' => array('bottom' => t('Bottom'), 'top' => t('Top')),
     '#description' => t('Show toolbar at the top or bottom of the editor area?'),
   );
@@ -275,7 +289,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['appearance']['toolbar_align'] = array(
     '#type' => 'select',
     '#title' => t('Toolbar alignment'),
-    '#default_value' => isset($edit->settings['toolbar_align']) ? $edit->settings['toolbar_align'] : NULL,
+    '#default_value' => $edit->settings['toolbar_align'],
     '#options' => array('center' => t('Center'), 'left' => t('Left'), 'right' => t('Right')),
     '#description' => t('Align tool icons left, center, or right within the toolbar.'),
   );
@@ -283,7 +297,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['appearance']['path_loc'] = array(
     '#type' => 'select',
     '#title' => t('Path location'),
-    '#default_value' => isset($edit->settings['path_loc']) ? $edit->settings['path_loc'] : 'bottom',
+    '#default_value' => $edit->settings['path_loc'],
     '#options' => array('none' => t('None'), 'top' => t('Top'), 'bottom' => t('Bottom')),
     '#description' => t('Path to html elements (i.e. "body>table>tr>td"). Show at top, bottom, or not at all.'),
   );
@@ -291,7 +305,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['appearance']['resizing'] = array(
     '#type' => 'select',
     '#title' => t('Enable resizing button'),
-    '#default_value' => isset($edit->settings['resizing']) ? $edit->settings['resizing'] : 'true',
+    '#default_value' => $edit->settings['resizing'],
     '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t(' This option gives you the ability to enable/disable the resizing button. If enabled the <strong>Path location toolbar</strong> must be set to "top" or "bottom" in order to display the resize icon.'),
   );
@@ -299,7 +313,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['appearance']['block_formats'] = array(
     '#type' => 'textfield',
     '#title' => t('Block formats'),
-    '#default_value' => isset($edit->settings['block_formats']) ? $edit->settings['block_formats'] : 'p,address,pre,h1,h2,h3,h4,h5,h6',
+    '#default_value' => $edit->settings['block_formats'],
     '#size' => 40,
     '#maxlength' => 250,
     '#description' => t('Comma separated list of HTML block formats. You can only remove elements, not add.'),
@@ -315,7 +329,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['output']['verify_html'] = array(
     '#type' => 'select',
     '#title' => t('Verify HTML'),
-    '#default_value' => isset($edit->settings['verify_html']) ? $edit->settings['verify_html'] : NULL,
+    '#default_value' => $edit->settings['verify_html'],
     '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('Should the HTML contents be verified or not? Verifying will strip &lt;head&gt tags, so choose false if you will be editing full page HTML.'),
   );
@@ -323,7 +337,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['output']['preformatted'] = array(
     '#type' => 'select',
     '#title' => t('Preformatted'),
-    '#default_value' => isset($edit->settings['preformatted']) ? $edit->settings['preformatted'] : NULL,
+    '#default_value' => $edit->settings['preformatted'],
     '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
     '#description' => t('If this option is set to true, the editor will insert TAB characters on tab and preserve other whitespace characters just like a PRE HTML element does.'),
   );
@@ -331,7 +345,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['output']['convert_fonts_to_spans'] = array(
     '#type' => 'select',
     '#title' => t('Convert &lt;font&gt; tags to styles'),
-    '#default_value' => isset($edit->settings['convert_fonts_to_spans']) ? $edit->settings['convert_fonts_to_spans'] : NULL,
+    '#default_value' => $edit->settings['convert_fonts_to_spans'],
     '#options' => array('true' => t('Enabled'), 'false' => t('Disabled')),
     '#description' => t('If you set this option to true, font size, font family, font color and font background color will be replaced by inline styles.'),
   );
@@ -339,7 +353,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['output']['remove_linebreaks'] = array(
     '#type' => 'select',
     '#title' => t('Remove linebreaks'),
-    '#default_value' => isset($edit->settings['remove_linebreaks']) ? $edit->settings['remove_linebreaks'] : NULL,
+    '#default_value' => $edit->settings['remove_linebreaks'],
     '#options' => array('true' => t('Enabled'), 'false' => t('Disabled')),
     '#description' => t('Set this option to false to prevent TinyMCE from removing linebreaks from existing nodes.  True avoids conflicts with some filters.'),
   );
@@ -347,7 +361,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['output']['apply_source_formatting'] = array(
     '#type' => 'select',
     '#title' => t('Apply source formatting'),
-    '#default_value' => isset($edit->settings['apply_source_formatting']) ? $edit->settings['apply_source_formatting'] : NULL,
+    '#default_value' => $edit->settings['apply_source_formatting'],
     '#options' => array('true' => t('Enabled'), 'false' => t('Disabled')),
     '#description' => t('This option makes TinyMCE apply source formatting.  Set this to true for a cleaner HTML source.  Choose false to avoid conflicts with some filters.'),
   );
@@ -362,7 +376,7 @@ function wysiwyg_editor_profile_form($edit) {
   $form['css']['css_setting'] = array(
     '#type' => 'select',
     '#title' => t('Editor CSS'),
-    '#default_value' => isset($edit->settings['css_setting']) ? $edit->settings['css_setting'] : 'theme',
+    '#default_value' => $edit->settings['css_setting'],
     '#options' => array('theme' => t('Use theme CSS'), 'self' => t('Define CSS'), 'none' => t('TinyMCE default CSS')),
     '#description' => t('Defines the CSS to be used in the editor area.<br />use theme css - load style.css from current site theme.<br/>define css - enter path for css file below.<br />TinyMCE default - uses default CSS from editor.'),
   );
@@ -370,16 +384,16 @@ function wysiwyg_editor_profile_form($edit) {
   $form['css']['css_path'] = array(
     '#type' => 'textfield',
     '#title' => t('CSS path'),
-    '#default_value' => isset($edit->settings['css_path']) ? $edit->settings['css_path'] : NULL,
+    '#default_value' => $edit->settings['css_path'],
     '#size' => 40,
     '#maxlength' => 255,
-    '#description' => t('Enter path to CSS file (<em>example: "css/editor.css"</em>) or a list of css files seperated by a comma (<em>example: /themes/garland/style.css,http://domain.com/customMCE.css</em>).<br />Macros: %h (host name: http://www.example.com/), %t (path to theme: theme/yourtheme/)<br />Be sure to select "define css" above.'),
+    '#description' => t('If "Define CSS" has been selected above, enter path to a CSS file or a list of CSS files seperated by a comma.') .'<br />'. t('Available tokens: %b (base path, f.e.: /), %t (path to theme, f.e.: themes/garland)') .'<br />'. t('Examples:') .' css/editor.css,/themes/garland/style.css,%t/style.css,http://example.com/custom.css',
   );
 
   $form['css']['css_classes'] = array(
     '#type' => 'textfield',
     '#title' => t('CSS classes'),
-    '#default_value' => isset($edit->settings['css_classes']) ? $edit->settings['css_classes'] : NULL,
+    '#default_value' => $edit->settings['css_classes'],
     '#size' => 40,
     '#maxlength' => 255,
     '#description' => t('Adds CSS classes to the "styles" droplist. Format is: &lt;title&gt;=&lt;class&gt;;<br/> Example: Header 1=header1;Header 2=header2;Header 3=header3 (note: no trailing \';\')<br />Leave blank to automatically import list of CSS classes from style sheet.'),
@@ -429,7 +443,7 @@ function wysiwyg_editor_profile_form_submit($form_id, &$form_values) {
 }
 
 /**
- * Layout for the buttons in the Wysiwyg Editor profile form
+ * Layout for the buttons in the Wysiwyg Editor profile form.
  */
 function theme_wysiwyg_editor_admin_button_table($form) {
   $buttons = array();
@@ -460,19 +474,22 @@ function theme_wysiwyg_editor_admin_button_table($form) {
  */
 function wysiwyg_editor_profile_overview() {
   $output = '';
+  $access_check = user_roles(FALSE, 'access wysiwyg editor');
+  if (!$access_check) {
+    drupal_set_message(t('You must <a href="!access-control-url">assign</a> at least one role with the \'access wysiwyg editor\' permission before creating a profile.', array('!access-control-url' => url('admin/user/access'))), 'error');
+    return $output;
+  }
+
   $profiles = wysiwyg_editor_profile_load();
   if ($profiles) {
-    $roles = user_roles();
+    $roles = user_roles(FALSE, 'access wysiwyg editor');
     $header = array(t('Profile'), t('Roles'), t('Operations'));
     foreach ($profiles as $p) {
       $rows[] = array(array('data' => $p->name, 'valign' => 'top'), array('data' => implode("<br />\n", $p->rids)), array('data' => l(t('Edit'), 'admin/settings/wysiwyg/profile/edit/'. urlencode($p->name)) .' '. l(t('Delete'), 'admin/settings/wysiwyg/profile/delete/'. urlencode($p->name)), 'valign' => 'top'));
     }
     $output .= theme('table', $header, $rows);
-    $output .= t('<p><a href="!create-profile-url">Create new profile</a></p>', array('!create-profile-url' => url('admin/settings/wysiwyg/profile/add')));
   }
-  else {
-    drupal_set_message(t('No profiles found. Click here to <a href="!create-profile-url">create a new profile</a>.', array('!create-profile-url' => url('admin/settings/wysiwyg/profile/add'))));
-  }
+  $output .= '<p>'. t('<a href="!create-profile-url">Create new profile</a>', array('!create-profile-url' => url('admin/settings/wysiwyg/profile/add'))) .'</p>';
 
   return $output;
 }

@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-0.x, xxxx-xx-xx
 ---------------------------
+#268562 by sun: Code clean-up.
 #60667 by sun: Fixed wrong editor profile is loaded when user is granted access
   to more than one profile.
 #264739 by sun: Fixed missing t() around some profile settings options.

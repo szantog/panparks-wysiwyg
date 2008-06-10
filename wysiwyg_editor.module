@@ -90,44 +90,54 @@ function wysiwyg_editor_load() {
 
   // We only load the Wysiwyg Editor js file once per page request.
   if (!$loaded) {
+    $path_wysiwyg = drupal_get_path('module', 'wysiwyg_editor');
+    // Hard-coded for now.
+    $path_editor = $path_wysiwyg .'/tinymce/jscripts/tiny_mce';
     $profile = wysiwyg_editor_profile_load(wysiwyg_editor_current_profile());
+    $status = wysiwyg_editor_user_get_status($user, $profile);
 
     $enable  = t('Enable rich-text');
     $disable = t('Disable rich-text');
-
-    $status = wysiwyg_editor_user_get_status($user, $profile);
-
     $no_wysiwyg = t('Your current web browser does not support WYSIWYG editing.');
 
-    $wysiwyg_editor_mod_path = drupal_get_path('module', 'wysiwyg_editor');
-
-    if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/imagemanager/') && user_access('access tinymce imagemanager')) {
-      // if tinymce imagemanager is installed
-      drupal_add_js($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/imagemanager/jscripts/mcimagemanager.js');
+    // TinyMCE ImageManager
+    if (user_access('access tinymce imagemanager') && is_dir($path_editor .'/plugins/imagemanager/')) {
+      drupal_add_js($path_editor .'/plugins/imagemanager/jscripts/mcimagemanager.js');
     }
 
-    if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/filemanager/') && user_access('access tinymce filemanager')) {
-      // if tinymce filemanager is installed
-      drupal_add_js($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/filemanager/jscripts/mcfilemanager.js');
+    // TinyMCE FileManager
+    if (user_access('access tinymce filemanager') && is_dir($path_editor .'/plugins/filemanager/')) {
+      drupal_add_js($path_editor .'/plugins/filemanager/jscripts/mcfilemanager.js');
     }
 
     // TinyMCE Compressor >= 1.0.9
-    if (file_exists($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/tiny_mce_gzip.js')) {
-      drupal_add_js($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/tiny_mce_gzip.js');
+    if (file_exists($path_editor .'/tiny_mce_gzip.js')) {
+      drupal_add_js($path_editor .'/tiny_mce_gzip.js');
     }
     // TinyMCE Compressor < 1.0.9
-    elseif (file_exists($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/tiny_mce_gzip.php')) {
-      drupal_add_js($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/tiny_mce_gzip.php');
+    elseif (file_exists($path_editor .'/tiny_mce_gzip.php')) {
+      drupal_add_js($path_editor .'/tiny_mce_gzip.php');
     }
     else {
-      // For some crazy reason IE will only load this JS file if the absolute reference is given to it.
-      drupal_add_js($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/tiny_mce.js');
+      drupal_add_js($path_editor .'/tiny_mce.js');
     }
-    // Add wysiwyg_editor.js to the footer to ensure it's executed after the Drupal.settings array has been rendered and populated.
-    drupal_add_js($wysiwyg_editor_mod_path .'/wysiwyg_editor.js', 'footer');
-    drupal_add_js(array('wysiwygEditor' => array('configs' => array(), 'showToggle' => ($profile->settings['show_toggle'] == 'true'), 'disable' => $disable, 'enable' => $enable, 'noWysiwyg' => $no_wysiwyg, 'linkText' => $link_text, 'status' => $status)), 'setting');
-    // We have to do this because of some unfocused CSS in certain themes. See http://drupal.org/node/18879 for details
+    // Add wysiwyg_editor.js to the footer to ensure it's executed after the
+    // Drupal.settings array has been rendered and populated.
+    drupal_add_js($path_wysiwyg .'/wysiwyg_editor.js', 'footer');
+    drupal_add_js(array('wysiwygEditor' => array(
+      'configs' => array(),
+      'showToggle' => ($profile->settings['show_toggle'] == 'true'),
+      'disable' => $disable,
+      'enable' => $enable,
+      'noWysiwyg' => $no_wysiwyg,
+      'linkText' => $link_text,
+      'status' => $status,
+    )), 'setting');
+
+    // We have to do this because of some unfocused CSS in certain themes.
+    // @see http://drupal.org/node/18879
     drupal_set_html_head('<style type="text/css" media="all">.mceEditor img { display: inline; }</style>');
+
     $loaded = TRUE;
   }
 }
@@ -149,7 +159,7 @@ function wysiwyg_editor_process_textarea($element) {
       }
 
       wysiwyg_editor_load();
-      _wysiwyg_editor_set_config($element['#wysiwyg_style']);
+      wysiwyg_editor_load_config($element['#wysiwyg_style']);
       if (!isset($element['#attributes'])) {
         $element['#attributes'] = array();
       }
@@ -171,7 +181,7 @@ function wysiwyg_editor_process_textarea($element) {
 /**
  * Register a theme.
  */
-function _wysiwyg_editor_set_config($theme) {
+function wysiwyg_editor_load_config($theme) {
   static $themes = array();
   // Only sent a theme's configuration data once.
   if (!in_array($theme, $themes)) {
@@ -377,12 +387,14 @@ function wysiwyg_editor_config($profile, $theme) {
   $init['theme_advanced_resizing_use_cookie'] = 'false';
 
 
-  $wysiwyg_editor_mod_path = drupal_get_path('module', 'wysiwyg_editor');
-  if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/imagemanager/') && user_access('access tinymce imagemanager')) {
+  $path_wysiwyg = drupal_get_path('module', 'wysiwyg_editor');
+  // Hard-coded for now.
+  $path_editor = $path_wysiwyg .'/tinymce/jscripts/tiny_mce';
+  if (user_access('access tinymce imagemanager') && is_dir($path_editor .'/plugins/imagemanager/')) {
     // we probably need more security than this
     $init['file_browser_callback'] = "mcImageManager.filebrowserCallBack";
   }
-  if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/filemanager/') && user_access('access tinymce filemanager')) {
+  if (user_access('access tinymce filemanager') && is_dir($path_editor .'/plugins/filemanager/')) {
     // we probably need more security than this
     $init['file_browser_callback'] = "mcImageManager.filebrowserCallBack";
   }
@@ -418,57 +430,59 @@ function wysiwyg_editor_config($profile, $theme) {
         // This gives us the $plugins variable.
         $plugins = _wysiwyg_editor_get_buttons();
 
-        // Find the enabled buttons and the mce row they belong on. Also map the
-        // plugin metadata for each button.
+        // Find the enabled buttons and the button row they belong on.
+        // Also map the plugin metadata for each button.
         $plugin_tracker = array();
-        // Plugin name
-        foreach ($plugins as $rname => $rplugin) {
-          // Wysiwyg Editor key
-          foreach ($rplugin as $mce_key => $mce_value) {
-            // Buttons
-            foreach ($mce_value as $k => $v) {
-              if (isset($settings['buttons'][$rname .'-'. $v])) {
-                // Font isn't a true plugin, rather it's buttons made available by the advanced theme
-                if (!in_array($rname, $plugin_tracker) && $rname != 'font') {
-                  $plugin_tracker[] = $rname;
+        foreach ($plugins as $name => $plugin) { // Plugin name
+          foreach ($plugin as $key => $value) { // Wysiwyg Editor key
+            if (!is_array($value)) {
+              continue;
+            }
+            foreach ($value as $k => $v) { // Buttons
+              if (isset($settings['buttons'][$name .'-'. $v])) {
+                // Font isn't a true plugin, rather it's buttons made available
+                // by the advanced theme.
+                if ($name != 'font' && !in_array($name, $plugin_tracker)) {
+                  $plugin_tracker[] = $name;
                 }
-                $init[$mce_key][] = $v;
+                $init[$key][] = $v;
               }
             }
           }
-          // Some advanced plugins only have an $rname and no buttons
-          if (isset($settings['buttons'][$rname])) {
-            if (!in_array($rname, $plugin_tracker)) {
-              $plugin_tracker[] = $rname;
+          // Some advanced plugins only have an $name and no buttons
+          if (isset($settings['buttons'][$name])) {
+            if (!in_array($name, $plugin_tracker)) {
+              $plugin_tracker[] = $name;
             }
           }
         }
 
-        // Add the rest of the Wysiwyg Editor config options to the $init array for each button.
+        // Add the rest of the Wysiwyg Editor config options to the $init array
+        // for each button.
         if (is_array($plugin_tracker)) {
           foreach ($plugin_tracker as $pname) {
             if ($pname != 'default') {
               $init['plugins'][] = $pname;
             }
-            foreach ($plugins[$pname] as $mce_key => $mce_value) {
+            foreach ($plugins[$pname] as $key => $value) {
               // Don't overwrite buttons or extended_valid_elements
-              if ($mce_key == 'extended_valid_elements') {
-                // $mce_value is an array for extended_valid_elements so just grab the first element in the array (never more than one)
-                $init[$mce_key][] = $mce_value[0];
+              if ($key == 'extended_valid_elements') {
+                // $value is an array for extended_valid_elements so just grab the first element in the array (never more than one)
+                $init[$key][] = $value[0];
               }
-              else if (!strstr($mce_key, 'theme_advanced_buttons')) {
-                $init[$mce_key] = $mce_value;
+              else if (!strstr($key, 'theme_advanced_buttons')) {
+                $init[$key] = $value;
               }
             }
           }
         }
 
         // Cleanup
-        foreach ($init as $mce_key => $mce_value) {
-          if (is_array($mce_value)) {
-            $mce_value = array_unique($mce_value);
+        foreach ($init as $key => $value) {
+          if (is_array($value)) {
+            $value = array_unique($value);
           }
-          $init[$mce_key] = $mce_value;
+          $init[$key] = $value;
         }
 
         // Shuffle buttons around so that row 1 always has the most buttons,

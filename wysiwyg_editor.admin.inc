@@ -222,7 +222,7 @@ function wysiwyg_editor_profile_form($edit) {
         if ($name != 'default') {
           $img_src = drupal_get_path('module', 'wysiwyg_editor') ."/tinymce/jscripts/tiny_mce/plugins/$name/images/$name.gif";
 
-          //correct for plugins that have more than one button
+          // Handle plugins that have more than one button.
           if (!file_exists($img_src)) {
             $img_src = drupal_get_path('module', 'wysiwyg_editor') ."/tinymce/jscripts/tiny_mce/plugins/$name/images/$button.gif";
           }
@@ -409,6 +409,10 @@ function wysiwyg_editor_profile_form_submit($form_id, &$form_values) {
   db_query("DELETE FROM {wysiwyg_editor_profile} WHERE name = '%s' OR name = '%s'", $form_values['name'], $form_values['old_name']);
   db_query("DELETE FROM {wysiwyg_editor_role} WHERE name = '%s' OR name = '%s'", $form_values['name'], $form_values['old_name']);
 
+  // Remove FAPI values.
+  // @see system_settings_form_submit()
+  unset($form_values['submit'], $form_values['form_id'], $form_values['op'], $form_values['form_token']);
+
   // Insert new profile data.
   db_query("INSERT INTO {wysiwyg_editor_profile} (name, settings, plugin_count) VALUES ('%s', '%s', %d)", $form_values['name'], serialize($form_values), $plugin_count);
   foreach ($form_values['rids'] as $rid => $value) {
@@ -430,12 +434,12 @@ function wysiwyg_editor_profile_form_submit($form_id, &$form_values) {
 function theme_wysiwyg_editor_admin_button_table($form) {
   $buttons = array();
 
-  // Flatten forms array
+  // Flatten forms array.
   foreach (element_children($form) as $key) {
     $buttons[] = drupal_render($form[$key]);
   }
 
-  //split checkboxes into rows with 3 columns
+  // Split checkboxes into rows with 3 columns.
   $total = count($buttons);
   $rows = array();
   for ($i = 0; $i < $total; $i++) {

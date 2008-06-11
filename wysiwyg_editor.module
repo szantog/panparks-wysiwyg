@@ -56,9 +56,9 @@ function wysiwyg_editor_perm() {
 /**
  * Callback handler for admin pages; menu callback.
  */
-function wysiwyg_editor_admin($arg = NULL) {
+function wysiwyg_editor_admin($arg = '') {
   require_once drupal_get_path('module', 'wysiwyg_editor') .'/wysiwyg_editor.admin.inc';
-  $op = isset($_POST['op']) ? $_POST['op'] : NULL;
+  $op = isset($_POST['op']) ? $_POST['op'] : '';
   $op = ($arg && !$op ? $arg : $op);
   return _wysiwyg_editor_admin($op);
 }
@@ -68,12 +68,10 @@ function wysiwyg_editor_admin($arg = NULL) {
  */
 function wysiwyg_editor_elements() {
   $type = array();
-
   if (user_access('access wysiwyg editor')) {
     // Let Wysiwyg Editor potentially process each textarea.
     $type['textarea'] = array('#process' => array('wysiwyg_editor_process_textarea' => array()), '#wysiwyg' => TRUE, '#wysiwyg_style' => 'advanced');
   }
-
   return $type;
 }
 
@@ -119,14 +117,13 @@ function wysiwyg_editor_load() {
     }
     // Add wysiwyg_editor.js to the footer to ensure it's executed after the
     // Drupal.settings array has been rendered and populated.
-    drupal_add_js($path_wysiwyg .'/wysiwyg_editor.js', 'footer');
+    drupal_add_js($path_wysiwyg .'/wysiwyg_editor.js', 'module', 'footer');
     drupal_add_js(array('wysiwygEditor' => array(
       'configs' => array(),
-      'showToggle' => ($profile->settings['show_toggle'] == 'true'),
+      'showToggle' => $profile->settings['show_toggle'],
       'disable' => $disable,
       'enable' => $enable,
       'noWysiwyg' => $no_wysiwyg,
-      'linkText' => $link_text,
       'status' => $status,
     )), 'setting');
 
@@ -146,8 +143,7 @@ function wysiwyg_editor_process_textarea($element) {
 
   if ($element['#wysiwyg']) {
     $profile = wysiwyg_editor_profile_load(wysiwyg_editor_current_profile());
-    if (_wysiwyg_editor_page_match($profile)) {
-
+    if ($profile && _wysiwyg_editor_page_match($profile)) {
       // Default to advanced theme if the requested one is not installed.
       $themes = _wysiwyg_editor_get_themes();
       if (!isset($themes[$element['#wysiwyg_style']])) {
@@ -186,6 +182,9 @@ function wysiwyg_editor_load_config($theme) {
     $config = wysiwyg_editor_config($profile, $theme);
     // Convert the config values into the form expected by Wysiwyg Editor.
     foreach ($config as $key => $value) {
+      if (is_bool($value)) {
+        continue;
+      }
       switch ($value) {
         case 'true':
           $config[$key] = TRUE;
@@ -231,9 +230,7 @@ function wysiwyg_editor_load_plugins() {
 function wysiwyg_editor_user($type, &$edit, &$user, $category = NULL) {
   if ($type == 'form' && $category == 'account' && user_access('access wysiwyg editor')) {
     $profile = wysiwyg_editor_user_get_profile($user);
-
-    // because the settings are saved as strings we need to test for the string 'true'
-    if ($profile->settings['user_choose'] == 'true') {
+    if ($profile->settings['user_choose']) {
       $form['wysiwyg'] = array(
         '#type' => 'fieldset',
         '#title' => t('Wysiwyg Editor rich-text settings'),
@@ -241,15 +238,13 @@ function wysiwyg_editor_user($type, &$edit, &$user, $category = NULL) {
         '#collapsible' => TRUE,
         '#collapsed' => TRUE,
       );
-
       $form['wysiwyg']['wysiwyg_status'] = array(
         '#type' => 'select',
         '#title' => t('Default state'),
-        '#default_value' => isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($profile->settings['default']) ? $profile->settings['default'] : 'false'),
-        '#options' => array('false' => t('disabled'), 'true' => t('enabled')),
+        '#default_value' => isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($profile->settings['default']) ? $profile->settings['default'] : FALSE),
+        '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
         '#description' => t('Should rich-text editing be enabled or disabled by default in textarea fields?'),
       );
-
       return array('wysiwyg_editor' => $form);
     }
   }
@@ -364,6 +359,9 @@ function _wysiwyg_editor_plugin_name($op, $name) {
 function wysiwyg_editor_config($profile, $theme) {
   global $user;
 
+  if (!is_object($profile)) {
+    return array();
+  }
   $path_wysiwyg = drupal_get_path('module', 'wysiwyg_editor');
   // Hard-coded for now.
   $path_editor = $path_wysiwyg .'/tinymce/jscripts/tiny_mce';
@@ -376,18 +374,18 @@ function wysiwyg_editor_config($profile, $theme) {
   $init = array();
   $init['mode'] = 'none';
   $init['theme'] = $theme;
-  $init['relative_urls'] = 'false';
+  $init['relative_urls'] = FALSE;
   $init['document_base_url'] = "$base_path";
   $init['language'] = $settings['language'] ? $settings['language'] : 'en';
-  $init['safari_warning'] = $settings['safari_message'] ? $settings['safari_message'] : 'false';
+  $init['safari_warning'] = $settings['safari_message'] ? $settings['safari_message'] : FALSE;
   $init['entity_encoding'] = 'raw';
-  $init['verify_html'] = $settings['verify_html'] ? $settings['verify_html'] : 'false';
-  $init['preformatted'] = $settings['preformatted'] ? $settings['preformatted'] : 'false';
-  $init['convert_fonts_to_spans'] = $settings['convert_fonts_to_spans'] ? $settings['convert_fonts_to_spans'] : 'false';
-  $init['remove_linebreaks'] = $settings['remove_linebreaks'] ? $settings['remove_linebreaks'] : 'true';
-  $init['apply_source_formatting'] = $settings['apply_source_formatting'] ? $settings['apply_source_formatting'] : 'true';
-  $init['theme_advanced_resize_horizontal'] = 'false';
-  $init['theme_advanced_resizing_use_cookie'] = 'false';
+  $init['verify_html'] = $settings['verify_html'] ? $settings['verify_html'] : TRUE;
+  $init['preformatted'] = $settings['preformatted'] ? $settings['preformatted'] : FALSE;
+  $init['convert_fonts_to_spans'] = $settings['convert_fonts_to_spans'] ? $settings['convert_fonts_to_spans'] : TRUE;
+  $init['remove_linebreaks'] = $settings['remove_linebreaks'] ? $settings['remove_linebreaks'] : TRUE;
+  $init['apply_source_formatting'] = $settings['apply_source_formatting'] ? $settings['apply_source_formatting'] : FALSE;
+  $init['theme_advanced_resize_horizontal'] = FALSE;
+  $init['theme_advanced_resizing_use_cookie'] = FALSE;
 
   if (user_access('access tinymce imagemanager') && is_dir($path_editor .'/plugins/imagemanager/')) {
     // we probably need more security than this
@@ -415,14 +413,12 @@ function wysiwyg_editor_config($profile, $theme) {
   // Add theme-specific settings.
   switch ($theme) {
     case 'advanced':
-      $init['theme_advanced_resize_horizontal'] = 'false';
-      $init['theme_advanced_resizing_use_cookie'] = 'false';
       $init['plugins'] = array();
       $init['theme_advanced_toolbar_location'] = $settings['toolbar_loc'] ? $settings['toolbar_loc'] : 'bottom';
       $init['theme_advanced_toolbar_align'] = $settings['toolbar_align'] ? $settings['toolbar_align'] : 'left';
       $init['theme_advanced_path_location'] = $settings['path_loc'] ? $settings['path_loc'] : 'bottom';
-      $init['theme_advanced_resizing'] = $settings['resizing'] ? $settings['resizing'] : 'true';
-      $init['theme_advanced_blockformats'] = $settings['block_formats'] ? $settings['block_formats'] : 'p,address,pre,h1,h2,h3,h4,h5,h6';
+      $init['theme_advanced_resizing'] = $settings['resizing'] ? $settings['resizing'] : TRUE;
+      $init['theme_advanced_blockformats'] = $settings['block_formats'] ? $settings['block_formats'] : 'p,address,pre,h2,h3,h4,h5,h6';
 
       if (is_array($settings['buttons'])) {
         $init['buttons'] = $init['extensions'] = $init['extended_valid_elements'] = array();
@@ -531,25 +527,29 @@ function wysiwyg_editor_current_profile() {
  * Load all profiles. Just load one profile if $name is passed in.
  */
 function wysiwyg_editor_profile_load($name = '') {
-  static $profiles = array();
+  static $profiles;
 
-  if (!$profiles) {
+  if ($name === FALSE) {
+    return FALSE;
+  }
+  if (!isset($profiles)) {
+    $profiles = array();
     $roles = user_roles();
     $result = db_query('SELECT * FROM {wysiwyg_editor_profile}');
-    while ($data = db_fetch_object($result)) {
-      $data->settings = unserialize($data->settings);
-      $result2 = db_query("SELECT rid FROM {wysiwyg_editor_role} WHERE name = '%s'", $data->name);
-      $role = array();
-      while ($r = db_fetch_object($result2)) {
-        $role[$r->rid] = $roles[$r->rid];
+    while ($profile = db_fetch_object($result)) {
+      $profile->settings = unserialize($profile->settings);
+      $result2 = db_query("SELECT rid FROM {wysiwyg_editor_role} WHERE name = '%s'", $profile->name);
+      $profile_roles = array();
+      while ($role = db_fetch_object($result2)) {
+        $profile_roles[$role->rid] = $roles[$role->rid];
       }
-      $data->rids = $role;
+      $profile->rids = $profile_roles;
 
-      $profiles[$data->name] = $data;
+      $profiles[$profile->name] = $profile;
     }
   }
 
-  return ($name ? $profiles[$name] : $profiles);
+  return ($name && isset($profiles[$name]) ? $profiles[$name] : ($name ? FALSE : $profiles));
 }
 
 /**
@@ -558,27 +558,30 @@ function wysiwyg_editor_profile_load($name = '') {
  * @return
  *   TRUE if can render, FALSE if not allowed.
  */
-function _wysiwyg_editor_page_match($edit) {
+function _wysiwyg_editor_page_match($profile) {
   $page_match = FALSE;
+  if (!is_object($profile)) {
+    return FALSE;
+  }
 
   // Kill Wysiwyg Editor if we're editing a textarea with PHP in it!
   // PHP input formats are #2 in the filters table.
-  if (is_numeric(arg(1)) && arg(2) == 'edit') {
+  if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == 'edit') {
     $node = node_load(arg(1));
     if ($node->format == 2) {
       return FALSE;
     }
   }
 
-  if ($edit->settings['access_pages']) {
+  if ($profile->settings['access_pages']) {
     // If the PHP option wasn't selected
-    if ($edit->settings['access'] < 2) {
+    if ($profile->settings['access'] < 2) {
       $path = drupal_get_path_alias($_GET['q']);
-      $regexp = '/^('. preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'), array('|', '.*', '\1'. preg_quote(variable_get('site_frontpage', 'node'), '/') .'\2'), preg_quote($edit->settings['access_pages'], '/')) .')$/';
-      $page_match = !($edit->settings['access'] xor preg_match($regexp, $path));
+      $regexp = '/^('. preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'), array('|', '.*', '\1'. preg_quote(variable_get('site_frontpage', 'node'), '/') .'\2'), preg_quote($profile->settings['access_pages'], '/')) .')$/';
+      $page_match = !($profile->settings['access'] xor preg_match($regexp, $path));
     }
     else {
-      $page_match = drupal_eval($edit->settings['access_pages']);
+      $page_match = drupal_eval($profile->settings['access_pages']);
     }
   }
   // No pages were specified to block so show on all
@@ -603,12 +606,12 @@ function wysiwyg_editor_user_get_status($user, $profile) {
   $settings = $profile->settings;
 
   if ($settings['user_choose']) {
-    $status = isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($settings['default']) ? $settings['default'] : 'false');
+    $status = isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($settings['default']) ? $settings['default'] : FALSE);
   }
   else {
-    $status = isset($settings['default']) ? $settings['default'] : 'false';
+    $status = isset($settings['default']) ? $settings['default'] : FALSE;
   }
 
-  return $status == 'true' ? TRUE : FALSE;
+  return $status;
 }
 

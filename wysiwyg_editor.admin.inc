@@ -40,12 +40,6 @@ function _wysiwyg_editor_admin($op = NULL) {
       break;
 
     default:
-      drupal_set_title(t('Wysiwyg Editor settings'));
-      //Check if Wysiwyg Editor is installed.
-      $tinymce_loc = drupal_get_path('module', 'wysiwyg_editor') .'/tinymce/';
-      if (!is_dir($tinymce_loc)) {
-        drupal_set_message(t('Could not find the TinyMCE engine installed at <strong>!tinymce-directory</strong>. Please <a href="http://tinymce.moxiecode.com/">download TinyMCE</a>, uncompress it and copy the folder into !tinymce-path.', array('!tinymce-path' => drupal_get_path('module', 'wysiwyg_editor'), '!tinymce-directory' => $tinymce_loc)), 'error');
-      }
       $output = wysiwyg_editor_profile_overview();
   }
 
@@ -62,34 +56,25 @@ function wysiwyg_editor_profile_form($edit) {
     'name' => NULL,
     'rids' => NULL,
     'settings' => array(
-      'default' => FALSE,
+      'default' => TRUE,
       'user_choose' => FALSE,
       'show_toggle' => TRUE,
       'theme' => 'advanced',
       'language' => 'en',
       'safari_message' => FALSE,
-    ),
-    'visibility' => array(
       'access' => 1,
       'access_pages' => "node/*\nuser/*\ncomment/*",
-    ),
-    'buttons' => array(
-    ),
-    'appearance' => array(
+      'buttons' => array(),
       'toolbar_loc' => 'top',
       'toolbar_align' => 'left',
       'path_loc' => 'bottom',
-      'resizing' => 'true',
-      'block_formats' => 'p,address,pre,h1,h2,h3,h4,h5,h6',
-    ),
-    'output' => array(
+      'resizing' => TRUE,
+      'block_formats' => 'p,address,pre,h2,h3,h4,h5,h6',
       'verify_html' => TRUE,
       'preformatted' => FALSE,
       'convert_fonts_to_spans' => TRUE,
       'remove_linebreaks' => TRUE,
       'apply_source_formatting' => FALSE,
-    ),
-    'css' => array(
       'css_setting' => 'theme',
       'css_path' => NULL,
       'css_classes' => NULL,
@@ -135,7 +120,7 @@ function wysiwyg_editor_profile_form($edit) {
     '#type' => 'select',
     '#title' => t('Default state'),
     '#default_value' => $edit->settings['default'],
-    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
+    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
     '#description' => t('Default editor state for users in this profile. Users will be able to override this state if the next option is enabled.'),
   );
 
@@ -143,7 +128,7 @@ function wysiwyg_editor_profile_form($edit) {
     '#type' => 'select',
     '#title' => t('Allow users to choose default'),
     '#default_value' => $edit->settings['user_choose'],
-    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
+    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
     '#description' => t('If allowed, users will be able to choose their own Wysiwyg Editor default state by visiting their profile page.'),
   );
 
@@ -151,7 +136,7 @@ function wysiwyg_editor_profile_form($edit) {
     '#type' => 'select',
     '#title' => t('Show disable/enable rich text editor toggle'),
     '#default_value' => $edit->settings['show_toggle'],
-    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
+    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
     '#description' => t('Whether or not to show the disable/enable rich text editor toggle below the textarea. If false, editor defaults to the global default or user default (see above).'),
   );
 
@@ -172,7 +157,7 @@ function wysiwyg_editor_profile_form($edit) {
     '#type' => 'select',
     '#title' => t('Safari browser warning'),
     '#default_value' => $edit->settings['safari_message'],
-    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
+    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
     '#description' => t('TinyMCE support for the Safari web browser is experimental and a warning message is displayed when that browser is detected. You can disable this message here.'),
   );
 
@@ -207,13 +192,13 @@ function wysiwyg_editor_profile_form($edit) {
     $form['visibility']['access'] = array(
       '#type' => 'radios',
       '#title' => t('Show Wysiwyg Editor on specific pages'),
-      '#default_value' => $edit->visibility['access'],
+      '#default_value' => $edit->settings['access'],
       '#options' => $options,
     );
     $form['visibility']['access_pages'] = array(
       '#type' => 'textarea',
       '#title' => t('Pages'),
-      '#default_value' => $edit->visibility['access_pages'],
+      '#default_value' => $edit->settings['access_pages'],
       '#description' => $description,
       '#wysiwyg' => FALSE,
     );
@@ -304,7 +289,7 @@ function wysiwyg_editor_profile_form($edit) {
     '#type' => 'select',
     '#title' => t('Enable resizing button'),
     '#default_value' => $edit->settings['resizing'],
-    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
+    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
     '#description' => t(' This option gives you the ability to enable/disable the resizing button. If enabled the <strong>Path location toolbar</strong> must be set to "top" or "bottom" in order to display the resize icon.'),
   );
 
@@ -328,7 +313,7 @@ function wysiwyg_editor_profile_form($edit) {
     '#type' => 'select',
     '#title' => t('Verify HTML'),
     '#default_value' => $edit->settings['verify_html'],
-    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
+    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
     '#description' => t('Should the HTML contents be verified or not? Verifying will strip &lt;head&gt tags, so choose false if you will be editing full page HTML.'),
   );
 
@@ -336,7 +321,7 @@ function wysiwyg_editor_profile_form($edit) {
     '#type' => 'select',
     '#title' => t('Preformatted'),
     '#default_value' => $edit->settings['preformatted'],
-    '#options' => array('false' => t('Disabled'), 'true' => t('Enabled')),
+    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
     '#description' => t('If this option is set to true, the editor will insert TAB characters on tab and preserve other whitespace characters just like a PRE HTML element does.'),
   );
 
@@ -344,7 +329,7 @@ function wysiwyg_editor_profile_form($edit) {
     '#type' => 'select',
     '#title' => t('Convert &lt;font&gt; tags to styles'),
     '#default_value' => $edit->settings['convert_fonts_to_spans'],
-    '#options' => array('true' => t('Enabled'), 'false' => t('Disabled')),
+    '#options' => array(TRUE => t('Enabled'), FALSE => t('Disabled')),
     '#description' => t('If you set this option to true, font size, font family, font color and font background color will be replaced by inline styles.'),
   );
 
@@ -352,7 +337,7 @@ function wysiwyg_editor_profile_form($edit) {
     '#type' => 'select',
     '#title' => t('Remove linebreaks'),
     '#default_value' => $edit->settings['remove_linebreaks'],
-    '#options' => array('true' => t('Enabled'), 'false' => t('Disabled')),
+    '#options' => array(TRUE => t('Enabled'), FALSE => t('Disabled')),
     '#description' => t('Set this option to false to prevent TinyMCE from removing linebreaks from existing nodes.  True avoids conflicts with some filters.'),
   );
 
@@ -360,7 +345,7 @@ function wysiwyg_editor_profile_form($edit) {
     '#type' => 'select',
     '#title' => t('Apply source formatting'),
     '#default_value' => $edit->settings['apply_source_formatting'],
-    '#options' => array('true' => t('Enabled'), 'false' => t('Disabled')),
+    '#options' => array(TRUE => t('Enabled'), FALSE => t('Disabled')),
     '#description' => t('This option makes TinyMCE apply source formatting.  Set this to true for a cleaner HTML source.  Choose false to avoid conflicts with some filters.'),
   );
 
@@ -423,8 +408,10 @@ function wysiwyg_editor_profile_form_submit($form_id, &$form_values) {
   $form_values['rids'] = array_filter($form_values['rids']);
 
   // Delete existing profile(s) with the current profile name.
-  db_query("DELETE FROM {wysiwyg_editor_profile} WHERE name = '%s' OR name = '%s'", $form_values['name'], $form_values['old_name']);
-  db_query("DELETE FROM {wysiwyg_editor_role} WHERE name = '%s' OR name = '%s'", $form_values['name'], $form_values['old_name']);
+  if (!empty($form_values['old_name'])) {
+    db_query("DELETE FROM {wysiwyg_editor_profile} WHERE name = '%s' OR name = '%s'", $form_values['name'], $form_values['old_name']);
+    db_query("DELETE FROM {wysiwyg_editor_role} WHERE name = '%s' OR name = '%s'", $form_values['name'], $form_values['old_name']);
+  }
 
   // Remove FAPI values.
   // @see system_settings_form_submit()
@@ -479,9 +466,21 @@ function theme_wysiwyg_editor_admin_button_table($form) {
  */
 function wysiwyg_editor_profile_overview() {
   $output = '';
+  $usable = TRUE;
+  // Check if a Wysiwyg Editor is installed.
+  // Hard-coded for TinyMCE for now.
+  $tinymce_loc = drupal_get_path('module', 'wysiwyg_editor') .'/tinymce/';
+  if (!is_dir($tinymce_loc)) {
+    drupal_set_message(t('Could not find the TinyMCE engine installed at <strong>!tinymce-directory</strong>. Please <a href="http://tinymce.moxiecode.com/">download TinyMCE</a>, uncompress it and copy the folder into !tinymce-path.', array('!tinymce-path' => drupal_get_path('module', 'wysiwyg_editor'), '!tinymce-directory' => $tinymce_loc)), 'error');
+    $usable = FALSE;
+  }
+  // Check if at least one role is granted access to Wysiwyg Editor.
   $access_check = user_roles(FALSE, 'access wysiwyg editor');
   if (!$access_check) {
     drupal_set_message(t('You must <a href="!access-control-url">assign</a> at least one role with the \'access wysiwyg editor\' permission before creating a profile.', array('!access-control-url' => url('admin/user/access'))), 'error');
+    $usable = FALSE;
+  }
+  if (!$usable) {
     return $output;
   }
 

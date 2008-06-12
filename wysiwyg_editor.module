@@ -426,7 +426,7 @@ function wysiwyg_editor_config($profile, $theme) {
       $init['theme_advanced_resizing'] = $settings['resizing'] ? $settings['resizing'] : TRUE;
       $init['theme_advanced_blockformats'] = $settings['block_formats'] ? $settings['block_formats'] : 'p,address,pre,h2,h3,h4,h5,h6';
 
-      if (is_array($settings['buttons'])) {
+      if (!empty($settings['buttons']) && is_array($settings['buttons'])) {
         $init['buttons'] = $init['extensions'] = $init['extended_valid_elements'] = array();
         // Find the enabled buttons and the button row they belong on.
         // Also map the plugin metadata for each button.

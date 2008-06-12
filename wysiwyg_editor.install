@@ -3,39 +3,60 @@
 
 
 /**
+ * Implementation of hook_schema().
+ */
+function wysiwyg_editor_schema() {
+  $schema = array();
+  $schema['wysiwyg_editor_profile'] = array(
+    'description' => t('Stores Wysiwyg Editor profiles.'),
+    'fields' => array(
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'settings' => array(
+        'type' => 'text',
+        'size' => 'normal',
+      ),
+      'plugin_count' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('name'),
+  );
+  $schema['wysiwyg_editor_role'] = array(
+    'description' => t('Stores user role access permissions for Wysiwyg Editor profiles.'),
+    'fields' => array(
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'rid' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('name', 'rid'),
+  );
+  return $schema;
+}
+
+/**
  * Implementation of hook_install().
  */
 function wysiwyg_editor_install() {
-  switch ($GLOBALS['db_type']) {
-    case 'mysql':
-    case 'mysqli':
-      db_query("CREATE TABLE {wysiwyg_editor_profile} (
-        name varchar(128) NOT NULL default '',
-        settings text,
-        plugin_count tinyint NOT NULL default '0',
-        PRIMARY KEY (name)
-      ) /*!40100 DEFAULT CHARACTER SET utf8 */");
-      db_query("CREATE TABLE {wysiwyg_editor_role} (
-        name varchar(128) NOT NULL default '',
-        rid tinyint(3) unsigned NOT NULL default '0',
-        PRIMARY KEY (name,rid)
-      ) /*!40100 DEFAULT CHARACTER SET utf8 */");
-      break;
-
-    case 'pgsql':
-      db_query("CREATE TABLE {wysiwyg_editor_profile} (
-        name varchar(128) NOT NULL default '',
-        settings text,
-        plugin_count smallint NOT NULL default '0',
-        PRIMARY KEY (name)
-      )");
-      db_query("CREATE TABLE {wysiwyg_editor_role} (
-        name varchar(128) NOT NULL default '',
-        rid smallint NOT NULL default '0',
-        PRIMARY KEY (name,rid)
-      )");
-      break;
-  }
+  drupal_install_schema('wysiwyg_editor');
   // Import data from old editor modules.
   wysiwyg_editor_migrate_tinymce();
 }
@@ -44,8 +65,7 @@ function wysiwyg_editor_install() {
  * Implementation of hook_uninstall()
  */
 function wysiwyg_editor_uninstall() {
-  db_query('DROP TABLE {wysiwyg_editor_profile}');
-  db_query('DROP TABLE {wysiwyg_editor_role}');
+  drupal_uninstall_schema('wysiwyg_editor');
 }
 
 /**
@@ -70,24 +90,6 @@ function wysiwyg_editor_migrate_tinymce() {
       drupal_set_message(t('To migrate your existing TinyMCE settings to Wysiwyg Editor, please update TinyMCE module to the latest official release, and re-install Wysiwyg Editor module.'));
     }
   }
-}
-
-/**
- * Add plugin_count to editor profiles.
- */
-function wysiwyg_editor_update_5000() {
-  $ret = array();
-  switch ($GLOBALS['db_type']) {
-    case 'mysql':
-    case 'mysqli':
-      $ret[] = update_sql("ALTER TABLE {wysiwyg_editor_profile} ADD COLUMN plugin_count tinyint NOT NULL default '0'");
-      break;
-
-    case 'pgsql':
-      db_add_column($ret, 'wysiwyg_editor_profile', 'plugin_count', 'smallint', array('not null' => TRUE, 'default' => "'0'"));
-      break;
-  }
-  return $ret;
 }
 
 /**

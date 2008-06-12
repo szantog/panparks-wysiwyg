@@ -10,28 +10,35 @@
 /**
  * Implementation of hook_menu().
  */
-function wysiwyg_editor_menu($may_cache) {
+function wysiwyg_editor_menu() {
   $items = array();
-  if ($may_cache) {
-    $items[] = array(
-      'path' => 'admin/settings/wysiwyg/profile',
-      'title' => t('Wysiwyg Editor'),
-      'callback' => 'wysiwyg_editor_admin',
-      'description' => t('Configure the rich editor.'),
-      'access' => user_access('administer site configuration'),
-    );
-  }
+  $items['admin/settings/wysiwyg/profile'] = array(
+    'title' => 'Wysiwyg Editor',
+    'page callback' => 'wysiwyg_editor_admin',
+    'description' => 'Configure the rich editor.',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'wysiwyg_editor.admin.inc',
+  );
   return $items;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function wysiwyg_editor_theme() {
+  return array(
+    'wysiwyg_editor_admin_button_table' => array('arguments' => array('form')),
+  );
 }
 
 /**
  * Implementation of hook_help().
  */
-function wysiwyg_editor_help($section) {
-  switch ($section) {
+function wysiwyg_editor_help($path, $arg) {
+  switch ($path) {
     case 'admin/settings/wysiwyg/profile':
     case 'admin/help#wysiwyg_editor':
-      $output = '<p>'. t('Profiles can be defined based on user roles. A Wysiwyg Editor profile can define which pages receive this Wysiwyg Editor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions. Lastly, only users with the %permission <a href="!url">user permission</a> are able to use Wysiwyg Editor.', array('%permission' => 'access wysiwyg editor', '!url' => url('admin/user/access'))) .'</p>';
+      $output = '<p>'. t('Profiles can be defined based on user roles. A Wysiwyg Editor profile can define which pages receive this Wysiwyg Editor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions. Lastly, only users with the %permission <a href="!url">user permission</a> are able to use Wysiwyg Editor.', array('%permission' => 'access wysiwyg editor', '!url' => url('admin/user/permissions'))) .'</p>';
       return $output;
   }
 }
@@ -54,25 +61,24 @@ function wysiwyg_editor_perm() {
 }
 
 /**
- * Callback handler for admin pages; menu callback.
- */
-function wysiwyg_editor_admin($arg = '') {
-  require_once drupal_get_path('module', 'wysiwyg_editor') .'/wysiwyg_editor.admin.inc';
-  $op = isset($_POST['op']) ? $_POST['op'] : '';
-  $op = ($arg && !$op ? $arg : $op);
-  return _wysiwyg_editor_admin($op);
-}
-
-/**
  * Implementation of hook_elements().
  */
 function wysiwyg_editor_elements() {
   $type = array();
   if (user_access('access wysiwyg editor')) {
     // Let Wysiwyg Editor potentially process each textarea.
-    $type['textarea'] = array('#process' => array('wysiwyg_editor_process_textarea' => array()), '#wysiwyg' => TRUE, '#wysiwyg_style' => 'advanced');
+    $type['textarea'] = array('#process' => array('wysiwyg_editor_process_textarea'), '#wysiwyg' => TRUE, '#wysiwyg_style' => 'advanced');
   }
   return $type;
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function wysiwyg_editor_form_alter(&$form, &$form_state) {
+  // Disable 'teaser' textarea.
+  unset($form['body_field']['teaser_js']);
+  $form['body_field']['teaser_include'] = array();
 }
 
 /**
@@ -106,14 +112,14 @@ function wysiwyg_editor_load() {
 
     // TinyMCE Compressor >= 1.0.9
     if (file_exists($path_editor .'/tiny_mce_gzip.js')) {
-      drupal_add_js($path_editor .'/tiny_mce_gzip.js');
+      drupal_add_js($path_editor .'/tiny_mce_gzip.js', 'module', 'header', FALSE, FALSE, FALSE);
     }
     // TinyMCE Compressor < 1.0.9
     elseif (file_exists($path_editor .'/tiny_mce_gzip.php')) {
-      drupal_add_js($path_editor .'/tiny_mce_gzip.php');
+      drupal_add_js($path_editor .'/tiny_mce_gzip.php', 'module', 'header', FALSE, FALSE, FALSE);
     }
     else {
-      drupal_add_js($path_editor .'/tiny_mce.js');
+      drupal_add_js($path_editor .'/tiny_mce.js', 'module', 'header', FALSE, FALSE);
     }
     // Add wysiwyg_editor.js to the footer to ensure it's executed after the
     // Drupal.settings array has been rendered and populated.
@@ -230,15 +236,15 @@ function wysiwyg_editor_load_plugins() {
 function wysiwyg_editor_user($type, &$edit, &$user, $category = NULL) {
   if ($type == 'form' && $category == 'account' && user_access('access wysiwyg editor')) {
     $profile = wysiwyg_editor_user_get_profile($user);
-    if ($profile->settings['user_choose']) {
+    if (isset($profile->settings['user_choose']) && $profile->settings['user_choose']) {
       $form['wysiwyg'] = array(
         '#type' => 'fieldset',
-        '#title' => t('Wysiwyg Editor rich-text settings'),
+        '#title' => t('Wysiwyg Editor settings'),
         '#weight' => 10,
         '#collapsible' => TRUE,
         '#collapsed' => TRUE,
       );
-      $form['wysiwyg']['wysiwyg_status'] = array(
+      $form['wysiwyg']['wysiwyg_editor_status'] = array(
         '#type' => 'select',
         '#title' => t('Default state'),
         '#default_value' => isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($profile->settings['default']) ? $profile->settings['default'] : FALSE),

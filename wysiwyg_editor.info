@@ -2,3 +2,4 @@
 name = Wysiwyg Editor
 description = Allows users to edit contents with client-side editors.
 package = User Interface
+core = 6.x

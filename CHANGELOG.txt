@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-0.x, xxxx-xx-xx
 ---------------------------
+#268838 by sun: Ported to Drupal 6.x.
 #152046 by sun: Added hook_wysiwyg_plugin().
 #268562 by sun: Code clean-up.
 #60667 by sun: Fixed wrong editor profile is loaded when user is granted access

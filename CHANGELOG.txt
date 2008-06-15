@@ -4,8 +4,9 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 ---------------------------
 
 
-Wysiwyg 6.x-0.x, xxxx-xx-xx
+Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#270730 by hass, sun: Added German translation for Teaser break plugin.
 #268838 by sun: Fixed PHP warning if no buttons are enabled for a profile.
 #268838 by sun: Ported to Drupal 6.x.
 #152046 by sun: Added hook_wysiwyg_plugin().
@@ -13,6 +14,10 @@ Wysiwyg 6.x-0.x, xxxx-xx-xx
 #60667 by sun: Fixed wrong editor profile is loaded when user is granted access
   to more than one profile.
 #264739 by sun: Fixed missing t() around some profile settings options.
+
+
+Wysiwyg 5.x-0.1, 2008-06-07
+---------------------------
 #264739 by sun: Improved output strings.
 #264739 by hass, sun: Fixed potx error due to wrong t() string.
 #264411 by sun: Cleaned coding-style using coder_format script.

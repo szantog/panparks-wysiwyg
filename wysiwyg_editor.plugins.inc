@@ -19,7 +19,7 @@ function wysiwyg_editor_wysiwyg_plugin($editor) {
       return array(
         'default' => array(
           'path' => $path_editor .'/themes/advanced',
-          'buttons' => array('bold' => t('Bold'), 'italic' => t('Italic'), 'underline' => t('Underline'), 'strikethrough' => t('Strike-through'), 'justifyleft' => t('Justify left'), 'justifycenter' => t('Justify center'), 'justifyright' => t('Justify right'), 'justifyfull' => t('Justify full'), 'bullist' => t('Bullet list'), 'numlist' => t('Numbered list'), 'outdent' => t('Outdent'), 'indent' => t('Indent'), 'undo' => t('Undo'), 'redo' => t('Redo'), 'link' => t('Link'), 'unlink' => t('Unlink'), 'anchor' => t('Anchor'), 'image' => t('Image'), 'cleanup' => t('Clean-up'), 'forecolor' => t('Forecolor'), 'backcolor' => t('Backcolor'), 'sup' => t('Sup'), 'sub' => t('Sub'), 'code' => t('Code'), 'hr' => t('Horizontal rule'), 'cut' => t('Cut'), 'copy' => t('Copy'), 'paste' => t('Paste'), 'visualaid' => t('Visual aid'), 'removeformat' => t('Remove format'), 'charmap' => t('Char map'), 'help' => t('Help')),
+          'buttons' => array('bold' => t('Bold'), 'italic' => t('Italic'), 'underline' => t('Underline'), 'strikethrough' => t('Strike-through'), 'justifyleft' => t('Align left'), 'justifycenter' => t('Align center'), 'justifyright' => t('Align right'), 'justifyfull' => t('Justify'), 'bullist' => t('Bullet list'), 'numlist' => t('Numbered list'), 'outdent' => t('Outdent'), 'indent' => t('Indent'), 'undo' => t('Undo'), 'redo' => t('Redo'), 'link' => t('Link'), 'unlink' => t('Unlink'), 'anchor' => t('Anchor'), 'image' => t('Image'), 'cleanup' => t('Clean-up'), 'forecolor' => t('Forecolor'), 'backcolor' => t('Backcolor'), 'sup' => t('Sup'), 'sub' => t('Sub'), 'code' => t('Source code'), 'hr' => t('Horizontal rule'), 'cut' => t('Cut'), 'copy' => t('Copy'), 'paste' => t('Paste'), 'visualaid' => t('Visual aid'), 'removeformat' => t('Remove format'), 'charmap' => t('Char map'), 'help' => t('Help')),
           'internal' => TRUE,
         ),
         'advhr' => array(
@@ -89,7 +89,7 @@ function wysiwyg_editor_wysiwyg_plugin($editor) {
         ),
         'font' => array(
           'path' => $path_editor .'/plugins/font',
-          'buttons' => array('formatselect' => t('Font format'), 'fontselect' => t('Font'), 'fontsizeselect' => t('Font size'), 'styleselect' => t('Font style')),
+          'buttons' => array('formatselect' => t('HTML block format'), 'fontselect' => t('Font'), 'fontsizeselect' => t('Font size'), 'styleselect' => t('Font style')),
           'extended_valid_elements' => array('font[face|size|color|style],span[class|align|style]'),
           'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/font',
           'internal' => TRUE,

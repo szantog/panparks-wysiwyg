@@ -132,6 +132,8 @@ function wysiwyg_editor_load() {
       'noWysiwyg' => $no_wysiwyg,
       'status' => $status,
     )), 'setting');
+    // Add our stylesheet to stack editor buttons into one row.
+    drupal_add_css($path_wysiwyg .'/wysiwyg_editor.css');
 
     // We have to do this because of some unfocused CSS in certain themes.
     // @see http://drupal.org/node/18879
@@ -403,7 +405,7 @@ function wysiwyg_editor_config($profile, $theme) {
   }
 
   if ($settings['css_classes']) {
-    $init['theme_advanced_styles'] = $settings['css_classes'];
+    $init['theme_advanced_styles'] = implode(';', array_filter(explode("\n", str_replace("\r", '', $settings['css_classes']))));
   }
 
   if ($settings['css_setting'] == 'theme') {
@@ -475,42 +477,17 @@ function wysiwyg_editor_config($profile, $theme) {
           unset($init['extensions']);
         }
 
-        // Shuffle buttons around so that row 1 always has the most buttons,
-        // followed by row 2, etc. Note: These rows need to be set to NULL otherwise
-        // Wysiwyg Editor loads its own buttons inherited from the theme.
+        // Note: These rows need to be set to NULL otherwise TinyMCE loads its
+        // own buttons as defined in advanced theme.
         $init += array(
           'theme_advanced_buttons1' => array(),
           'theme_advanced_buttons2' => array(),
           'theme_advanced_buttons3' => array(),
         );
-        $row = $button_count = 1;
         for ($i = 0; $i < count($init['buttons']); $i++) {
-          if (!isset($init['theme_advanced_buttons'. $row])) {
-            $init['theme_advanced_buttons'. $row] = array();
-          }
-          $init['theme_advanced_buttons'. $row][] = $init['buttons'][$i];
-          if (strpos($init['buttons'][$i], 'font') !== FALSE) {
-            $button_count += 5;
-          }
-          if ($button_count < 23) {
-            $button_count++;
-          }
-          else {
-            $row++;
-            $button_count = 1;
-          }
+          $init['theme_advanced_buttons1'][] = $init['buttons'][$i];
         }
         unset($init['buttons']);
-
-        // Minimum number of buttons per row.
-        $min_btns = 5;
-        foreach (range($row, 1) as $row) {
-          if (count($init['theme_advanced_buttons'. $row]) < $min_btns) {
-            // Squish the rows together, since row is empty.
-            $init['theme_advanced_buttons'. ($row - 1)] = array_merge($init['theme_advanced_buttons'. ($row - 1)], $init['theme_advanced_buttons'. $row]);
-            $init['theme_advanced_buttons'. $row] = array();
-          }
-        }
       }
       break;
   }

@@ -6,6 +6,9 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#268562 by sun: Code clean-up; changed format for custom defined CSS classes
+  and removed error-prone auto-layout of buttons in favor of aligning them in
+  one row with a stylesheet; may break existing profiles.
 #270730 by hass, sun: Added German translation for Teaser break plugin.
 #268838 by sun: Fixed PHP warning if no buttons are enabled for a profile.
 #268838 by sun: Ported to Drupal 6.x.

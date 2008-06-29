@@ -73,7 +73,8 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
       'toolbar_align' => 'left',
       'path_loc' => 'bottom',
       'resizing' => TRUE,
-      'block_formats' => 'p,address,pre,h2,h3,h4,h5,h6',
+      // Also available, but buggy in TinyMCE 2.x: blockquote,code,dt,dd,samp.
+      'block_formats' => 'p,address,pre,h2,h3,h4,h5,h6,div',
       'verify_html' => TRUE,
       'preformatted' => FALSE,
       'convert_fonts_to_spans' => TRUE,
@@ -297,15 +298,6 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
     '#description' => t(' This option gives you the ability to enable/disable the resizing button. If enabled the <strong>Path location toolbar</strong> must be set to "top" or "bottom" in order to display the resize icon.'),
   );
 
-  $form['appearance']['block_formats'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Block formats'),
-    '#default_value' => $edit->settings['block_formats'],
-    '#size' => 40,
-    '#maxlength' => 250,
-    '#description' => t('Comma separated list of HTML block formats. You can only remove elements, not add.'),
-  );
-
   $form['output'] = array(
     '#type' => 'fieldset',
     '#title' => t('Cleanup and output'),
@@ -360,6 +352,15 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
     '#collapsed' => TRUE,
   );
 
+  $form['css']['block_formats'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Block formats'),
+    '#default_value' => $edit->settings['block_formats'],
+    '#size' => 40,
+    '#maxlength' => 250,
+    '#description' => t('Comma separated list of HTML block formats. You can only remove elements, not add.'),
+  );
+
   $form['css']['css_setting'] = array(
     '#type' => 'select',
     '#title' => t('Editor CSS'),
@@ -374,16 +375,14 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
     '#default_value' => $edit->settings['css_path'],
     '#size' => 40,
     '#maxlength' => 255,
-    '#description' => t('If "Define CSS" has been selected above, enter path to a CSS file or a list of CSS files seperated by a comma.') .'<br />'. t('Available tokens: %b (base path, f.e.: /), %t (path to theme, f.e.: themes/garland)') .'<br />'. t('Examples:') .' css/editor.css,/themes/garland/style.css,%t/style.css,http://example.com/custom.css',
+    '#description' => t('If "Define CSS" has been selected above, enter path to a CSS file or a list of CSS files seperated by a comma.') .'<br />'. t('Available tokens: %b (base path, f.e.: /), %t (path to theme, f.e.: themes/garland)') .'<br />'. t('Examples:') .' css/editor.css,/themes/garland/style.css,%b%t/style.css,http://example.com/external.css',
   );
 
   $form['css']['css_classes'] = array(
-    '#type' => 'textfield',
+    '#type' => 'textarea',
     '#title' => t('CSS classes'),
     '#default_value' => $edit->settings['css_classes'],
-    '#size' => 40,
-    '#maxlength' => 255,
-    '#description' => t('Adds CSS classes to the "styles" droplist. Format is: &lt;title&gt;=&lt;class&gt;;<br/> Example: Header 1=header1;Header 2=header2;Header 3=header3 (note: no trailing \';\')<br />Leave blank to automatically import list of CSS classes from style sheet.'),
+    '#description' => t('Optionally define CSS classes for the "Font style" dropdown list.<br />Enter one class on each line in the format: !format. Example: !example<br />If left blank, CSS classes are automatically imported from all loaded stylesheet(s).', array('!format' => '<code>[title]=[class]</code>', '!example' => 'My heading=header1')),
   );
 
   $form['submit'] = array(
@@ -428,10 +427,10 @@ function wysiwyg_editor_profile_form_submit($form, &$form_state) {
   }
 
   if (isset($form_state['values']['old_name'])) {
-    drupal_set_message(t('Wysiwyg Editor profile has been updated.'));
+    drupal_set_message(t('Wysiwyg Editor profile %name has been updated.', array('%name' => $form_state['values']['name'])));
   }
   else {
-    drupal_set_message(t('Wysiwyg Editor profile has been created.'));
+    drupal_set_message(t('Wysiwyg Editor profile %name has been created.', array('%name' => $form_state['values']['name'])));
   }
   drupal_goto('admin/settings/wysiwyg/profile');
 }

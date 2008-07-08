@@ -119,7 +119,9 @@ function wysiwyg_editor_load() {
       drupal_add_js($path_editor .'/tiny_mce_gzip.php', 'module', 'header', FALSE, FALSE, FALSE);
     }
     else {
+      // @todo Turn this into a module setting.
       drupal_add_js($path_editor .'/tiny_mce.js', 'module', 'header', FALSE, FALSE);
+      // drupal_add_js($path_editor .'/tiny_mce_src.js', 'module', 'header', FALSE, FALSE);
     }
     // Add wysiwyg_editor.js to the footer to ensure it's executed after the
     // Drupal.settings array has been rendered and populated.
@@ -134,10 +136,6 @@ function wysiwyg_editor_load() {
     )), 'setting');
     // Add our stylesheet to stack editor buttons into one row.
     drupal_add_css($path_wysiwyg .'/wysiwyg_editor.css');
-
-    // We have to do this because of some unfocused CSS in certain themes.
-    // @see http://drupal.org/node/18879
-    drupal_set_html_head('<style type="text/css" media="all">.mceEditor img { display: inline; }</style>');
 
     $loaded = TRUE;
   }
@@ -512,6 +510,8 @@ function wysiwyg_editor_current_profile() {
 function wysiwyg_editor_profile_load($name = '') {
   static $profiles;
 
+  // If $name is passed from wysiwyg_editor_current_profile(), it may be FALSE,
+  // and thus, the user is not allowed to use a wysiwyg editor.
   if ($name === FALSE) {
     return FALSE;
   }

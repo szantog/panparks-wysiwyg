@@ -55,15 +55,11 @@ Drupal.wysiwygEditorToggle = function (id, theme) {
       tinyMCE.settings[setting] = config[setting];
     }
     tinyMCE.addMCEControl($('#' + id).get(0), id);
-    $('#wysiwyg4' + id)
-      .html(Drupal.settings.wysiwygEditor.disable)
-      .blur();
+    $('#wysiwyg4' + id).html(Drupal.settings.wysiwygEditor.disable).blur();
   }
   else {
     tinyMCE.removeMCEControl(tinyMCE.getEditorId(id));
-    $('#wysiwyg4' + id)
-      .html(Drupal.settings.wysiwygEditor.enable)
-      .blur();
+    $('#wysiwyg4' + id).html(Drupal.settings.wysiwygEditor.enable).blur();
   }
 }
 

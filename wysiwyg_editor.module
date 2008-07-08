@@ -113,15 +113,19 @@ function wysiwyg_editor_load() {
     // TinyMCE Compressor >= 1.0.9
     if (file_exists($path_editor .'/tiny_mce_gzip.js')) {
       drupal_add_js($path_editor .'/tiny_mce_gzip.js', 'module', 'header', FALSE, FALSE, FALSE);
+      $exec_mode = 'gzip';
     }
     // TinyMCE Compressor < 1.0.9
     elseif (file_exists($path_editor .'/tiny_mce_gzip.php')) {
       drupal_add_js($path_editor .'/tiny_mce_gzip.php', 'module', 'header', FALSE, FALSE, FALSE);
+      $exec_mode = 'gzip';
     }
     else {
       // @todo Turn this into a module setting.
       drupal_add_js($path_editor .'/tiny_mce.js', 'module', 'header', FALSE, FALSE);
+      $exec_mode = '';
       // drupal_add_js($path_editor .'/tiny_mce_src.js', 'module', 'header', FALSE, FALSE);
+      // $exec_mode = 'src';
     }
     // Add wysiwyg_editor.js to the footer to ensure it's executed after the
     // Drupal.settings array has been rendered and populated.
@@ -133,6 +137,10 @@ function wysiwyg_editor_load() {
       'enable' => $enable,
       'noWysiwyg' => $no_wysiwyg,
       'status' => $status,
+      // If JS compression is enabled, at least TinyMCE is unable to determine
+      // its own base path and exec mode since it can't find the script name.
+      'editorBasePath' => $GLOBALS['base_url'] . base_path() . $path_editor,
+      'execMode' => $exec_mode,
     )), 'setting');
     // Add our stylesheet to stack editor buttons into one row.
     drupal_add_css($path_wysiwyg .'/wysiwyg_editor.css');

@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+by sun: Fixed JavaScript errors when JS aggregation/compression is enabled.
 #268562 by sun: Code clean-up; changed format for custom defined CSS classes
   and removed error-prone auto-layout of buttons in favor of aligning them in
   one row with a stylesheet; may break existing profiles.

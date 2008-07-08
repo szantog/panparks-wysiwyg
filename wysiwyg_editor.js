@@ -7,6 +7,12 @@
  * calling tinyMCE.init() after the page is loaded breaks in IE 6.
  */
 Drupal.wysiwygEditorInit = function () {
+  // If JS compression is enabled, TinyMCE is unable to find its own base path
+  // and exec mode, hence we need to define it manually.
+  tinyMCE.baseURL = Drupal.settings.wysiwygEditor.editorBasePath;
+  tinyMCE.srcMode = (Drupal.settings.wysiwygEditor.execMode == 'src' ? '_src' : '');
+  tinyMCE.gzipMode = (Drupal.settings.wysiwygEditor.execMode == 'gzip');
+
   for (var theme in Drupal.settings.wysiwygEditor.configs) {
     // Clone so we are not passing by reference. Otherwise the
     // settings will get overwritten.

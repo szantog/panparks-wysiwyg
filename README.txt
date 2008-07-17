@@ -30,11 +30,6 @@ Bug reports, feature suggestions and latest developments:
   contents of the downloaded archive in a new subfolder 'tinymce' of this
   module.
 
-* To boost performance of TinyMCE, download the TinyMCE Compressor from
-  http://tinymce.moxiecode.com/download.php and place tiny_mce_gzip.js and
-  tiny_mce_gzip.php into the subfolder ./tinymce/jscripts/tiny_mce/ of this
-  module.
-
 
 -- CONFIGURATION --
 

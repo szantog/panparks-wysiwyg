@@ -559,8 +559,11 @@ function _wysiwyg_editor_page_match($profile) {
   // PHP input formats are #2 in the filters table.
   if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == 'edit') {
     $node = node_load(arg(1));
-    if ($node->format == 2) {
-      return FALSE;
+    $filters = filter_list_format($node->format);
+    foreach ($filters as $filter) {
+      if ($filter->module == 'php') {
+        return FALSE;
+      }
     }
   }
 

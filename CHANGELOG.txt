@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#288028 by Matthew Davidson: Fixed outdated check for PHP input filter.
 #280727 by sun: Removed gzip compressor from installation instructions.
 by sun: Fixed JavaScript errors when JS aggregation/compression is enabled.
 #268562 by sun: Code clean-up; changed format for custom defined CSS classes

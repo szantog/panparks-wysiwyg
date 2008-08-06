@@ -139,7 +139,7 @@ function wysiwyg_editor_load() {
       'status' => $status,
       // If JS compression is enabled, at least TinyMCE is unable to determine
       // its own base path and exec mode since it can't find the script name.
-      'editorBasePath' => $GLOBALS['base_url'] . base_path() . $path_editor,
+      'editorBasePath' => base_path() . $path_editor,
       'execMode' => $exec_mode,
     )), 'setting');
     // Add our stylesheet to stack editor buttons into one row.

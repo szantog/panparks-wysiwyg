@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#286470 by chayner, sun: Fixed wrong editorBasePath in editor configuration.
 #227687 by sun: Fixed improperly capitalized package name.
 #288028 by Matthew Davidson: Fixed outdated check for PHP input filter.
 #280727 by sun: Removed gzip compressor from installation instructions.

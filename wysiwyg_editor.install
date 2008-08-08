@@ -76,9 +76,9 @@ function wysiwyg_editor_migrate_tinymce() {
     $schema = db_result(db_query("SELECT schema_version FROM {system} WHERE name = 'tinymce'"));
     if ($schema >= 1) {
       // Import TinyMCE settings.
-      db_query('INSERT INTO {wysiwyg_editor_profile} SELECT * FROM {tinymce_settings}');
+      db_query('INSERT INTO {wysiwyg_editor_profile} (name, settings) SELECT name, settings FROM {tinymce_settings}');
       // Import TinyMCE profile role assignments.
-      db_query('INSERT INTO {wysiwyg_editor_role} SELECT * FROM {tinymce_role}');
+      db_query('INSERT INTO {wysiwyg_editor_role} (name, rid) SELECT name, rid FROM {tinymce_role}');
 
       // Disable TinyMCE module.
       module_disable(array('tinymce'));

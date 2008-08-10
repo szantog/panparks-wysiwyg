@@ -103,7 +103,7 @@ function wysiwyg_editor_update_5001() {
   while ($profile = db_fetch_array($profiles)) {
     $settings = unserialize($profile['settings']);
     if (isset($settings['form_id'])) {
-      $old_buttons = $settings['buttons'];
+      $old_buttons = (isset($settings['buttons']) ? $settings['buttons'] : array());
       $settings['buttons'] = array();
       $plugin_count = 0;
       foreach ($old_buttons as $old_button => $enabled) {

@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#293916 by sun: Clarified TinyMCE compatibility in README.txt.
 #293425 by sun: Fixed foreach warning during upgrade from TinyMCE module.
 #292517 by sun: Fixed SQL error during upgrade from TinyMCE module.
 #286470 by chayner, sun: Fixed wrong editorBasePath in editor configuration.

@@ -12,7 +12,7 @@ Currently supported editors:
 For a full description visit the project page:
   http://drupal.org/project/wysiwyg
 Bug reports, feature suggestions and latest developments:
-  http://drupal.org/project/wysiwyg (component "Wysiwyg Editor")
+  http://drupal.org/project/issues/wysiwyg (component "Wysiwyg Editor")
 
 
 -- REQUIREMENTS --
@@ -29,6 +29,7 @@ Bug reports, feature suggestions and latest developments:
 * Download TinyMCE 2.1.x from http://tinymce.moxiecode.com and extract the
   contents of the downloaded archive in a new subfolder 'tinymce' of this
   module.
+  Please note that TinyMCE 3.x is not yet supported.
 
 
 -- CONFIGURATION --

@@ -80,6 +80,7 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
       'convert_fonts_to_spans' => TRUE,
       'remove_linebreaks' => TRUE,
       'apply_source_formatting' => FALSE,
+      'paste_auto_cleanup_on_paste' => FALSE,
       'css_setting' => 'theme',
       'css_path' => NULL,
       'css_classes' => NULL,
@@ -343,6 +344,14 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
     '#default_value' => $edit->settings['apply_source_formatting'],
     '#options' => array(TRUE => t('Enabled'), FALSE => t('Disabled')),
     '#description' => t('This option makes TinyMCE apply source formatting.  Set this to true for a cleaner HTML source.  Choose false to avoid conflicts with some filters.'),
+  );
+
+  $form['output']['paste_auto_cleanup_on_paste'] = array(
+    '#type' => 'select',
+    '#title' => t('Force Word cleanup on standard paste'),
+    '#default_value' => $edit->settings['paste_auto_cleanup_on_paste'],
+    '#options' => array(TRUE => t('Enabled'), FALSE => t('Disabled')),
+    '#description' => t('Enable this option to have the default paste function (CTRL-V or SHIFT-INS) to behave like the "paste from word" plugin function.'),
   );
 
   $form['css'] = array(

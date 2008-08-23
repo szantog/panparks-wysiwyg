@@ -398,6 +398,7 @@ function wysiwyg_editor_config($profile, $theme) {
   $init['convert_fonts_to_spans'] = $settings['convert_fonts_to_spans'] ? $settings['convert_fonts_to_spans'] : TRUE;
   $init['remove_linebreaks'] = $settings['remove_linebreaks'] ? $settings['remove_linebreaks'] : TRUE;
   $init['apply_source_formatting'] = $settings['apply_source_formatting'] ? $settings['apply_source_formatting'] : FALSE;
+  $init['paste_auto_cleanup_on_paste'] = $settings['paste_auto_cleanup_on_paste'] ? $settings['paste_auto_cleanup_on_paste'] : FALSE;
   $init['theme_advanced_resize_horizontal'] = FALSE;
   $init['theme_advanced_resizing_use_cookie'] = FALSE;
 

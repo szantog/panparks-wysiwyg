@@ -77,8 +77,10 @@ function wysiwyg_editor_elements() {
  */
 function wysiwyg_editor_form_alter(&$form, &$form_state) {
   // Disable 'teaser' textarea.
-  unset($form['body_field']['teaser_js']);
-  $form['body_field']['teaser_include'] = array();
+  if (isset($form['body_field'])) {
+    unset($form['body_field']['teaser_js']);
+    $form['body_field']['teaser_include'] = array();
+  }
 }
 
 /**

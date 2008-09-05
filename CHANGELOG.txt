@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#304243 by sun: Code clean-up for wysiwyg_editor_user_status().
 #299108 by toniw: Added setting for TinyMCE's auto-cleanup paste feature.
 #293916 by sun: Clarified TinyMCE compatibility in README.txt.
 #293425 by sun: Fixed foreach warning during upgrade from TinyMCE module.

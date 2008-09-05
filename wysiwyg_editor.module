@@ -600,8 +600,8 @@ function wysiwyg_editor_user_get_profile($account) {
 function wysiwyg_editor_user_get_status($user, $profile) {
   $settings = $profile->settings;
 
-  if ($settings['user_choose']) {
-    $status = isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($settings['default']) ? $settings['default'] : FALSE);
+  if ($settings['user_choose'] && isset($user->wysiwyg_editor_status)) {
+    $status = $user->wysiwyg_editor_status;
   }
   else {
     $status = isset($settings['default']) ? $settings['default'] : FALSE;

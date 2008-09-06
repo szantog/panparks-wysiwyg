@@ -559,7 +559,6 @@ function _wysiwyg_editor_page_match($profile) {
   }
 
   // Kill Wysiwyg Editor if we're editing a textarea with PHP in it!
-  // PHP input formats are #2 in the filters table.
   if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == 'edit') {
     $node = node_load(arg(1));
     $filters = filter_list_format($node->format);

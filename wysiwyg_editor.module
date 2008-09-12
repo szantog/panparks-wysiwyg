@@ -201,6 +201,7 @@ function wysiwyg_editor_load_config($theme) {
       if (is_bool($value)) {
         continue;
       }
+      // Backwards compatibility for obsolete TinyMCE module.
       switch ($value) {
         case 'true':
           $config[$key] = TRUE;
@@ -255,11 +256,11 @@ function wysiwyg_editor_user($type, &$edit, &$user, $category = NULL) {
         '#collapsed' => TRUE,
       );
       $form['wysiwyg']['wysiwyg_editor_status'] = array(
-        '#type' => 'select',
-        '#title' => t('Default state'),
+        '#type' => 'checkbox',
+        '#title' => t('Enable editor by default'),
         '#default_value' => isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($profile->settings['default']) ? $profile->settings['default'] : FALSE),
-        '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
-        '#description' => t('Should rich-text editing be enabled or disabled by default in textarea fields?'),
+        '#return_value' => 1,
+        '#description' => t('If enabled, rich-text editing is enabled by default in textarea fields.'),
       );
       return array('wysiwyg_editor' => $form);
     }

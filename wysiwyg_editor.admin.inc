@@ -118,32 +118,32 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
     '#title' => t('Roles allowed to use this profile'),
     '#default_value' => array_keys((array)$edit->rids),
     '#options' => user_roles(FALSE, 'access wysiwyg editor'),
-    '#description' => t('Check at least one role. Only roles with \'access wysiwyg editor\' permission will be shown here.'),
+    '#description' => t('Only roles with the %access permission will be shown here.', array('%access' => 'access wysiwyg editor')),
     '#required' => TRUE,
   );
 
   $form['basic']['default'] = array(
-    '#type' => 'select',
-    '#title' => t('Default state'),
+    '#type' => 'checkbox',
+    '#title' => t('Enabled by default'),
     '#default_value' => $edit->settings['default'],
-    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
-    '#description' => t('Default editor state for users in this profile. Users will be able to override this state if the next option is enabled.'),
+    '#return_value' => 1,
+    '#description' => t('The default editor state for users having access to this profile. Users are able to override this state if the next option is enabled.'),
   );
 
   $form['basic']['user_choose'] = array(
-    '#type' => 'select',
+    '#type' => 'checkbox',
     '#title' => t('Allow users to choose default'),
     '#default_value' => $edit->settings['user_choose'],
-    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
-    '#description' => t('If allowed, users will be able to choose their own Wysiwyg Editor default state by visiting their profile page.'),
+    '#return_value' => 1,
+    '#description' => t('If allowed, users will be able to choose their own Wysiwyg Editor default state in their user account settings.'),
   );
 
   $form['basic']['show_toggle'] = array(
-    '#type' => 'select',
-    '#title' => t('Show disable/enable rich text editor toggle'),
+    '#type' => 'checkbox',
+    '#title' => t('Show %editor toggle link', array('%editor' => t('enable/disable rich text'))),
     '#default_value' => $edit->settings['show_toggle'],
-    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
-    '#description' => t('Whether or not to show the disable/enable rich text editor toggle below the textarea. If false, editor defaults to the global default or user default (see above).'),
+    '#return_value' => 1,
+    '#description' => t('Whether or not to show the %editor toggle link below a textarea. If disabled, the user setting or global default is used (see above).', array('%editor' => t('enable/disable rich text'))),
   );
 
   $form['basic']['theme'] = array(
@@ -156,14 +156,14 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
     '#title' => t('Language'),
     '#default_value' => $edit->settings['language'],
     '#options' => drupal_map_assoc(array('ar', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'es', 'fa', 'fi', 'fr', 'fr_ca', 'he', 'hu', 'is', 'it', 'ja', 'ko', 'nb', 'nl', 'nn', 'pl', 'pt', 'pt_br', 'ru', 'ru_KOI8-R', 'ru_UTF-8', 'si', 'sk', 'sv', 'th', 'zh_cn', 'zh_tw', 'zh_tw_utf8')),
-    '#description' => t('The language for the Wysiwyg Editor interface. Language codes based on the <a href="http://www.loc.gov/standards/iso639-2/englangn.html">ISO-639-2</a> format.'),
+    '#description' => t('The language for the Wysiwyg Editor interface. Language codes are based on the <a href="http://www.loc.gov/standards/iso639-2/englangn.html">ISO-639-2</a> format.'),
   );
 
   $form['basic']['safari_message'] = array(
-    '#type' => 'select',
+    '#type' => 'checkbox',
     '#title' => t('Safari browser warning'),
     '#default_value' => $edit->settings['safari_message'],
-    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
+    '#return_value' => 1,
     '#description' => t('TinyMCE support for the Safari web browser is experimental and a warning message is displayed when that browser is detected. You can disable this message here.'),
   );
 
@@ -272,31 +272,31 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
     '#title' => t('Toolbar location'),
     '#default_value' => $edit->settings['toolbar_loc'],
     '#options' => array('bottom' => t('Bottom'), 'top' => t('Top')),
-    '#description' => t('Show toolbar at the top or bottom of the editor area?'),
+    '#description' => t('This option controls whether the editor toolbar is displayed above or below the editing area.'),
   );
 
   $form['appearance']['toolbar_align'] = array(
     '#type' => 'select',
-    '#title' => t('Toolbar alignment'),
+    '#title' => t('Button alignment'),
     '#default_value' => $edit->settings['toolbar_align'],
     '#options' => array('center' => t('Center'), 'left' => t('Left'), 'right' => t('Right')),
-    '#description' => t('Align tool icons left, center, or right within the toolbar.'),
+    '#description' => t('This option controls the alignment of icons in the editor toolbar.'),
   );
 
   $form['appearance']['path_loc'] = array(
     '#type' => 'select',
     '#title' => t('Path location'),
     '#default_value' => $edit->settings['path_loc'],
-    '#options' => array('none' => t('None'), 'top' => t('Top'), 'bottom' => t('Bottom')),
-    '#description' => t('Path to html elements (i.e. "body>table>tr>td"). Show at top, bottom, or not at all.'),
+    '#options' => array('none' => t('Hide'), 'top' => t('Top'), 'bottom' => t('Bottom')),
+    '#description' => t('Where to display the path to HTML elements (i.e. <code>body > table > tr > td</code>).'),
   );
 
   $form['appearance']['resizing'] = array(
-    '#type' => 'select',
+    '#type' => 'checkbox',
     '#title' => t('Enable resizing button'),
     '#default_value' => $edit->settings['resizing'],
-    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
-    '#description' => t(' This option gives you the ability to enable/disable the resizing button. If enabled the <strong>Path location toolbar</strong> must be set to "top" or "bottom" in order to display the resize icon.'),
+    '#return_value' => 1,
+    '#description' => t('This option gives you the ability to enable/disable the resizing button. If enabled, the Path location toolbar must be set to "Top" or "Bottom" in order to display the resize icon.'),
   );
 
   $form['output'] = array(
@@ -307,51 +307,51 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
   );
 
   $form['output']['verify_html'] = array(
-    '#type' => 'select',
+    '#type' => 'checkbox',
     '#title' => t('Verify HTML'),
     '#default_value' => $edit->settings['verify_html'],
-    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
-    '#description' => t('Should the HTML contents be verified or not? Verifying will strip &lt;head&gt tags, so choose false if you will be editing full page HTML.'),
+    '#return_value' => 1,
+    '#description' => t('If enabled, potentially malicious code like <code>&lt;HEAD&gt;</code> tags will be removed from HTML contents.'),
   );
 
   $form['output']['preformatted'] = array(
-    '#type' => 'select',
+    '#type' => 'checkbox',
     '#title' => t('Preformatted'),
     '#default_value' => $edit->settings['preformatted'],
-    '#options' => array(FALSE => t('Disabled'), TRUE => t('Enabled')),
-    '#description' => t('If this option is set to true, the editor will insert TAB characters on tab and preserve other whitespace characters just like a PRE HTML element does.'),
+    '#return_value' => 1,
+    '#description' => t('If enabled, the editor will insert TAB characters on tab and preserve other whitespace characters just like a PRE element in HTML does.'),
   );
 
   $form['output']['convert_fonts_to_spans'] = array(
-    '#type' => 'select',
+    '#type' => 'checkbox',
     '#title' => t('Convert &lt;font&gt; tags to styles'),
     '#default_value' => $edit->settings['convert_fonts_to_spans'],
-    '#options' => array(TRUE => t('Enabled'), FALSE => t('Disabled')),
-    '#description' => t('If you set this option to true, font size, font family, font color and font background color will be replaced by inline styles.'),
+    '#return_value' => 1,
+    '#description' => t('If enabled, HTML tags declaring the font size, font family, font color and font background color will be replaced by inline CSS styles.'),
   );
 
   $form['output']['remove_linebreaks'] = array(
-    '#type' => 'select',
+    '#type' => 'checkbox',
     '#title' => t('Remove linebreaks'),
     '#default_value' => $edit->settings['remove_linebreaks'],
-    '#options' => array(TRUE => t('Enabled'), FALSE => t('Disabled')),
-    '#description' => t('Set this option to false to prevent TinyMCE from removing linebreaks from existing nodes.  True avoids conflicts with some filters.'),
+    '#return_value' => 1,
+    '#description' => t('If enabled, the editor will remove most linebreaks from contents. Disabling this option could avoid conflicts with other input filters.'),
   );
 
   $form['output']['apply_source_formatting'] = array(
-    '#type' => 'select',
+    '#type' => 'checkbox',
     '#title' => t('Apply source formatting'),
     '#default_value' => $edit->settings['apply_source_formatting'],
-    '#options' => array(TRUE => t('Enabled'), FALSE => t('Disabled')),
-    '#description' => t('This option makes TinyMCE apply source formatting.  Set this to true for a cleaner HTML source.  Choose false to avoid conflicts with some filters.'),
+    '#return_value' => 1,
+    '#description' => t('If enabled, the editor will re-format the HTML source code. Disabling this option could avoid conflicts with other input filters.'),
   );
 
   $form['output']['paste_auto_cleanup_on_paste'] = array(
-    '#type' => 'select',
-    '#title' => t('Force Word cleanup on standard paste'),
+    '#type' => 'checkbox',
+    '#title' => t('Force cleanup on standard paste'),
     '#default_value' => $edit->settings['paste_auto_cleanup_on_paste'],
-    '#options' => array(TRUE => t('Enabled'), FALSE => t('Disabled')),
-    '#description' => t('Enable this option to have the default paste function (CTRL-V or SHIFT-INS) to behave like the "paste from word" plugin function.'),
+    '#return_value' => 1,
+    '#description' => t('If enabled, the default paste function (CTRL-V or SHIFT-INS) behaves like the "paste from word" plugin function.'),
   );
 
   $form['css'] = array(

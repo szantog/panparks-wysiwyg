@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#304243 by sun: Fixed profile configuration improperly passed to JavaScript.
 #304243 by sun: Code clean-up for wysiwyg_editor_profile_overview().
 #289218 by gustav: Fixed E^ALL notice if node has no body field.
 #304243 by sun: Code clean-up for wysiwyg_editor_user_status().

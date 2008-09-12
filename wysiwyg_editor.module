@@ -394,7 +394,6 @@ function wysiwyg_editor_config($profile, $theme) {
   $init['relative_urls'] = FALSE;
   $init['document_base_url'] = "$base_path";
   $init['language'] = $settings['language'] ? $settings['language'] : 'en';
-  $init['safari_warning'] = $settings['safari_message'] ? $settings['safari_message'] : FALSE;
   $init['entity_encoding'] = 'raw';
   $init['verify_html'] = $settings['verify_html'] ? $settings['verify_html'] : TRUE;
   $init['preformatted'] = $settings['preformatted'] ? $settings['preformatted'] : FALSE;

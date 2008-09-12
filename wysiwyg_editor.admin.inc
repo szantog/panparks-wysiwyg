@@ -65,7 +65,6 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
       'show_toggle' => TRUE,
       'theme' => 'advanced',
       'language' => 'en',
-      'safari_message' => FALSE,
       'access' => 1,
       'access_pages' => "node/*\nuser/*\ncomment/*",
       'buttons' => array(),
@@ -157,14 +156,6 @@ function wysiwyg_editor_profile_form($form_state, $edit) {
     '#default_value' => $edit->settings['language'],
     '#options' => drupal_map_assoc(array('ar', 'ca', 'cs', 'cy', 'da', 'de', 'el', 'en', 'es', 'fa', 'fi', 'fr', 'fr_ca', 'he', 'hu', 'is', 'it', 'ja', 'ko', 'nb', 'nl', 'nn', 'pl', 'pt', 'pt_br', 'ru', 'ru_KOI8-R', 'ru_UTF-8', 'si', 'sk', 'sv', 'th', 'zh_cn', 'zh_tw', 'zh_tw_utf8')),
     '#description' => t('The language for the Wysiwyg Editor interface. Language codes are based on the <a href="http://www.loc.gov/standards/iso639-2/englangn.html">ISO-639-2</a> format.'),
-  );
-
-  $form['basic']['safari_message'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Safari browser warning'),
-    '#default_value' => $edit->settings['safari_message'],
-    '#return_value' => 1,
-    '#description' => t('TinyMCE support for the Safari web browser is experimental and a warning message is displayed when that browser is detected. You can disable this message here.'),
   );
 
   $form['visibility'] = array(

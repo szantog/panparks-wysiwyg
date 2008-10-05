@@ -15,7 +15,7 @@ function wysiwyg_editor_menu() {
   $items['admin/settings/wysiwyg/profile'] = array(
     'title' => 'Wysiwyg Editor',
     'page callback' => 'wysiwyg_editor_admin',
-    'description' => 'Configure the rich editor.',
+    'description' => 'Configure client-side editors profiles.',
     'access arguments' => array('administer site configuration'),
     'file' => 'wysiwyg_editor.admin.inc',
   );
@@ -62,6 +62,13 @@ function wysiwyg_editor_perm() {
 
 /**
  * Implementation of hook_elements().
+ *
+ * @todo Remove #wysiwyg_style; the GUI for an editor should be solely handled
+ *   via profiles, when profiles are attached to an input format. It makes no
+ *   sense to display TinyMCE's simple GUI/theme for the user signature, when
+ *   the input format allows users to use advanced HTML and hence, editor
+ *   plugins.  Fix this here, in wysiwyg_editor_process_textarea(), and lastly
+ *   in wysiwyg_editor_get_config().
  */
 function wysiwyg_editor_elements() {
   $type = array();
@@ -84,70 +91,37 @@ function wysiwyg_editor_form_alter(&$form, &$form_state) {
 }
 
 /**
- * Load Wysiwyg Editor files and send configuration data.
+ * Alter #wysiwyg for certain core textareas.
+ *
+ * @param $element
+ *   The textarea element to be processed.
  */
-function wysiwyg_editor_load() {
-  global $user;
-  static $loaded = FALSE;
+function wysiwyg_editor_filter_elements(&$element) {
+  switch ($element['#name']) {
+    // Disable Wysiwyg Editor for these textareas.
+    case 'log': // Node revisions log message.
+    case 'img_assist_pages': // Image Assist visibility settings.
+    case 'caption': // User signature?
+    case 'pages': // (Block) Visibility settings.
+    case 'access_pages': // Wysiwyg Editor profile settings.
+    case 'user_mail_welcome_body': // User settings.
+    case 'user_mail_approval_body': // User settings.
+    case 'user_mail_pass_body': // User settings.
+    case 'synonyms': // Taxonomy terms.
+    case 'description': // Taxonomy terms.
+      $element['#wysiwyg'] = FALSE;
+      break;
 
-  // We only load the Wysiwyg Editor js file once per page request.
-  if (!$loaded) {
-    $path_wysiwyg = drupal_get_path('module', 'wysiwyg_editor');
-    // Hard-coded for now.
-    $path_editor = $path_wysiwyg .'/tinymce/jscripts/tiny_mce';
-    $profile = wysiwyg_editor_profile_load(wysiwyg_editor_current_profile());
-    $status = wysiwyg_editor_user_get_status($user, $profile);
-
-    $enable  = t('Enable rich-text');
-    $disable = t('Disable rich-text');
-    $no_wysiwyg = t('Your current web browser does not support WYSIWYG editing.');
-
-    // TinyMCE ImageManager
-    if (user_access('access tinymce imagemanager') && is_dir($path_editor .'/plugins/imagemanager/')) {
-      drupal_add_js($path_editor .'/plugins/imagemanager/jscripts/mcimagemanager.js');
-    }
-
-    // TinyMCE FileManager
-    if (user_access('access tinymce filemanager') && is_dir($path_editor .'/plugins/filemanager/')) {
-      drupal_add_js($path_editor .'/plugins/filemanager/jscripts/mcfilemanager.js');
-    }
-
-    // TinyMCE Compressor >= 1.0.9
-    if (file_exists($path_editor .'/tiny_mce_gzip.js')) {
-      drupal_add_js($path_editor .'/tiny_mce_gzip.js', 'module', 'header', FALSE, FALSE, FALSE);
-      $exec_mode = 'gzip';
-    }
-    // TinyMCE Compressor < 1.0.9
-    elseif (file_exists($path_editor .'/tiny_mce_gzip.php')) {
-      drupal_add_js($path_editor .'/tiny_mce_gzip.php', 'module', 'header', FALSE, FALSE, FALSE);
-      $exec_mode = 'gzip';
-    }
-    else {
-      // @todo Turn this into a module setting.
-      drupal_add_js($path_editor .'/tiny_mce.js', 'module', 'header', FALSE, FALSE);
-      $exec_mode = '';
-      // drupal_add_js($path_editor .'/tiny_mce_src.js', 'module', 'header', FALSE, FALSE);
-      // $exec_mode = 'src';
-    }
-    // Add wysiwyg_editor.js to the footer to ensure it's executed after the
-    // Drupal.settings array has been rendered and populated.
-    drupal_add_js($path_wysiwyg .'/wysiwyg_editor.js', 'module', 'footer');
-    drupal_add_js(array('wysiwygEditor' => array(
-      'configs' => array(),
-      'showToggle' => $profile->settings['show_toggle'],
-      'disable' => $disable,
-      'enable' => $enable,
-      'noWysiwyg' => $no_wysiwyg,
-      'status' => $status,
-      // If JS compression is enabled, at least TinyMCE is unable to determine
-      // its own base path and exec mode since it can't find the script name.
-      'editorBasePath' => base_path() . $path_editor,
-      'execMode' => $exec_mode,
-    )), 'setting');
-    // Add our stylesheet to stack editor buttons into one row.
-    drupal_add_css($path_wysiwyg .'/wysiwyg_editor.css');
-
-    $loaded = TRUE;
+    // Force 'simple' theme for some smaller textareas.
+    case 'signature': // User signature.
+    case 'site_mission':
+    case 'site_footer':
+    case 'site_offline_message':
+    case 'page_help': // Page content-type help message?
+    case 'user_registration_help':
+    case 'user_picture_guidelines':
+      $element['#wysiwyg_style'] = 'simple';
+      break;
   }
 }
 
@@ -158,17 +132,18 @@ function wysiwyg_editor_process_textarea($element) {
   wysiwyg_editor_filter_elements($element);
 
   if ($element['#wysiwyg']) {
-    $profile = wysiwyg_editor_profile_load(wysiwyg_editor_current_profile());
+    $profile = wysiwyg_editor_load_profile(wysiwyg_editor_current_profile());
     if ($profile && _wysiwyg_editor_page_match($profile)) {
-      // Default to advanced theme if the requested one is not installed.
-      $themes = _wysiwyg_editor_get_themes();
-      if (!isset($themes[$element['#wysiwyg_style']])) {
-        $element['#wysiwyg_style'] = 'advanced';
+      if (!wysiwyg_editor_load_editor($profile)) {
+        // Bail out if editor could not be loaded.
+        return $element;
       }
+      // Check editor theme (and reset if needed).
+      // Default to advanced theme if the requested one is not installed.
+      $element['#wysiwyg_style'] = wysiwyg_editor_get_themes($profile, $element['#wysiwyg_style']);
 
-      wysiwyg_editor_load();
-      wysiwyg_editor_load_config($element['#wysiwyg_style']);
-      wysiwyg_editor_load_plugins();
+      wysiwyg_editor_add_settings($profile, $element['#wysiwyg_style']);
+      wysiwyg_editor_add_plugin_settings($profile);
       if (!isset($element['#attributes'])) {
         $element['#attributes'] = array();
       }
@@ -188,120 +163,130 @@ function wysiwyg_editor_process_textarea($element) {
 }
 
 /**
+ * Load an editor library and initialize basic Wysiwyg settings.
+ *
+ * @param $profile
+ *   A wysiwyg editor profile.
+ *
+ * @return
+ *   TRUE if the editor has been loaded, FALSE if not.
+ *
+ * @see wysiwyg_editor_process_textarea()
+ */
+function wysiwyg_editor_load_editor($profile) {
+  static $settings_added;
+  static $loaded = array();
+
+  // Add basic Wysiwyg settings.
+  if (!isset($settings_added)) {
+    drupal_add_js(array('wysiwygEditor' => array(
+      'configs' => array(),
+      'disable' => t('Disable rich-text'),
+      'enable' => t('Enable rich-text'),
+      'noWysiwyg' => t('Your current web browser does not support WYSIWYG editing.'),
+    )), 'setting');
+    // Add wysiwyg_editor.js to the footer to ensure it's executed after the
+    // Drupal.settings array has been rendered and populated.
+    drupal_add_js(wysiwyg_get_path('wysiwyg_editor.js'), 'module', 'footer');
+    // Add our stylesheet to stack editor buttons into one row.
+    drupal_add_css(wysiwyg_get_path('wysiwyg_editor.css'));
+
+    $settings_added = TRUE;
+  }
+
+  $name = $profile->settings['editor'];
+  // Library files must only be loaded once.
+  if (!isset($loaded[$name])) {
+    // Load editor 
+    $editor = wysiwyg_get_editor($name);
+    if (!$editor) {
+      $loaded[$name] = FALSE;
+      return FALSE;
+    }
+    // Determine library files to load.
+    if (isset($profile->settings['library']) && isset($editor['libraries'][$profile->settings['library']])) {
+      $library = $profile->settings['library'];
+      $files = $editor['libraries'][$profile->settings['library']]['files'];
+    }
+    else {
+      // Fallback to the first by default (external libraries can change).
+      $library = key($editor['libraries']);
+      $files = array_shift($editor['libraries']);
+      $files = $files['files'];
+    }
+    foreach ($files as $file) {
+      drupal_add_js($editor['library path'] . '/' . $file);
+    }
+    // Load JavaScript integration files for this editor.
+    if (isset($editor['js files'])) {
+      $files = $editor['js files'];
+    }
+    foreach ($files as $file) {
+      drupal_add_js($editor['js path'] . '/' . $file, 'module', 'footer');
+    }
+
+    $status = wysiwyg_editor_user_get_status($profile);
+    drupal_add_js(array('wysiwygEditor' => array(
+      'configs' => array($editor['name'] => array()),
+      'showToggle' => $profile->settings['show_toggle'],
+      'status' => $status,
+      // If JS compression is enabled, at least TinyMCE is unable to determine
+      // its own base path and exec mode since it can't find the script name.
+      'editorBasePath' => base_path() . $editor['library path'],
+      'execMode' => $library,
+    )), 'setting');
+
+    $loaded[$name] = TRUE;
+  }
+  return $loaded[$name];
+}
+
+/**
  * Register a theme.
  */
-function wysiwyg_editor_load_config($theme) {
+function wysiwyg_editor_add_settings($profile, $theme) {
   static $themes = array();
-  // Only send a theme's configuration data once.
-  if (!in_array($theme, $themes)) {
-    $profile = wysiwyg_editor_profile_load(wysiwyg_editor_current_profile());
-    $config = wysiwyg_editor_config($profile, $theme);
+
+  if (!isset($themes[$theme])) {
+    $config = wysiwyg_editor_get_config($profile, $theme);
     // Convert the config values into the form expected by Wysiwyg Editor.
+    // @todo Is this conversion TinyMCE specific?
     foreach ($config as $key => $value) {
       if (is_bool($value)) {
         continue;
-      }
-      // Backwards compatibility for obsolete TinyMCE module.
-      switch ($value) {
-        case 'true':
-          $config[$key] = TRUE;
-          break;
-
-        case 'false':
-          $config[$key] = FALSE;
-          break;
       }
       if (is_array($value)) {
         $config[$key] = implode(',', $config[$key]);
       }
     }
-    drupal_add_js('Drupal.settings.wysiwygEditor.configs["'. $theme .'"] = '. drupal_to_js($config) .';', 'inline');
-    $themes[] = $theme;
+    drupal_add_js(array('wysiwygEditor' => array('configs' => array($profile->settings['editor'] => array($theme => $config)))), 'setting');
+    $themes[$theme] = TRUE;
   }
 }
 
 /**
  * Load external plugins.
  * 
+ * @param $profile
+ *   A wysiwyg editor profile.
+ *
  * Note: tinyMCE.loadPlugin() need not be invoked more than once.
  */
-function wysiwyg_editor_load_plugins() {
-  static $plugins;
+function wysiwyg_editor_add_plugin_settings($profile) {
+  static $plugins_added = array();
   
-  if (!isset($plugins)) {
+  if (!isset($plugins_added[$profile->settings['editor']])) {
     $plugins = array();
-    $module_plugins = module_invoke_all('wysiwyg_plugin', 'tinymce');
-    foreach ($module_plugins as $name => $plugin) {
-      if (!isset($plugin['internal'])) {
-        $name = _wysiwyg_editor_plugin_name('remove', $name);
-        $plugins[$name] = base_path() . $plugin['path'];
-      }
+    $editor = wysiwyg_get_editor($profile->settings['editor']);
+    $info = module_invoke_all('wysiwyg_plugin', $editor['name'], $editor['installed version']);
+
+    if (isset($editor['plugin settings callback']) && function_exists($editor['plugin settings callback'])) {
+      $plugins = $editor['plugin settings callback']($editor, $profile, $info);
     }
-    drupal_add_js('Drupal.settings.wysiwygEditor.plugins = '. drupal_to_js($plugins) .';', 'inline');
-  }
-}
 
-/**
- * Implementation of hook_user().
- */
-function wysiwyg_editor_user($type, &$edit, &$user, $category = NULL) {
-  if ($type == 'form' && $category == 'account' && user_access('access wysiwyg editor')) {
-    $profile = wysiwyg_editor_user_get_profile($user);
-    if (isset($profile->settings['user_choose']) && $profile->settings['user_choose']) {
-      $form['wysiwyg'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('Wysiwyg Editor settings'),
-        '#weight' => 10,
-        '#collapsible' => TRUE,
-        '#collapsed' => TRUE,
-      );
-      $form['wysiwyg']['wysiwyg_editor_status'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Enable editor by default'),
-        '#default_value' => isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($profile->settings['default']) ? $profile->settings['default'] : FALSE),
-        '#return_value' => 1,
-        '#description' => t('If enabled, rich-text editing is enabled by default in textarea fields.'),
-      );
-      return array('wysiwyg_editor' => $form);
-    }
-  }
-  if ($type == 'validate') {
-    return array('wysiwyg_editor_status' => $edit['wysiwyg_editor_status']);
-  }
-}
+    drupal_add_js(array('wysiwygEditor' => array('plugins' => array($profile->settings['editor'] => $plugins))), 'setting');
 
-/**
- * Filter for core text fields.
- *
- * @param $element
- *   The textarea element to be filtered.
- */
-function wysiwyg_editor_filter_elements(&$element) {
-  switch ($element['#name']) {
-    // Disable Wysiwyg Editor for these textareas.
-    case 'log': // book and page log
-    case 'img_assist_pages':
-    case 'caption': // signature
-    case 'pages':
-    case 'access_pages': //Wysiwyg Editor profile settings.
-    case 'user_mail_welcome_body': // user config settings
-    case 'user_mail_approval_body': // user config settings
-    case 'user_mail_pass_body': // user config settings
-    case 'synonyms': // taxonomy terms
-    case 'description': // taxonomy terms
-      $element['#wysiwyg'] = FALSE;
-      break;
-
-    // Force the 'simple' theme for some of the smaller textareas.
-    case 'signature':
-    case 'site_mission':
-    case 'site_footer':
-    case 'site_offline_message':
-    case 'page_help':
-    case 'user_registration_help':
-    case 'user_picture_guidelines':
-      $element['#wysiwyg_style'] = 'simple';
-      break;
+    $plugins_added[$profile->settings['editor']] = TRUE;
   }
 }
 
@@ -311,205 +296,84 @@ function wysiwyg_editor_filter_elements(&$element) {
  * Wysiwyg Editor themes control the functionality and buttons that are available to a
  * user. Themes are only looked for within the default Wysiwyg Editor theme directory.
  *
+ * @param $profile
+ *   A wysiwyg editor profile; passed/altered by reference.
+ * @param $selected_theme
+ *   An optional theme name that ought to be used.
+ *
  * @return
- *   An array of theme names.
+ *   An array of theme names, or a single, checked theme name if $selected_theme
+ *   was given.
  */
-function _wysiwyg_editor_get_themes() {
+function wysiwyg_editor_get_themes(&$profile, $selected_theme = NULL) {
   static $themes = array();
 
-  if (!$themes) {
-    $theme_loc = drupal_get_path('module', 'wysiwyg_editor') .'/tinymce/jscripts/tiny_mce/themes/';
-    if (is_dir($theme_loc) && $dh = opendir($theme_loc)) {
-      while (($file = readdir($dh)) !== false) {
-        if (!in_array($file, array('.', '..', 'CVS')) && is_dir($theme_loc . $file)) {
-          $themes[$file] = $file;
-        }
-      }
-      closedir($dh);
-      asort($themes);
+  if (!isset($themes[$profile->settings['editor']])) {
+    $editor = wysiwyg_get_editor($profile->settings['editor']);
+    if (isset($editor['themes callback']) && function_exists($editor['themes callback'])) {
+      $themes[$editor['name']] = $editor['themes callback']($editor, $profile);
+    }
+    // Fallback to 'default' otherwise.
+    else {
+      $themes[$editor['name']] = array('default');
     }
   }
 
-  return $themes;
+  // Check optional $selected_theme argument, if given.
+  if (isset($selected_theme)) {
+    // If the passed theme name does not exist, use the first available.
+    if (!isset($themes[$profile->settings['editor']][$selected_theme])) {
+      $selected_theme = $profile->settings['theme'] = $themes[$profile->settings['editor']][0];
+    }
+  }
+
+  return isset($selected_theme) ? $selected_theme : $themes[$profile->settings['editor']];
 }
 
 /**
  * Return plugin metadata from the plugin registry.
  *
+ * @param $editor_name
+ *   The internal name of an editor to return plugins for.
+ *
  * @return
  *   An array for each plugin.
  */
-function _wysiwyg_editor_get_buttons($metadata = FALSE) {
-  include_once drupal_get_path('module', 'wysiwyg_editor') .'/wysiwyg_editor.plugins.inc';
-  return module_invoke_all('wysiwyg_plugin', 'tinymce');
-}
-
-/**
- * Add or remove leading hiven to/of (external) plugin names.
- *
- * TinyMCE requires that external plugins that should not be loaded from
- * its own plugin repository include a leading hiven in the name.
- * 
- * @param string $op
- *   Operation to perform, 'add' or 'remove'.
- * @param string $name
- *   A plugin name.
- */
-function _wysiwyg_editor_plugin_name($op, $name) {
-  if ($op == 'add') {
-    if (strpos($name, '-') !== 0) {
-      return '-'. $name;
+function wysiwyg_editor_get_plugins($editor_name) {
+  $plugins = array();
+  if (!empty($editor_name)) {
+    $editor = wysiwyg_get_editor($editor_name);
+    if (isset($editor['plugin callback']) && function_exists($editor['plugin callback'])) {
+      $plugins = $editor['plugin callback']($editor);
     }
-    return $name;
+    // Load our own plugins.
+    include_once drupal_get_path('module', 'wysiwyg_editor') .'/wysiwyg_editor.plugins.inc';
+  
+    $plugins = array_merge($plugins, module_invoke_all('wysiwyg_plugin', $editor['name'], $editor['installed version']));
   }
-  else if ($op == 'remove') {
-    if (strpos($name, '-') === 0) {
-      return substr($name, 1);
-    }
-    return $name;
-  }
+  return $plugins;
 }
 
 /**
  * Return an array of initial Wysiwyg Editor config options from the current role.
  */
-function wysiwyg_editor_config($profile, $theme) {
-  global $user;
-
-  if (!is_object($profile)) {
-    return array();
+function wysiwyg_editor_get_config($profile, $theme) {
+  $editor = wysiwyg_get_editor($profile->settings['editor']);
+  $settings = array();
+  if (!empty($editor['settings callback']) && function_exists($editor['settings callback'])) {
+    $settings = $editor['settings callback']($editor, $profile->settings, $theme);
   }
-  $path_wysiwyg = drupal_get_path('module', 'wysiwyg_editor');
-  // Hard-coded for now.
-  $path_editor = $path_wysiwyg .'/tinymce/jscripts/tiny_mce';
-  // Drupal theme path.
-  $themepath = path_to_theme();
-  $base_path = base_path();
-  $settings = $profile->settings;
-
-  // Build a default list of Wysiwyg Editor settings.
-  $init = array();
-  $init['mode'] = 'none';
-  $init['theme'] = $theme;
-  $init['relative_urls'] = FALSE;
-  $init['document_base_url'] = "$base_path";
-  $init['language'] = $settings['language'] ? $settings['language'] : 'en';
-  $init['entity_encoding'] = 'raw';
-  $init['verify_html'] = $settings['verify_html'] ? $settings['verify_html'] : TRUE;
-  $init['preformatted'] = $settings['preformatted'] ? $settings['preformatted'] : FALSE;
-  $init['convert_fonts_to_spans'] = $settings['convert_fonts_to_spans'] ? $settings['convert_fonts_to_spans'] : TRUE;
-  $init['remove_linebreaks'] = $settings['remove_linebreaks'] ? $settings['remove_linebreaks'] : TRUE;
-  $init['apply_source_formatting'] = $settings['apply_source_formatting'] ? $settings['apply_source_formatting'] : FALSE;
-  $init['paste_auto_cleanup_on_paste'] = $settings['paste_auto_cleanup_on_paste'] ? $settings['paste_auto_cleanup_on_paste'] : FALSE;
-  $init['theme_advanced_resize_horizontal'] = FALSE;
-  $init['theme_advanced_resizing_use_cookie'] = FALSE;
-
-  if (user_access('access tinymce imagemanager') && is_dir($path_editor .'/plugins/imagemanager/')) {
-    // we probably need more security than this
-    $init['file_browser_callback'] = "mcImageManager.filebrowserCallBack";
-  }
-  if (user_access('access tinymce filemanager') && is_dir($path_editor .'/plugins/filemanager/')) {
-    // we probably need more security than this
-    $init['file_browser_callback'] = "mcImageManager.filebrowserCallBack";
-  }
-
-  if ($settings['css_classes']) {
-    $init['theme_advanced_styles'] = implode(';', array_filter(explode("\n", str_replace("\r", '', $settings['css_classes']))));
-  }
-
-  if ($settings['css_setting'] == 'theme') {
-    $css = $themepath .'/style.css';
-    if (file_exists($css)) {
-      $init['content_css'] = $base_path . $css;
-    }
-  }
-  else if ($settings['css_setting'] == 'self') {
-    $init['content_css'] = str_replace(array('%b', '%t'), array($base_path, $themepath), $settings['css_path']);
-  }
-
-  // Add theme-specific settings.
-  switch ($theme) {
-    case 'advanced':
-      $init['plugins'] = array();
-      $init['theme_advanced_toolbar_location'] = $settings['toolbar_loc'] ? $settings['toolbar_loc'] : 'bottom';
-      $init['theme_advanced_toolbar_align'] = $settings['toolbar_align'] ? $settings['toolbar_align'] : 'left';
-      $init['theme_advanced_path_location'] = $settings['path_loc'] ? $settings['path_loc'] : 'bottom';
-      $init['theme_advanced_resizing'] = $settings['resizing'] ? $settings['resizing'] : TRUE;
-      $init['theme_advanced_blockformats'] = $settings['block_formats'] ? $settings['block_formats'] : 'p,address,pre,h2,h3,h4,h5,h6';
-
-      if (!empty($settings['buttons']) && is_array($settings['buttons'])) {
-        $init['buttons'] = $init['extensions'] = $init['extended_valid_elements'] = array();
-        // Find the enabled buttons and the button row they belong on.
-        // Also map the plugin metadata for each button.
-        $plugins = _wysiwyg_editor_get_buttons();
-        foreach ($settings['buttons'] as $plugin => $buttons) {
-          foreach ($buttons as $button => $enabled) {
-            foreach (array('buttons', 'extensions') as $type) {
-              // Skip disabled plugins.
-              if (!isset($plugins[$plugin][$type][$button])) {
-                continue;
-              }
-              // Add buttons.
-              if ($type == 'buttons') {
-                $init[$type][] = $button;
-              }
-              // Add external plugins to the list of extensions.
-              if ($type == 'buttons' && !isset($plugins[$plugin]['internal'])) {
-                $init['extensions'][_wysiwyg_editor_plugin_name('add', $plugin)] = 1;
-              }
-              // Add internal buttons that also need to be loaded as extension.
-              else if ($type == 'buttons' && isset($plugins[$plugin]['load'])) {
-                $init['extensions'][$plugin] = 1;
-              }
-              // Add internal extensions.
-              else if ($type == 'extensions') {
-                $init[$type][$plugin] = 1;
-              }
-              // Allow plugins to add valid HTML elements.
-              if (!empty($plugins[$plugin]['extended_valid_elements'])) {
-                $init['extended_valid_elements'] = array_merge($init['extended_valid_elements'], $plugins[$plugin]['extended_valid_elements']);
-              }
-              // Allow plugins to add or override configuration settings.
-              if (!empty($plugins[$plugin]['options'])) {
-                $init = array_merge($init, $plugins[$plugin]['options']);
-              }
-            }
-          }
-        }
-        // Clean-up.
-        // Hard-coded for TinyMCE for now.
-        $init['extended_valid_elements'] = array_unique($init['extended_valid_elements']);
-        if ($init['extensions']) {
-          $init['plugins'] = array_keys($init['extensions']);
-          unset($init['extensions']);
-        } else {
-          unset($init['extensions']);
-        }
-
-        // Note: These rows need to be set to NULL otherwise TinyMCE loads its
-        // own buttons as defined in advanced theme.
-        $init += array(
-          'theme_advanced_buttons1' => array(),
-          'theme_advanced_buttons2' => array(),
-          'theme_advanced_buttons3' => array(),
-        );
-        for ($i = 0; $i < count($init['buttons']); $i++) {
-          $init['theme_advanced_buttons1'][] = $init['buttons'][$i];
-        }
-        unset($init['buttons']);
-      }
-      break;
-  }
-  return $init;
+  return $settings;
 }
 
 /**
  * Return the name of the current user's default profile.
  */
 function wysiwyg_editor_current_profile() {
+  global $user;
   static $profile_name;
-  if (!$profile_name) {
-    global $user;
+
+  if (!isset($profile_name)) {
     $profile_name = db_result(db_query_range('SELECT p.name FROM {wysiwyg_editor_profile} p INNER JOIN {wysiwyg_editor_role} r ON r.name = p.name WHERE r.rid IN (%s) ORDER BY plugin_count DESC', implode(',', array_keys($user->roles)), 0, 1));
   }
   return $profile_name;
@@ -518,11 +382,11 @@ function wysiwyg_editor_current_profile() {
 /**
  * Load all profiles. Just load one profile if $name is passed in.
  */
-function wysiwyg_editor_profile_load($name = '') {
+function wysiwyg_editor_load_profile($name = '') {
   static $profiles;
 
   // If $name is passed from wysiwyg_editor_current_profile(), it may be FALSE,
-  // and thus, the user is not allowed to use a wysiwyg editor.
+  // which means the user is not allowed to use a wysiwyg editor.
   if ($name === FALSE) {
     return FALSE;
   }
@@ -588,17 +452,47 @@ function _wysiwyg_editor_page_match($profile) {
   return $page_match;
 }
 
+/**
+ * Implementation of hook_user().
+ */
+function wysiwyg_editor_user($type, &$edit, &$user, $category = NULL) {
+  if ($type == 'form' && $category == 'account' && user_access('access wysiwyg editor')) {
+    $profile = wysiwyg_editor_user_get_profile($user);
+    if (isset($profile->settings['user_choose']) && $profile->settings['user_choose']) {
+      $form['wysiwyg'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Wysiwyg Editor settings'),
+        '#weight' => 10,
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      );
+      $form['wysiwyg']['wysiwyg_editor_status'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Enable editor by default'),
+        '#default_value' => isset($user->wysiwyg_editor_status) ? $user->wysiwyg_editor_status : (isset($profile->settings['default']) ? $profile->settings['default'] : FALSE),
+        '#return_value' => 1,
+        '#description' => t('If enabled, rich-text editing is enabled by default in textarea fields.'),
+      );
+      return array('wysiwyg_editor' => $form);
+    }
+  }
+  if ($type == 'validate') {
+    return array('wysiwyg_editor_status' => $edit['wysiwyg_editor_status']);
+  }
+}
+
 function wysiwyg_editor_user_get_profile($account) {
   $profile_name = db_result(db_query('SELECT s.name FROM {wysiwyg_editor_profile} s INNER JOIN {wysiwyg_editor_role} r ON r.name = s.name WHERE r.rid IN (%s)', implode(',', array_keys($account->roles))));
   if ($profile_name) {
-    return wysiwyg_editor_profile_load($profile_name);
+    return wysiwyg_editor_load_profile($profile_name);
   }
   else {
     return FALSE;
   }
 }
 
-function wysiwyg_editor_user_get_status($user, $profile) {
+function wysiwyg_editor_user_get_status($profile) {
+  global $user;
   $settings = $profile->settings;
 
   if ($settings['user_choose'] && isset($user->wysiwyg_editor_status)) {
@@ -610,4 +504,195 @@ function wysiwyg_editor_user_get_status($user, $profile) {
 
   return $status;
 }
+
+/**
+ * @defgroup wysiwyg_editor_api Wysiwyg Editor API
+ * @{
+ * Description
+ *
+ * @todo Forked from Panels; abstract into a separate API module that allows
+ *   contrib modules to define supported include/plugin types.
+ */
+
+/**
+ * Return library information for a given editor.
+ *
+ * @param $name
+ *   The internal name of an editor.
+ *
+ * @return
+ *   The library information for the editor, or FALSE if $name is unknown or not
+ *   installed properly.
+ */
+function wysiwyg_get_editor($name) {
+  $editors = wysiwyg_get_all_editors();
+  return isset($editors[$name]) && $editors[$name]['installed'] ? $editors[$name] : FALSE;
+}
+
+/**
+ * Compile a list holding all supported editors including installed editor version information.
+ */
+function wysiwyg_get_all_editors() {
+  static $editors;
+
+  if (isset($editors)) {
+    return $editors;
+  }
+
+  $editors = wysiwyg_load_includes('editors', 'editor');
+  foreach ($editors as $editor => $properties) {
+    // Fill in required properties.
+    $editors[$editor] += array(
+      'title' => '',
+      'vendor url' => '',
+      'download url' => '',
+      'library path' => '',
+      'libraries' => array(),
+      'settings callback' => '',
+      'plugin callback' => '',
+      'version callback' => '',
+      'versions' => array(),
+    );
+    // Check whether library is present.
+    if (!($editors[$editor]['installed'] = file_exists($properties['library path']))) {
+      continue;
+    }
+    // Detect library version.
+    if (function_exists($editors[$editor]['version callback'])) {
+      $editors[$editor]['installed version'] = $editors[$editor]['version callback']($properties);
+    }
+    if (empty($editors[$editor]['installed version'])) {
+      $editors[$editor]['error'] = t('The version of %editor could not be detected.', array('%editor' => $properties['title']));
+      $editors[$editor]['installed'] = FALSE;
+      continue;
+    }
+    // Determine to which supported version the installed version maps.
+    ksort($editors[$editor]['versions']);
+    $version = 0;
+    foreach ($editors[$editor]['versions'] as $supported_version => $version_properties) {
+      if (version_compare($editors[$editor]['installed version'], $supported_version, '>=')) {
+        $version = $supported_version;
+      }
+    }
+    if (!$version) {
+      $editors[$editor]['error'] = t('The installed version of %editor is not supported.', array('%editor' => $properties['title']));
+      $editors[$editor]['installed'] = FALSE;
+      continue;
+    }
+    // Apply library version specific definitions and overrides.
+    $editors[$editor] = array_merge($editors[$editor], $editors[$editor]['versions'][$version]);
+    unset($editors[$editor]['versions']);
+    $editors[$editor]['title'] = $editors[$editor]['title'] . ' ' . $editors[$editor]['installed version'];
+  }
+  return $editors;
+}
+
+/**
+ * Load include files for wysiwyg implemented by all modules.
+ *
+ * @param $type
+ *   The type of includes to search for, can be 'editors'.
+ * @param $hook
+ *   The hook name to invoke.
+ * @param $file
+ *   An optional include file name without .inc extension to limit the search to.
+ *
+ * @see wysiwyg_get_directories(), _wysiwyg_process_include()
+ */
+function wysiwyg_load_includes($type = 'editors', $hook = 'editor', $file = NULL) {
+  // Determine implementations.
+  $directories = wysiwyg_get_directories($type);
+  $directories['wysiwyg_'] = wysiwyg_get_path($type);
+  $file_list = array();
+  foreach ($directories as $module => $path) {
+    $file_list[$module] = drupal_system_listing("$file" . '.inc$', $path, 'name', 0);
+  }
+
+  // Load implementations.
+  $info = array();
+  foreach (array_filter($file_list) as $module => $files) {
+    foreach ($files as $file) {
+      include_once './' . $file->filename;
+      $result = _wysiwyg_process_include('wysiwyg', $module . $file->name, dirname($file->filename), $hook);
+      if (is_array($result)) {
+        $info = array_merge($info, $result);
+      }
+    }
+  }
+  return $info;
+}
+
+/**
+ * Helper function to build module/file paths.
+ *
+ * @param $file
+ *   A file or directory in a module to return.
+ * @param $base_path
+ *   Whether to prefix the resulting path with base_path().
+ * @param $module
+ *   The module name to use as prefix.
+ *
+ * @return
+ *   The path to the specified file in a module.
+ */
+function wysiwyg_get_path($file = '', $base_path = FALSE, $module = 'wysiwyg_editor') {
+  $base_path = ($base_path ? base_path() : '');
+  return $base_path . drupal_get_path('module', $module) . '/' . $file;
+}
+
+/**
+ * Return a list of directories by modules implementing wysiwyg_include_directory().
+ *
+ * @param $plugintype
+ *   The type of a plugin; can be 'editors'.
+ *
+ * @return
+ *   An array containing module names suffixed with '_' and their defined
+ *   directory.
+ *
+ * @see wysiwyg_load_includes(), _wysiwyg_process_include()
+ */
+function wysiwyg_get_directories($plugintype) {
+  $directories = array();
+  foreach (module_implements('wysiwyg_include_directory') as $module) {
+    $result = module_invoke($module, 'wysiwyg_include_directory', $plugintype);
+    if (isset($result) && is_string($result)) {
+      $directories[$module .'_'] = drupal_get_path('module', $module) .'/'. $result;
+    }
+  }
+  return $directories;
+}
+
+/**
+ * Process a single hook implementation of a wysiwyg editor.
+ *
+ * @param $module
+ *   The module that owns the hook.
+ * @param $identifier
+ *   Either the module or 'wysiwyg_' . $file->name
+ * @param $hook
+ *   The name of the hook being invoked.
+ */
+function _wysiwyg_process_include($module, $identifier, $path, $hook) {
+  $function = $identifier . '_' . $hook;
+  if (!function_exists($function)) {
+    return NULL;
+  }
+  $result = $function();
+  if (!isset($result) || !is_array($result)) {
+    return NULL;
+  }
+
+  // Fill in defaults.
+  foreach ($result as $editor => $properties) {
+    $result[$editor]['module'] = $module;
+    $result[$editor]['name'] = $editor;
+    $result[$editor]['path'] = $path;
+  }
+  return $result;
+}
+
+/**
+ * @} End of "defgroup wysiwyg_editor_api".
+ */
 

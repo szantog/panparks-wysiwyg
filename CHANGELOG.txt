@@ -6,6 +6,8 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#316507 by sun: Rewrote Wysiwyg API's internal architecture to support multiple
+  editors.
 
 
 Wysiwyg 6.x-0.3, 2008-09-12

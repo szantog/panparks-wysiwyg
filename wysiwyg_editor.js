@@ -13,14 +13,14 @@ Drupal.wysiwygEditorInit = function () {
   tinyMCE.srcMode = (Drupal.settings.wysiwygEditor.execMode == 'src' ? '_src' : '');
   tinyMCE.gzipMode = (Drupal.settings.wysiwygEditor.execMode == 'gzip');
 
-  for (var theme in Drupal.settings.wysiwygEditor.configs) {
-    // Clone so we are not passing by reference. Otherwise the
-    // settings will get overwritten.
-    var config = Drupal.wysiwygEditorCloneObject(Drupal.settings.wysiwygEditor.configs[theme]);
+  for (var theme in Drupal.settings.wysiwygEditor.configs.tinymce) {
+    // Clone so we are not passing by reference. Otherwise the settings will
+    // get overwritten.
+    var config = Drupal.wysiwygEditorCloneObject(Drupal.settings.wysiwygEditor.configs.tinymce[theme]);
     tinyMCE.init(config);
   }
-  for (var plugin in Drupal.settings.wysiwygEditor.plugins) {
-    tinyMCE.loadPlugin(plugin, Drupal.settings.wysiwygEditor.plugins[plugin]);
+  for (var plugin in Drupal.settings.wysiwygEditor.plugins.tinymce) {
+    tinyMCE.loadPlugin(plugin, Drupal.settings.wysiwygEditor.plugins.tinymce[plugin]);
   }
 }
 
@@ -30,8 +30,8 @@ Drupal.wysiwygEditorInit = function () {
  * This function can be called to process AJAX-loaded content.
  */
 Drupal.wysiwygEditorAttach = function () {
-  for (var theme in Drupal.settings.wysiwygEditor.configs) {
-    var config = Drupal.wysiwygEditorCloneObject(Drupal.settings.wysiwygEditor.configs[theme]);
+  for (var theme in Drupal.settings.wysiwygEditor.configs.tinymce) {
+    var config = Drupal.wysiwygEditorCloneObject(Drupal.settings.wysiwygEditor.configs.tinymce[theme]);
     // Set configuration options for this theme.
     for (var setting in config) {
       tinyMCE.settings[setting] = config[setting];
@@ -55,7 +55,7 @@ Drupal.wysiwygEditorAttach = function () {
  */
 Drupal.wysiwygEditorToggle = function (id, theme) {
   if (tinyMCE.getEditorId(id) == null) {
-    var config = Drupal.wysiwygEditorCloneObject(Drupal.settings.wysiwygEditor.configs[theme]);
+    var config = Drupal.wysiwygEditorCloneObject(Drupal.settings.wysiwygEditor.configs.tinymce[theme]);
     // Set configuration options for this theme.
     for (var setting in config) {
       tinyMCE.settings[setting] = config[setting];

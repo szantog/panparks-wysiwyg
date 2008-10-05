@@ -17,7 +17,6 @@ function wysiwyg_fckeditor_editor() {
     'title' => 'FCKeditor',
     'vendor url' => 'http://www.fckeditor.net',
     'download url' => 'http://www.fckeditor.net/download',
-    'editor path' => wysiwyg_get_path('fckeditor'),
     'library path' => wysiwyg_get_path('fckeditor'),
     'libraries' => array( // We cannot assume that all editors need just one js library.
       '' => array( // Key may be used in wysiwyg_fckeditor_settings() for exec mode.
@@ -25,7 +24,6 @@ function wysiwyg_fckeditor_editor() {
         'files' => array('fckeditor.js'),
       ),
     ),
-    'js path' => wysiwyg_get_path('js'),
     'version callback' => 'wysiwyg_fckeditor_version',
     'themes callback' => 'wysiwyg_fckeditor_themes',
     'settings callback' => 'wysiwyg_fckeditor_settings',
@@ -33,13 +31,16 @@ function wysiwyg_fckeditor_editor() {
     'plugin settings callback' => 'wysiwyg_fckeditor_plugin_settings',
     'versions' => array( // Each version can override global editor properties.
       2.6 => array(
-        'include files' => array('fckeditor-2.inc'),
-        'js files' => array('fckeditor-2.js'),
+        // 'include files' => array('fckeditor-2.inc'),
+        'js files' => array('fckeditor-2.6.js'),
       ),
     ),
     // Optional properties
-    'css path' => wysiwyg_get_path('css'),
-    'css files' => array('fckeditor.css'),
+    // 'editor path' => wysiwyg_get_path('fckeditor'),
+    // 'js path' => wysiwyg_get_path('js'),
+    // 'css path' => wysiwyg_get_path('css'),
+    // @todo Not yet implemented.
+    // 'css files' => array('fckeditor.css'),
   );
   return $editor;
 }
@@ -79,6 +80,38 @@ function wysiwyg_fckeditor_version($editor) {
  *   Drupal.settings.wysiwygEditor.configs.{editor}
  */
 function wysiwyg_fckeditor_settings($editor, $config, $theme) {
+  $init = array(
+    'BasePath' => base_path() . $editor['editor path'] .'/',
+    'SkinPath' => base_path() . $editor['editor path'] .'/editor/skins/default/',
+    'DefaultLanguage' => 'en',
+    'AutoDetectLanguage' => TRUE,
+    'Height' => 420,
+    'ToolbarStartExpanded' => TRUE,
+    'Width' => '100%',
+    'EnterMode' => 'p',
+    'ShiftEnterMode' => 'br',
+    'FontFormats' => strtr($config['block_formats'], array(',' => ';')),
+    'FormatSource' => $config['apply_source_formatting'],
+    'FormatOutput' => $config['preformatted'],
+    'LinkBrowser' => FALSE,
+    'ImageBrowser' => FALSE,
+    'FlashBrowser' => FALSE,
+    'LinkUpload' => FALSE,
+    'ImageUpload' => FALSE,
+    'FlashUpload' => FALSE,
+  );
+
+  if ($config['css_setting'] == 'theme') {
+    $css = path_to_theme() .'/style.css';
+    if (file_exists($css)) {
+      $init['EditorAreaCSS'] = base_path() . $css;
+    }
+  }
+  else if ($config['css_setting'] == 'self') {
+    $init['EditorAreaCSS'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+  }
+
+  return $init;
 }
 
 /**

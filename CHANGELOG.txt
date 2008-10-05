@@ -6,6 +6,11 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#316507 by sun: Added Drupal.wysiwyg function stacks to execute editor library
+  specific actions upon initializing, attaching, detaching, and toggling an
+  editor. Editor specific JavaScript resides in separate files now, as specified
+  and returned by implementations of hook_editor().
+  Wysiwyg is a real API finally, supporting multiple editors and editor versions.
 #316507 by sun: Rewrote Wysiwyg API's internal architecture to support multiple
   editors.
 

@@ -177,67 +177,77 @@ function wysiwyg_editor_load_editor($profile) {
   static $settings_added;
   static $loaded = array();
 
+  $name = $profile->settings['editor'];
+  // Library files must only be loaded once.
+  if (!isset($loaded[$name])) {
+    // Load editor 
+    $editor = wysiwyg_get_editor($name);
+    if ($editor) {
+      // Determine library files to load.
+      if (isset($profile->settings['library']) && isset($editor['libraries'][$profile->settings['library']])) {
+        $library = $profile->settings['library'];
+        $files = $editor['libraries'][$profile->settings['library']]['files'];
+      }
+      else {
+        // Fallback to the first by default (external libraries can change).
+        $library = key($editor['libraries']);
+        $files = array_shift($editor['libraries']);
+        $files = $files['files'];
+      }
+      foreach ($files as $file) {
+        drupal_add_js($editor['library path'] . '/' . $file);
+      }
+      // Load JavaScript integration files for this editor.
+      if (isset($editor['js files'])) {
+        $files = $editor['js files'];
+      }
+      foreach ($files as $file) {
+        drupal_add_js($editor['js path'] . '/' . $file, 'module', 'footer');
+      }
+
+      $status = wysiwyg_editor_user_get_status($profile);
+      drupal_add_js(array('wysiwygEditor' => array(
+        'configs' => array($editor['name'] => array()),
+        'showToggle' => $profile->settings['show_toggle'],
+        'status' => $status,
+        // If JS compression is enabled, at least TinyMCE is unable to determine
+        // its own base path and exec mode since it can't find the script name.
+        'editorBasePath' => base_path() . $editor['library path'],
+        'execMode' => $library,
+      )), 'setting');
+
+      $loaded[$name] = TRUE;
+    }
+    else {
+      $loaded[$name] = FALSE;
+    }
+  }
+
   // Add basic Wysiwyg settings.
-  if (!isset($settings_added)) {
+  if (!isset($settings_added) && $loaded[$name]) {
     drupal_add_js(array('wysiwygEditor' => array(
       'configs' => array(),
       'disable' => t('Disable rich-text'),
       'enable' => t('Enable rich-text'),
-      'noWysiwyg' => t('Your current web browser does not support WYSIWYG editing.'),
     )), 'setting');
+
     // Add wysiwyg_editor.js to the footer to ensure it's executed after the
-    // Drupal.settings array has been rendered and populated.
+    // Drupal.settings array has been rendered and populated. Also, since editor
+    // library initialization functions must be loaded first by the browser,
+    // Drupal.wysiwygEditorInit() must be executed AFTER editors registered
+    // their callbacks, and BEFORE Drupal.behaviors are applied, this must come
+    // last.
+    // @todo Separate into wysiwyg.init.js and wysiwyg.editor?.js, to ensure
+    //   this logic/ordering, and do not force editor integration scripts to
+    //   check and define Drupal.wysiwyg on its own.
     drupal_add_js(wysiwyg_get_path('wysiwyg_editor.js'), 'module', 'footer');
+
     // Add our stylesheet to stack editor buttons into one row.
     drupal_add_css(wysiwyg_get_path('wysiwyg_editor.css'));
 
     $settings_added = TRUE;
   }
 
-  $name = $profile->settings['editor'];
-  // Library files must only be loaded once.
-  if (!isset($loaded[$name])) {
-    // Load editor 
-    $editor = wysiwyg_get_editor($name);
-    if (!$editor) {
-      $loaded[$name] = FALSE;
-      return FALSE;
-    }
-    // Determine library files to load.
-    if (isset($profile->settings['library']) && isset($editor['libraries'][$profile->settings['library']])) {
-      $library = $profile->settings['library'];
-      $files = $editor['libraries'][$profile->settings['library']]['files'];
-    }
-    else {
-      // Fallback to the first by default (external libraries can change).
-      $library = key($editor['libraries']);
-      $files = array_shift($editor['libraries']);
-      $files = $files['files'];
-    }
-    foreach ($files as $file) {
-      drupal_add_js($editor['library path'] . '/' . $file);
-    }
-    // Load JavaScript integration files for this editor.
-    if (isset($editor['js files'])) {
-      $files = $editor['js files'];
-    }
-    foreach ($files as $file) {
-      drupal_add_js($editor['js path'] . '/' . $file, 'module', 'footer');
-    }
-
-    $status = wysiwyg_editor_user_get_status($profile);
-    drupal_add_js(array('wysiwygEditor' => array(
-      'configs' => array($editor['name'] => array()),
-      'showToggle' => $profile->settings['show_toggle'],
-      'status' => $status,
-      // If JS compression is enabled, at least TinyMCE is unable to determine
-      // its own base path and exec mode since it can't find the script name.
-      'editorBasePath' => base_path() . $editor['library path'],
-      'execMode' => $library,
-    )), 'setting');
-
-    $loaded[$name] = TRUE;
-  }
   return $loaded[$name];
 }
 
@@ -546,12 +556,17 @@ function wysiwyg_get_all_editors() {
       'title' => '',
       'vendor url' => '',
       'download url' => '',
-      'library path' => '',
+      'editor path' => wysiwyg_get_path($properties['name']),
+      'library path' => wysiwyg_get_path($properties['name']),
       'libraries' => array(),
-      'settings callback' => '',
-      'plugin callback' => '',
-      'version callback' => '',
+      'version callback' => NULL,
+      'themes callback' => NULL,
+      'settings callback' => NULL,
+      'plugin callback' => NULL,
+      'plugin settings callback' => NULL,
       'versions' => array(),
+      'js path' => $properties['path'] .'/js',
+      'css path' => $properties['path'] .'/css',
     );
     // Check whether library is present.
     if (!($editors[$editor]['installed'] = file_exists($properties['library path']))) {

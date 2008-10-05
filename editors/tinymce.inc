@@ -17,7 +17,6 @@ function wysiwyg_tinymce_editor() {
     'title' => 'TinyMCE',
     'vendor url' => 'http://tinymce.moxiecode.com',
     'download url' => 'http://tinymce.moxiecode.com/download.php',
-    'editor path' => wysiwyg_get_path('tinymce'),
     'library path' => wysiwyg_get_path('tinymce') . '/jscripts/tiny_mce',
     'libraries' => array( // We cannot assume that all editors need just one js library.
       '' => array( // Key may be used in wysiwyg_tinymce_settings() for exec mode.
@@ -29,7 +28,6 @@ function wysiwyg_tinymce_editor() {
         'files' => array('tiny_mce_src.js'),
       ),
     ),
-    'js path' => wysiwyg_get_path('js'),
     'version callback' => 'wysiwyg_tinymce_version',
     'themes callback' => 'wysiwyg_tinymce_themes',
     'settings callback' => 'wysiwyg_tinymce_settings',
@@ -61,8 +59,11 @@ function wysiwyg_tinymce_editor() {
       ),
     ),
     // Optional properties
-    'css path' => wysiwyg_get_path('css'),
-    'css files' => array('tinymce.css'),
+    // 'editor path' => wysiwyg_get_path('tinymce'), // Assumed by default.
+    // 'js path' => wysiwyg_get_path('editors/js'), // Assumed by default.
+    // 'css path' => wysiwyg_get_path('editors/css'), // Assumed by default.
+    // @todo Not yet implemented.
+    // 'css files' => array('tinymce.css'),
   );
   return $editor;
 }

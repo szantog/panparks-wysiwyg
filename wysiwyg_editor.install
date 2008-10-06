@@ -10,42 +10,17 @@ function wysiwyg_editor_schema() {
   $schema['wysiwyg_editor_profile'] = array(
     'description' => t('Stores Wysiwyg Editor profiles.'),
     'fields' => array(
-      'name' => array(
-        'type' => 'varchar',
-        'length' => 128,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'settings' => array(
-        'type' => 'text',
-        'size' => 'normal',
-      ),
-      'plugin_count' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-      ),
+      'name' => array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => ''),
+      'settings' => array('type' => 'text', 'size' => 'normal'),
+      'plugin_count' => array('type' => 'int', 'size' => 'tiny', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
     ),
     'primary key' => array('name'),
   );
   $schema['wysiwyg_editor_role'] = array(
     'description' => t('Stores user role access permissions for Wysiwyg Editor profiles.'),
     'fields' => array(
-      'name' => array(
-        'type' => 'varchar',
-        'length' => 128,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'rid' => array(
-        'type' => 'int',
-        'size' => 'tiny',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-      ),
+      'name' => array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => ''),
+      'rid' => array('type' => 'int', 'size' => 'tiny', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
     ),
     'primary key' => array('name', 'rid'),
   );

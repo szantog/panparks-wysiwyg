@@ -4,7 +4,12 @@
 
 /**
  * @file
- * Integrate Wysiwyg editors into Drupal.
+ * Integrate client-side editors with Drupal.
+ *
+ * Please note that this module is slowly moving to become wysiwyg.module. Most
+ * functions are still based on the obsolete wysiwyg_editor name, which was
+ * originally chosen, because it was not clear whether editors would just be
+ * one component of a larger API.
  */
 
 /**
@@ -63,18 +68,27 @@ function wysiwyg_editor_perm() {
 /**
  * Implementation of hook_elements().
  *
+ * Before Drupal 7, there is no way to easily identify form fields that are
+ * input format enabled. This is a workaround: We assign a form #after_build
+ * processing callback that is executed on all forms after they have been
+ * completely built, so that form elements already are in their effective order
+ * and position.
+ *
+ * @see wysiwyg_process_form()
+ *
  * @todo Remove #wysiwyg_style; the GUI for an editor should be solely handled
  *   via profiles, when profiles are attached to an input format. It makes no
  *   sense to display TinyMCE's simple GUI/theme for the user signature, when
  *   the input format allows users to use advanced HTML and hence, editor
- *   plugins.  Fix this here, in wysiwyg_editor_process_textarea(), and lastly
+ *   plugins.  Fix this here, in wysiwyg_editor_process_element(), and lastly
  *   in wysiwyg_editor_get_config().
  */
 function wysiwyg_editor_elements() {
   $type = array();
   if (user_access('access wysiwyg editor')) {
-    // Let Wysiwyg Editor potentially process each textarea.
-    $type['textarea'] = array('#process' => array('wysiwyg_editor_process_textarea'), '#wysiwyg' => TRUE, '#wysiwyg_style' => 'advanced');
+    // @todo Derive editor theme from input format.
+    $type['textarea'] = array('#wysiwyg_style' => 'advanced');
+    $type['form'] = array('#after_build' => array('wysiwyg_process_form'));
   }
   return $type;
 }
@@ -91,75 +105,128 @@ function wysiwyg_editor_form_alter(&$form, &$form_state) {
 }
 
 /**
- * Alter #wysiwyg for certain core textareas.
+ * Process a textarea for Wysiwyg Editor.
  *
- * @param $element
- *   The textarea element to be processed.
+ * This way, we can recurse into the form and search for certain, hard-coded
+ * elements that have been added by filter_form(). If an input format selector
+ * or input format guidelines element is found, we assume that the preceding
+ * element is the corresponding textarea and use it's #id for attaching
+ * client-side editors.
+ *
+ * @see wysiwyg_editor_elements(), filter_form()
  */
-function wysiwyg_editor_filter_elements(&$element) {
-  switch ($element['#name']) {
-    // Disable Wysiwyg Editor for these textareas.
-    case 'log': // Node revisions log message.
-    case 'img_assist_pages': // Image Assist visibility settings.
-    case 'caption': // User signature?
-    case 'pages': // (Block) Visibility settings.
-    case 'access_pages': // Wysiwyg Editor profile settings.
-    case 'user_mail_welcome_body': // User settings.
-    case 'user_mail_approval_body': // User settings.
-    case 'user_mail_pass_body': // User settings.
-    case 'synonyms': // Taxonomy terms.
-    case 'description': // Taxonomy terms.
-      $element['#wysiwyg'] = FALSE;
-      break;
+function wysiwyg_process_form(&$form) {
+  // Iterate over element children; resetting array keys to access last index.
+  if ($children = array_values(element_children($form))) {
+    foreach ($children as $index => $item) {
+      $element = &$form[$item];
 
-    // Force 'simple' theme for some smaller textareas.
-    case 'signature': // User signature.
-    case 'site_mission':
-    case 'site_footer':
-    case 'site_offline_message':
-    case 'page_help': // Page content-type help message?
-    case 'user_registration_help':
-    case 'user_picture_guidelines':
-      $element['#wysiwyg_style'] = 'simple';
-      break;
+      // filter_form() always uses the key 'format'. We need a type-agnostic
+      // match to prevent false positives. Also, there must have been at least
+      // one element on this level.
+      if ($item === 'format' && $index > 0) {
+        // Make sure we either match a input format selector or input format
+        // guidelines (displayed if user has access to one input format only).
+        if ((isset($element['#type']) && $element['#type'] == 'fieldset') || isset($element['format']['guidelines'])) {
+          // The element before this element is the target form field.
+          $field = &$form[$children[$index - 1]];
+
+          // Disable #resizable to avoid resizable behavior to hi-jack the UI,
+          // but load the behavior, so the 'none' editor can attach/detach it.
+          $extra_class = '';
+          if (!empty($field['#resizable'])) {
+            // Due to our CSS class parsing, we can add arbitrary parameters
+            // for each input format.
+            $extra_class = ' wysiwyg-resizable-1';
+            $field['#resizable'] = FALSE;
+            drupal_add_js('misc/textarea.js');
+          }
+
+          // Determine the available input formats. The last child element is a
+          // link to "More information about formatting options". When only one
+          // input format is displayed, we also have to remove formatting
+          // guidelines, stored in the child 'format'.
+          $formats = element_children($element);
+          array_pop($formats);
+          unset($formats['format']);
+          foreach ($formats as $format) {
+            // Default to 'none' editor (Drupal's default behaviors).
+            $editor = 'none';
+            $theme = '';
+            // Fetch the profile associated to this input format.
+            $profile = wysiwyg_get_profile($format);
+            if ($profile) {
+              $editor = $profile->settings['editor'];
+              // Check editor theme (and reset it if not/no longer available).
+              $theme = wysiwyg_editor_get_themes($profile, $field['#wysiwyg_style']);
+
+              // Add profile settings for this input format.
+              wysiwyg_editor_add_settings($profile, $theme);
+              // Add plugin settings for this input format.
+              wysiwyg_editor_add_plugin_settings($profile);
+
+              $theme = ' wysiwyg-theme-'. $theme;
+            }
+
+            // Use a prefix/suffix for a single input format, or attach to input
+            // format selector radio buttons.
+            if (isset($element['format']['guidelines'])) {
+              $element[$format]['#prefix'] = '<div class="wysiwyg wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] . $theme . $extra_class .'">';
+              $element[$format]['#suffix'] = '</div>';
+            }
+            else {
+              if (isset($element[$format]['#attributes']['class'])) {
+                $element[$format]['#attributes']['class'] .= ' ';
+              }
+              else {
+                $element[$format]['#attributes']['class'] = '';
+              }
+              $element[$format]['#attributes']['class'] .= 'wysiwyg wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] . $theme . $extra_class;
+            }
+          }
+        }
+        // If this element is 'format', do not recurse further.
+        continue;
+      }
+      // Recurse into children.
+      wysiwyg_process_form($element);
+    }
   }
+  return $form;
 }
 
 /**
- * Process a textarea for Wysiwyg Editor.
+ * Determine the profile to use for a given input format id.
+ *
+ * This function also performs sanity checks for the configured editor in a
+ * profile to ensure that we do not load a malformed editor.
+ *
+ * @param $format
+ *   The internal id of an input format.
+ *
+ * @return
+ *   A wysiwyg profile.
+ *
+ * @see wysiwyg_editor_load_editor(), wysiwyg_get_editor()
+ *
+ * @todo Replace wysiwyg_editor_current_profile() with a input format to profile
+ *   association.
  */
-function wysiwyg_editor_process_textarea($element) {
-  wysiwyg_editor_filter_elements($element);
-
-  if ($element['#wysiwyg']) {
-    $profile = wysiwyg_editor_load_profile(wysiwyg_editor_current_profile());
-    if ($profile && _wysiwyg_editor_page_match($profile)) {
-      if (!wysiwyg_editor_load_editor($profile)) {
-        // Bail out if editor could not be loaded.
-        return $element;
-      }
-      // Check editor theme (and reset if needed).
-      // Default to advanced theme if the requested one is not installed.
-      $element['#wysiwyg_style'] = wysiwyg_editor_get_themes($profile, $element['#wysiwyg_style']);
-
-      wysiwyg_editor_add_settings($profile, $element['#wysiwyg_style']);
-      wysiwyg_editor_add_plugin_settings($profile);
-      if (!isset($element['#attributes'])) {
-        $element['#attributes'] = array();
-      }
-      if (!isset($element['#attributes']['class'])) {
-        $element['#attributes']['class'] = 'wysiwyg wysiwyg-'. $element['#wysiwyg_style'];
-      }
-      else {
-        $element['#attributes']['class'] .= ' wysiwyg wysiwyg-'. $element['#wysiwyg_style'];
-      }
-      // Set resizable to false to avoid drupal.js resizable function from
-      // taking control of the textarea
-      $element['#resizable'] = FALSE;
+function wysiwyg_get_profile($format) {
+  // Determine whether this input format has PHP filter enabled.
+  // Temporary, until input format to profile associations are in place.
+  $filters = filter_list_format($format);
+  foreach ($filters as $filter) {
+    if ($filter->module == 'php') {
+      return FALSE;
     }
   }
-
-  return $element;
+  if ($profile = wysiwyg_editor_load_profile(wysiwyg_editor_current_profile())) {
+    if (wysiwyg_editor_load_editor($profile)) {
+      return $profile;
+    }
+  }
+  return FALSE;
 }
 
 /**
@@ -171,16 +238,16 @@ function wysiwyg_editor_process_textarea($element) {
  * @return
  *   TRUE if the editor has been loaded, FALSE if not.
  *
- * @see wysiwyg_editor_process_textarea()
+ * @see wysiwyg_get_profile()
  */
 function wysiwyg_editor_load_editor($profile) {
   static $settings_added;
   static $loaded = array();
 
   $name = $profile->settings['editor'];
-  // Library files must only be loaded once.
+  // Library files must be loaded only once.
   if (!isset($loaded[$name])) {
-    // Load editor 
+    // Load editor.
     $editor = wysiwyg_get_editor($name);
     if ($editor) {
       // Determine library files to load.
@@ -230,6 +297,10 @@ function wysiwyg_editor_load_editor($profile) {
       'disable' => t('Disable rich-text'),
       'enable' => t('Enable rich-text'),
     )), 'setting');
+
+    // The 'none' editor is a special editor implementation, allowing us to
+    // attach and detach regular Drupal behaviors just like any other editor.
+    drupal_add_js(wysiwyg_get_path('editors/js/none.js'), 'module', 'footer');
 
     // Add wysiwyg_editor.js to the footer to ensure it's executed after the
     // Drupal.settings array has been rendered and populated. Also, since editor
@@ -418,48 +489,6 @@ function wysiwyg_editor_load_profile($name = '') {
   }
 
   return ($name && isset($profiles[$name]) ? $profiles[$name] : ($name ? FALSE : $profiles));
-}
-
-/**
- * Determine if Wysiwyg Editor has permission to be used on the current page.
- *
- * @return
- *   TRUE if can render, FALSE if not allowed.
- */
-function _wysiwyg_editor_page_match($profile) {
-  $page_match = FALSE;
-  if (!is_object($profile)) {
-    return FALSE;
-  }
-
-  // Kill Wysiwyg Editor if we're editing a textarea with PHP in it!
-  if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == 'edit') {
-    $node = node_load(arg(1));
-    $filters = filter_list_format($node->format);
-    foreach ($filters as $filter) {
-      if ($filter->module == 'php') {
-        return FALSE;
-      }
-    }
-  }
-
-  if ($profile->settings['access_pages']) {
-    // If the PHP option wasn't selected
-    if ($profile->settings['access'] < 2) {
-      $path = drupal_get_path_alias($_GET['q']);
-      $regexp = '/^('. preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'), array('|', '.*', '\1'. preg_quote(variable_get('site_frontpage', 'node'), '/') .'\2'), preg_quote($profile->settings['access_pages'], '/')) .')$/';
-      $page_match = !($profile->settings['access'] xor preg_match($regexp, $path));
-    }
-    else {
-      $page_match = drupal_eval($profile->settings['access_pages']);
-    }
-  }
-  // No pages were specified to block so show on all
-  else {
-    $page_match = TRUE;
-  }
-
-  return $page_match;
 }
 
 /**

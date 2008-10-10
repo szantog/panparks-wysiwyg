@@ -1,9 +1,9 @@
 // $Id$
 
-Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {}, 'toggle': {} };
+Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {} };
 
 /**
- * Initialize TinyMCE instances.
+ * Initialize editor instances.
  *
  * This function needs to be called before the page is fully loaded, as
  * calling tinyMCE.init() after the page is loaded breaks IE6.
@@ -31,54 +31,34 @@ Drupal.wysiwyg.init.tinymce = function(editorSettings) {
 }
 
 /**
- * Attach TinyMCE to textareas, using the theme specified in CSS class names.
+ * Attach this editor to a target element.
  *
- * @param editorSettings
- *   An object containing editor settings for each enabled editor theme.
+ * See Drupal.wysiwyg.attach.none() for a full desciption of this hook.
  */
-Drupal.wysiwyg.attach.tinymce = function(context, editorSettings) {
-  for (var theme in editorSettings) {
-    // Clone, so original settings are not overwritten.
-    var config = Drupal.wysiwyg.clone(editorSettings[theme]);
-    // Configure settings for this theme.
-    for (var setting in config) {
-      tinyMCE.settings[setting] = config[setting];
-    }
-    $('textarea.wysiwyg-' + theme + ':not(.wysiwyg-processed)', context).each(function() {
-      // Attach Wysiwyg Editor control if default is on.
-      if (Drupal.settings.wysiwygEditor.status) {
-        tinyMCE.execCommand('mceAddControl', true, this.id);
-      }
-      $(this).addClass('wysiwyg-processed');
-    });
+Drupal.wysiwyg.attach.tinymce = function(context, params, editorSettings) {
+  // Configure settings for this theme.
+  for (var setting in editorSettings[params.theme]) {
+    tinyMCE.settings[setting] = editorSettings[params.theme][setting];
+  }
+  // Attach editor control if default is on.
+  if (Drupal.settings.wysiwygEditor.status) {
+    tinyMCE.execCommand('mceAddControl', true, params.field);
   }
 }
 
 /**
- * Toggle editor and return new state.
+ * Detach a single or all editors.
  *
- * @param element
- *   The DOM element to toggle the editor for.
- * @param theme
- *   The editor theme assigned to the element.
- *
- * @return
- *   A boolean value indicating whether the editor has been enabled.
+ * See Drupal.wysiwyg.detach.none() for a full desciption of this hook.
  */
-Drupal.wysiwyg.toggle.tinymce = function(element, theme) {
-  if (tinyMCE.getEditorId(element.id) == null) {
-    // Clone, so original settings are not overwritten.
-    var config = Drupal.wysiwyg.clone(Drupal.settings.wysiwygEditor.configs.tinymce[theme]);
-    // Set configuration options for this theme.
-    for (var setting in config) {
-      tinyMCE.settings[setting] = config[setting];
-    }
-    tinyMCE.addMCEControl(element, element.id);
-    return true;
+Drupal.wysiwyg.detach.tinymce = function(context, params) {
+  if (typeof params != 'undefined') {
+    tinyMCE.removeMCEControl(tinyMCE.getEditorId(params.field));
+    $('#' + params.field).removeAttr('style');
   }
-  else {
-    tinyMCE.removeMCEControl(tinyMCE.getEditorId(element.id));
-    return false;
-  }
+//  else if (tinyMCE.activeEditor) {
+//    tinyMCE.triggerSave();
+//    tinyMCE.activeEditor.remove();
+//  }
 }
 

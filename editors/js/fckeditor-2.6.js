@@ -1,69 +1,45 @@
 // $Id$
 
-Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {}, 'toggle': {} };
+Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {} };
 
 /**
- * Attach FCKeditor to textareas, using the theme specified in CSS class names.
+ * Attach this editor to a target element.
  *
- * @param editorSettings
- *   An object containing editor settings for each enabled editor theme.
+ * See Drupal.wysiwyg.attach.none() for a full desciption of this hook.
  */
-Drupal.wysiwyg.attach.fckeditor = function(context, editorSettings) {
-  for (var theme in editorSettings) {
-    $('textarea.wysiwyg-' + theme + ':not(.wysiwyg-processed)', context).each(function() {
-      // @todo Convert string into variable name w/o overwriting string?
-      //   workaround: build object via editors[this.id] = new ...
-      var oFCK_1 = new FCKeditor(this.id);
-      // Clone, so original settings are not overwritten.
-      var config = Drupal.wysiwyg.clone(editorSettings[theme]);
-      // Configure settings for this theme.
-      oFCK_1.BasePath = config.BasePath;
-      for (var setting in config) {
-        oFCK_1.Config[setting] = config[setting];
-      }
-      // Attach Wysiwyg Editor control if default is on.
-      if (Drupal.settings.wysiwygEditor.status) {
-        oFCK_1.ReplaceTextarea();
-      }
-      $(this).addClass('wysiwyg-processed');
-    });
+Drupal.wysiwyg.attach.fckeditor = function(context, params, settings) {
+  // @todo Convert string into variable name w/o overwriting string?
+  //   workaround: build object via editors[this.id] = new ...
+  var FCKinstance = new FCKeditor(params.field);
+  // Configure settings for this theme.
+  FCKinstance.BasePath = settings[params.theme].BasePath;
+  for (var setting in settings[params.theme]) {
+    FCKinstance.Config[setting] = settings[params.theme][setting];
+  }
+  // Attach editor control if default is on.
+  if (Drupal.settings.wysiwygEditor.status) {
+    FCKinstance.ReplaceTextarea();
   }
 }
 
 /**
- * Detach all FCKeditor editors.
+ * Detach a single or all editors.
  *
- * @todo Context support required to remove only certain editors (think AHAH/AJAX).
+ * See Drupal.wysiwyg.detach.none() for a full desciption of this hook.
  */
-Drupal.wysiwyg.detach.fckeditor = function(context) {
-  if (tinyMCE.activeEditor) {
-    tinyMCE.triggerSave();
-    tinyMCE.activeEditor.remove();
+Drupal.wysiwyg.detach.fckeditor = function(context, params) {
+  if (typeof params != 'undefined') {
+    var editor = FCKeditorAPI.GetInstance(params.field);
+    if (editor) {
+      $('#' + params.field).val(editor.GetXHTML()).show();
+      $('#' + params.field + '___Config').remove();
+      $('#' + params.field + '___Frame').remove();
+      delete FCKeditorAPI.__Instances[params.field];
+    }
   }
-}
-
-/**
- * Toggle editor and return new state.
- *
- * @param element
- *   The DOM element to toggle the editor for.
- * @param theme
- *   The editor theme assigned to the element.
- *
- * @return
- *   A boolean value indicating whether the editor has been enabled.
- */
-Drupal.wysiwyg.toggle.fckeditor = function(element, theme) {
-  var instance = FCKeditorAPI.GetInstance(element.id);
-  if ($(element).css('display') != 'none' || instance == null) {
-    instance.SetHTML($(element).hide().val());
-    $('#' + element.id + '___Frame').show();
-    return true;
-  }
-  else {
-    $('#' + element.id).val(instance.GetXHTML()).show();
-    $('#' + element.id + '___Frame').hide();
-    return false;
-  }
+//  else {
+//    tinyMCE.triggerSave();
+//    tinyMCE.remove();
+//  }
 }
 

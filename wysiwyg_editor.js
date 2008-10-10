@@ -1,87 +1,146 @@
 // $Id$
 
-Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {}, 'toggle': {} };
+Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {} };
 
 /**
- * Initialize all editor libraries.
+ * Initialize editor libraries.
+ *
+ * Some editors need to be initialized before the DOM is fully loaded. The
+ * init hook gives them a chance to do so.
  */
-Drupal.wysiwygEditorInit = function() {
+Drupal.wysiwygInit = function() {
   jQuery.each(Drupal.wysiwyg.init, function(editor) {
     this(Drupal.settings.wysiwygEditor.configs[editor]);
   });
 }
 
 /**
- * Attach editors to fields.
+ * Attach editors to input formats and target elements (f.e. textareas).
  *
- * This function can be called to process AJAX-loaded content.
+ * This behavior searches for input format selectors and formatting guidelines
+ * that have been preprocessed by Wysiwyg API. All CSS classes of those elements
+ * with the prefix 'wysiwyg-' are parsed into input format parameters, defining
+ * the configured editor, editor theme, target element id, and variable other
+ * properties, which are passed to the attach/detach hooks of the corresponding
+ * editor.
+ *
+ * Furthermore, an "enable/disable rich-text" toggle link is added after the
+ * target element to allow users to alter its contents in plain text.
+ *
+ * This is executed once, while editor attach/detach hooks can be invoked
+ * multiple times.
+ *
+ * @param context
+ *   A DOM element, supplied by Drupal.attachBehaviors().
  */
 Drupal.behaviors.attachWysiwyg = function(context) {
-  jQuery.each(Drupal.wysiwyg.attach, function(editor) {
-    // Show toggle link if set.
-    if (Drupal.settings.wysiwygEditor.showToggle) {
-      for (var theme in Drupal.settings.wysiwygEditor.configs[editor]) {
-        $('textarea.wysiwyg-' + theme + ':not(.wysiwyg-processed)', context).each(function() {
-          Drupal.wysiwygEditorAttachToggleLink(this, editor, theme);
-        });
+  $('.wysiwyg:not(.wysiwyg-processed)', context).each(function() {
+    // Parse the element's CSS classes into parameters.
+    // Format is wysiwyg-name-value.
+    var classes = this.className.split(' ');
+    var params = {};
+    for (var i in classes) {
+      if (classes[i].substr(0, 8) == 'wysiwyg-') {
+        var parts = classes[i].split('-');
+        var value = parts.slice(2).join('-');
+        params[parts[1]] = value;
       }
     }
-    this(context, Drupal.settings.wysiwygEditor.configs[editor]);
+    $this = $(this);
+    // Directly attach this editor, if the input format is enabled or there is
+    // only one input format at all.
+    if (($this.is(':input') && $this.is(':checked')) || $this.is('div')) {
+      Drupal.wysiwygEditorAttachToggleLink(context, params);
+      Drupal.wysiwygAttach(context, params);
+    }
+    // Attach onChange handlers to input format selector elements.
+    // @todo To support different editors on the same page, we need to store
+    //   the last attached editor of each target element separately.
+    if ($this.is(':input')) {
+      $this.change(function() {
+        Drupal.wysiwygDetach(context, params);
+        Drupal.wysiwygAttach(context, params);
+      });
+    }
+    $this.addClass('wysiwyg-processed');
   });
 }
 
 /**
- * Append a toggle link to an element.
+ * Attach an editor to a target element.
  *
- * @param element
- *   The DOM element to toggle the editor for.
- * @param editor
- *   The editor name assigned to the element.
- * @param theme
- *   The editor theme assigned to the element.
+ * This tests whether the passed in editor implements the attach hook and
+ * invokes it if available. Editor profile settings are cloned first, so they
+ * cannot be overridden. After attaching the editor, the toggle link is shown
+ * again, except in case we are attaching no editor.
+ *
+ * @param context
+ *   A DOM element, supplied by Drupal.attachBehaviors().
+ * @param params
+ *   An object containing input format parameters.
  */
-Drupal.wysiwygEditorAttachToggleLink = function(element, editor, theme) {
+Drupal.wysiwygAttach = function(context, params) {
+  if (typeof Drupal.wysiwyg.attach[params.editor] == 'function') {
+    Drupal.wysiwyg.attach[params.editor](context, params, Drupal.wysiwyg.clone(Drupal.settings.wysiwygEditor.configs[params.editor]));
+    $('#wysiwyg-toggle-' + params.field).show();
+  }
+  if (params.editor == 'none') {
+    $('#wysiwyg-toggle-' + params.field).hide();
+  }
+}
+
+/**
+ * Detach all editors from a target element.
+ *
+ * Until there is a central registry of target elements storing the currently
+ * attached editor, we simply invoke the detach hook of all editors to ensure
+ * that no editor is attached to the target element.
+ *
+ * @param context
+ *   A DOM element, supplied by Drupal.attachBehaviors().
+ * @param params
+ *   An object containing input format parameters.
+ */
+Drupal.wysiwygDetach = function(context, params) {
+  jQuery.each(Drupal.wysiwyg.detach, function(editor) {
+    this(context, params);
+  });
+}
+
+/**
+ * Append a editor toggle link to a target element.
+ *
+ * @param context
+ *   A DOM element, supplied by Drupal.attachBehaviors().
+ * @param params
+ *   An object containing input format parameters.
+ */
+Drupal.wysiwygEditorAttachToggleLink = function(context, params) {
   var text = document.createTextNode(Drupal.settings.wysiwygEditor.status ? Drupal.settings.wysiwygEditor.disable : Drupal.settings.wysiwygEditor.enable);
   var a = document.createElement('a');
-  $(a)
-    .click(function() {
-      Drupal.wysiwygEditorToggle(element, editor, theme);
+  $(a).toggle(
+    function() {
+      Drupal.wysiwygDetach(context, params);
+      $('#wysiwyg-toggle-' + params.field).html(Drupal.settings.wysiwygEditor.enable).blur();
+      // After disabling the editor, re-attach default behaviors.
+      Drupal.wysiwyg.attach.none(context, params);
+    },
+    function() {
+      // Before enabling the editor, detach default behaviors.
+      Drupal.wysiwyg.detach.none(context, params);
+      Drupal.wysiwygAttach(context, params);
+      $('#wysiwyg-toggle-' + params.field).html(Drupal.settings.wysiwygEditor.disable).blur();
     })
-    .attr('id', 'wysiwyg4' + element.id)
-    .css('cursor', 'pointer')
+    .attr('id', 'wysiwyg-toggle-' + params.field)
+    .attr('href', 'javascript:void(0);')
     .append(text);
   var div = document.createElement('div');
   $(div).append(a);
-  $(element).after(div);
+  $('#' + params.field).after(div);
 }
 
 /**
- * Enable/disable the editor and change toggle link text accordingly.
- *
- * Toggle implementation functions are expected to return the new state of a
- * toggled editor.
- *
- * @param element
- *   The DOM element to toggle the editor for.
- * @param editor
- *   The editor name assigned to the element.
- * @param theme
- *   The editor theme assigned to the element.
- */
-Drupal.wysiwygEditorToggle = function(element, editor, theme) {
-  if (typeof Drupal.wysiwyg.toggle[editor] == 'function') {
-    var new_state = Drupal.wysiwyg.toggle[editor](element, theme);
-  }
-  if (new_state) {
-    $('#wysiwyg4' + element.id).html(Drupal.settings.wysiwygEditor.disable).blur();
-  }
-  else {
-    $('#wysiwyg4' + element.id).html(Drupal.settings.wysiwygEditor.enable).blur();
-  }
-}
-
-/**
- * Clone a configuration object recursively; required for certain editors.
+ * Clone a configuration object recursively.
  *
  * @param obj
  *   The object to clone.
@@ -103,7 +162,7 @@ Drupal.wysiwyg.clone = function(obj) {
 }
 
 /**
- * Initialize editor libraries.
+ * Allow certain editor libraries to initialize before the DOM is loaded.
  */
-Drupal.wysiwygEditorInit();
+Drupal.wysiwygInit();
 

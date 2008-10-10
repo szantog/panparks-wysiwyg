@@ -166,49 +166,6 @@ function wysiwyg_editor_profile_form($form_state, $profile) {
     '#description' => t('The language for the Wysiwyg Editor interface. Language codes are based on the <a href="http://www.loc.gov/standards/iso639-2/englangn.html">ISO-639-2</a> format.'),
   );
 
-  $form['visibility'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Visibility'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-
-  // If the visibility is set to PHP mode but the user doesn't have this block
-  // permission, don't allow them to edit nor see this PHP code
-  $access = user_access('use PHP for block visibility');
-  if ($profile->settings['access'] == 2 && !$access) {
-    $form['visibility'] = array();
-    $form['visibility']['access'] = array(
-      '#type' => 'value',
-      '#value' => 2,
-    );
-    $form['visibility']['access_pages'] = array(
-      '#type' => 'value',
-      '#value' => $profile->settings['access_pages'],
-    );
-  }
-  else {
-    $options = array(t('Show on every page except the listed pages.'), t('Show on only the listed pages.'));
-    $description = t("Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are '%blog' for the blog page and %blog-wildcard for every personal blog. %front is the front page.", array('%blog' => 'blog', '%blog-wildcard' => 'blog/*', '%front' => '<front>'));
-    if ($access) {
-      $options[] = t('Show if the following PHP code returns <code>TRUE</code> (PHP-mode, experts only).');
-      $description .= ' '. t('If the PHP-mode is chosen, enter PHP code between %php. Note that executing incorrect PHP-code can break your Drupal site.', array('%php' => '<?php ?>'));
-    }
-    $form['visibility']['access'] = array(
-      '#type' => 'radios',
-      '#title' => t('Show Wysiwyg Editor on specific pages'),
-      '#default_value' => $profile->settings['access'],
-      '#options' => $options,
-    );
-    $form['visibility']['access_pages'] = array(
-      '#type' => 'textarea',
-      '#title' => t('Pages'),
-      '#default_value' => $profile->settings['access_pages'],
-      '#description' => $description,
-      '#wysiwyg' => FALSE,
-    );
-  }
-
   $form['buttons'] = array(
     '#type' => 'fieldset',
     '#title' => t('Buttons and plugins'),

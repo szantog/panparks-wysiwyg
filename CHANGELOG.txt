@@ -6,6 +6,9 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#253600 by sun: Changed editor integration so that client-side editors attach to
+  input formats instead of textareas and are invoked for input format enabled
+  textareas only.
 #282717 by sun: Added (basic) FCKeditor support.
 #316507 by sun: Added Drupal.wysiwyg function stacks to execute editor library
   specific actions upon initializing, attaching, detaching, and toggling an

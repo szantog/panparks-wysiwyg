@@ -1,9 +1,9 @@
 // $Id$
 
-Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {}, 'toggle': {} };
+Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {} };
 
 /**
- * Initialize TinyMCE instances.
+ * Initialize editor instances.
  *
  * @todo Is the following note still valid for 3.x?
  * This function needs to be called before the page is fully loaded, as
@@ -33,54 +33,37 @@ Drupal.wysiwyg.init.tinymce = function(editorSettings) {
 }
 
 /**
- * Attach TinyMCE to textareas, using the theme specified in CSS class names.
+ * Attach this editor to a target element.
  *
- * @param editorSettings
- *   An object containing editor settings for each enabled editor theme.
+ * See Drupal.wysiwyg.attach.none() for a full desciption of this hook.
  */
-Drupal.wysiwyg.attach.tinymce = function(context, editorSettings) {
-  for (var theme in editorSettings) {
-    // Clone, so original settings are not overwritten.
-    var config = Drupal.wysiwyg.clone(editorSettings[theme]);
-    // Configure settings for this theme.
-    for (var setting in config) {
-      tinyMCE.settings[setting] = config[setting];
-    }
-    $('textarea.wysiwyg-' + theme + ':not(.wysiwyg-processed)', context).each(function() {
-      // Attach Wysiwyg Editor control if default is on.
-      if (Drupal.settings.wysiwygEditor.status) {
-        tinyMCE.execCommand('mceAddControl', true, this.id);
-      }
-      $(this).addClass('wysiwyg-processed');
-    });
+Drupal.wysiwyg.attach.tinymce = function(context, params, editorSettings) {
+  // Configure settings for this theme.
+  for (var setting in editorSettings[params.theme]) {
+    tinyMCE.settings[setting] = editorSettings[params.theme][setting];
+  }
+  // Attach editor control if default is on.
+  if (Drupal.settings.wysiwygEditor.status) {
+    tinyMCE.execCommand('mceAddControl', true, params.field);
   }
 }
 
 /**
- * Detach all TinyMCE editors.
+ * Detach a single or all editors.
  *
- * @todo Context support required to remove only certain editors (think AHAH/AJAX).
+ * See Drupal.wysiwyg.detach.none() for a full desciption of this hook.
  */
-Drupal.wysiwyg.detach.tinymce = function(context) {
-  if (tinyMCE.activeEditor) {
+Drupal.wysiwyg.detach.tinymce = function(context, params) {
+  if (typeof params != 'undefined') {
+    var editor = tinyMCE.get(params.field);
+    if (editor) {
+      editor.save();
+      editor.remove();
+    }
+  }
+  else if (tinyMCE.activeEditor) {
     tinyMCE.triggerSave();
     tinyMCE.activeEditor.remove();
   }
-}
-
-/**
- * Toggle editor and return new state.
- *
- * @param element
- *   The DOM element to toggle the editor for.
- * @param theme
- *   The editor theme assigned to the element.
- *
- * @return
- *   A boolean value indicating whether the editor has been enabled.
- */
-Drupal.wysiwyg.toggle.tinymce = function(element, theme) {
-  tinyMCE.execCommand('mceToggleEditor', false, element.id);
-  return !(tinyMCE.get(element.id).isHidden());
 }
 

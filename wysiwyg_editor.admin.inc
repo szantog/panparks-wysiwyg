@@ -180,18 +180,16 @@ function wysiwyg_editor_profile_form($form_state, $profile) {
   foreach ($plugins as $name => $meta) {
     if (isset($meta['buttons']) && is_array($meta['buttons'])) {
       foreach ($meta['buttons'] as $button => $title) {
+        // @todo Button icon locations are different in editors, editor versions,
+        //   and contrib/custom plugins (like Image Assist, f.e.).
         $img_src = $meta['path'] ."/images/$name.gif";
         // Handle plugins that have more than one button.
         if (!file_exists($img_src)) {
           $img_src = $meta['path'] ."/images/$button.gif";
         }
         $icon = file_exists($img_src) ? '<img src="'. base_path() . $img_src .'" title="'. $button .'" style="border: 1px solid grey; vertical-align: middle;" />' : '';
-        if (isset($meta['url'])) {
-          $title = $icon .' '. l($title, $meta['url'], array('attributes' => array('target' => '_blank')));
-        }
-        else {
-          $title = $icon .' '. $title;
-        }
+        $title = (isset($meta['url']) ? l($title, $meta['url'], array('target' => '_blank')) : $title);
+        $title = (!empty($icon) ? $icon .' '. $title : $title);
         $form['buttons'][$name][$button] = array(
           '#type' => 'checkbox',
           '#title' => $title,
@@ -201,15 +199,9 @@ function wysiwyg_editor_profile_form($form_state, $profile) {
     }
     else if (isset($meta['extensions']) && is_array($meta['extensions'])) {
       foreach ($meta['extensions'] as $extension => $title) {
-        if (isset($meta['url'])) {
-          $title = l($title, $meta['url'], array('attributes' => array('target' => '_blank')));
-        }
-        else {
-          $title = $title;
-        }
         $form['buttons'][$name][$extension] = array(
           '#type' => 'checkbox',
-          '#title' => $title,
+          '#title' => isset($meta['url']) ? l($title, $meta['url'], array('target' => '_blank')) : $title,
           '#default_value' => !empty($profile->settings['buttons'][$name][$extension]) ? $profile->settings['buttons'][$name][$extension] : FALSE,
         );
       }

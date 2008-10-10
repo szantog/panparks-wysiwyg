@@ -26,10 +26,9 @@ Drupal.wysiwyg.init.tinymce = function(editorSettings) {
     tinyMCE.init(config);
   }
   // @todo Move into global library settings.
-  // @todo Plugin architecture is completely different in 3.x.
-//  for (var plugin in Drupal.settings.wysiwygEditor.plugins.tinymce) {
-//    tinyMCE.loadPlugin(plugin, Drupal.settings.wysiwygEditor.plugins.tinymce[plugin]);
-//  }
+  for (var plugin in Drupal.settings.wysiwygEditor.plugins.tinymce) {
+    tinymce.PluginManager.load(plugin, Drupal.settings.wysiwygEditor.plugins.tinymce[plugin] + '/editor_plugin.js');
+  }
 }
 
 /**

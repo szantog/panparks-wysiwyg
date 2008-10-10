@@ -360,6 +360,12 @@ function wysiwyg_editor_add_plugin_settings($profile) {
     $plugins = array();
     $editor = wysiwyg_get_editor($profile->settings['editor']);
     $info = module_invoke_all('wysiwyg_plugin', $editor['name'], $editor['installed version']);
+    // Only keep enabled plugins in this profile.
+    foreach ($info as $plugin => $meta) {
+      if (!isset($profile->settings['buttons'][$plugin])) {
+        unset($info[$plugin]);
+      }
+    }
 
     if (isset($editor['plugin settings callback']) && function_exists($editor['plugin settings callback'])) {
       $plugins = $editor['plugin settings callback']($editor, $profile, $info);

@@ -6,6 +6,8 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#319363 by sun: Changed JavaScript namespaces and centralized namespace
+  initialization.
 #270780 by sun: Fixed TinyMCE 3 support for external plugins.
 #309832 by sun: Fixed README.txt.
 #253600 by sun: Changed editor integration so that client-side editors attach to

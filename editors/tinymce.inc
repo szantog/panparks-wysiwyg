@@ -37,6 +37,7 @@ function wysiwyg_tinymce_editor() {
       '2.1' => array(
         // 'include files' => array('tinymce-2.inc'),
         'js files' => array('tinymce-2.js'),
+        'download url' => 'http://sourceforge.net/project/showfiles.php?group_id=103281&package_id=111430&release_id=557383',
       ),
       '3.2' => array(
         // 'include files' => array('tinymce-3.inc'),

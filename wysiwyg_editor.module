@@ -290,13 +290,17 @@ function wysiwyg_editor_load_editor($profile) {
     }
   }
 
-  // Add basic Wysiwyg settings.
+  // Add basic Wysiwyg settings if any editor has been added.
   if (!isset($settings_added) && $loaded[$name]) {
     drupal_add_js(array('wysiwygEditor' => array(
       'configs' => array(),
       'disable' => t('Disable rich-text'),
       'enable' => t('Enable rich-text'),
     )), 'setting');
+
+    // Initialize our namespaces in the *header* to do not force editor
+    // integration scripts to check and define Drupal.wysiwyg on its own.
+    drupal_add_js(wysiwyg_get_path('wysiwyg.init.js'));
 
     // The 'none' editor is a special editor implementation, allowing us to
     // attach and detach regular Drupal behaviors just like any other editor.
@@ -308,12 +312,10 @@ function wysiwyg_editor_load_editor($profile) {
     // Drupal.wysiwygEditorInit() must be executed AFTER editors registered
     // their callbacks, and BEFORE Drupal.behaviors are applied, this must come
     // last.
-    // @todo Separate into wysiwyg.init.js and wysiwyg.editor?.js, to ensure
-    //   this logic/ordering, and do not force editor integration scripts to
-    //   check and define Drupal.wysiwyg on its own.
     drupal_add_js(wysiwyg_get_path('wysiwyg_editor.js'), 'module', 'footer');
 
     // Add our stylesheet to stack editor buttons into one row.
+    // @todo This is TinyMCE specific at the moment.
     drupal_add_css(wysiwyg_get_path('wysiwyg_editor.css'));
 
     $settings_added = TRUE;

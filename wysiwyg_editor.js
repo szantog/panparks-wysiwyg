@@ -1,7 +1,5 @@
 // $Id$
 
-Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {} };
-
 /**
  * Initialize editor libraries.
  *
@@ -9,7 +7,7 @@ Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {} };
  * init hook gives them a chance to do so.
  */
 Drupal.wysiwygInit = function() {
-  jQuery.each(Drupal.wysiwyg.init, function(editor) {
+  jQuery.each(Drupal.wysiwyg.editor.init, function(editor) {
     this(Drupal.settings.wysiwygEditor.configs[editor]);
   });
 }
@@ -80,10 +78,13 @@ Drupal.behaviors.attachWysiwyg = function(context) {
  *   An object containing input format parameters.
  */
 Drupal.wysiwygAttach = function(context, params) {
-  if (typeof Drupal.wysiwyg.attach[params.editor] == 'function') {
-    Drupal.wysiwyg.attach[params.editor](context, params, Drupal.wysiwyg.clone(Drupal.settings.wysiwygEditor.configs[params.editor]));
+  if (typeof Drupal.wysiwyg.editor.attach[params.editor] == 'function') {
+    // Attach editor.
+    Drupal.wysiwyg.editor.attach[params.editor](context, params, Drupal.wysiwyg.clone(Drupal.settings.wysiwygEditor.configs[params.editor]));
+    // Display toggle link.
     $('#wysiwyg-toggle-' + params.field).show();
   }
+  // Hide toggle link in case no editor is attached.
   if (params.editor == 'none') {
     $('#wysiwyg-toggle-' + params.field).hide();
   }
@@ -102,7 +103,7 @@ Drupal.wysiwygAttach = function(context, params) {
  *   An object containing input format parameters.
  */
 Drupal.wysiwygDetach = function(context, params) {
-  jQuery.each(Drupal.wysiwyg.detach, function(editor) {
+  jQuery.each(Drupal.wysiwyg.editor.detach, function(editor) {
     this(context, params);
   });
 }
@@ -123,11 +124,11 @@ Drupal.wysiwygEditorAttachToggleLink = function(context, params) {
       Drupal.wysiwygDetach(context, params);
       $('#wysiwyg-toggle-' + params.field).html(Drupal.settings.wysiwygEditor.enable).blur();
       // After disabling the editor, re-attach default behaviors.
-      Drupal.wysiwyg.attach.none(context, params);
+      Drupal.wysiwyg.editor.attach.none(context, params);
     },
     function() {
       // Before enabling the editor, detach default behaviors.
-      Drupal.wysiwyg.detach.none(context, params);
+      Drupal.wysiwyg.editor.detach.none(context, params);
       Drupal.wysiwygAttach(context, params);
       $('#wysiwyg-toggle-' + params.field).html(Drupal.settings.wysiwygEditor.disable).blur();
     })

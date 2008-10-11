@@ -1,7 +1,5 @@
 // $Id$
 
-Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {} };
-
 /**
  * Attach this editor to a target element.
  *
@@ -15,17 +13,17 @@ Drupal.wysiwyg = Drupal.wysiwyg || { 'init': {}, 'attach': {}, 'detach': {} };
  * @param settings
  *   An object containing editor settings for all enabled editor themes.
  */
-Drupal.wysiwyg.attach.none = function(context, params, settings) {
+Drupal.wysiwyg.editor.attach.none = function(context, params, settings) {
   if (params.resizable) {
     $('#' + params.field).addClass('resizable');
     Drupal.behaviors.textarea();
   }
-}
+};
 
 /**
  * Detach a single or all editors.
  *
- * See Drupal.wysiwyg.attach.none() for a full desciption of arguments.
+ * See Drupal.wysiwyg.editor.attach.none() for a full desciption of arguments.
  *
  * @param context
  *   A DOM element, supplied by Drupal.attachBehaviors().
@@ -35,12 +33,12 @@ Drupal.wysiwyg.attach.none = function(context, params, settings) {
  *   all editors should be detached and saved, so they can be submitted in
  *   AJAX/AHAH applications.
  */
-Drupal.wysiwyg.detach.none = function(context, params) {
+Drupal.wysiwyg.editor.detach.none = function(context, params) {
   if (typeof params != 'undefined') {
     var $textarea = $('#' + params.field, context).removeClass('textarea-processed');
     var $div = $textarea.parents('div.resizable-textarea');
     $div.before($textarea);
     $div.remove();
   }
-}
+};
 

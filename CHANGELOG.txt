@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#273408 by quicksketch: Added blockquote button for TinyMCE 3.
 #319363 by sun: Changed JavaScript namespaces and centralized namespace
   initialization.
 #270780 by sun: Fixed TinyMCE 3 support for external plugins.

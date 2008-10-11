@@ -318,7 +318,7 @@ function wysiwyg_tinymce_plugins($editor) {
         'cleanup' => t('Clean-up'),
         'forecolor' => t('Forecolor'), 'backcolor' => t('Backcolor'),
         'sup' => t('Sup'), 'sub' => t('Sub'),
-        'code' => t('Source code'),
+        'blockquote' => t('Blockquote'), 'code' => t('Source code'),
         'hr' => t('Horizontal rule'),
         'cut' => t('Cut'), 'copy' => t('Copy'), 'paste' => t('Paste'),
         'visualaid' => t('Visual aid'),

@@ -264,7 +264,7 @@ function wysiwyg_editor_load_editor($profile) {
       }
 
       $status = wysiwyg_editor_user_get_status($profile);
-      drupal_add_js(array('wysiwygEditor' => array(
+      drupal_add_js(array('wysiwyg' => array(
         'configs' => array($editor['name'] => array()),
         'showToggle' => $profile->settings['show_toggle'],
         'status' => $status,
@@ -283,7 +283,7 @@ function wysiwyg_editor_load_editor($profile) {
 
   // Add basic Wysiwyg settings if any editor has been added.
   if (!isset($settings_added) && $loaded[$name]) {
-    drupal_add_js(array('wysiwygEditor' => array(
+    drupal_add_js(array('wysiwyg' => array(
       'configs' => array(),
       'disable' => t('Disable rich-text'),
       'enable' => t('Enable rich-text'),
@@ -300,7 +300,7 @@ function wysiwyg_editor_load_editor($profile) {
     // Add wysiwyg_editor.js to the footer to ensure it's executed after the
     // Drupal.settings array has been rendered and populated. Also, since editor
     // library initialization functions must be loaded first by the browser,
-    // Drupal.wysiwygEditorInit() must be executed AFTER editors registered
+    // Drupal.wysiwygInit() must be executed AFTER editors registered
     // their callbacks, and BEFORE Drupal.behaviors are applied, this must come
     // last.
     drupal_add_js(wysiwyg_get_path('wysiwyg_editor.js'), 'module', 'footer');
@@ -333,7 +333,7 @@ function wysiwyg_editor_add_settings($profile, $theme) {
         $config[$key] = implode(',', $config[$key]);
       }
     }
-    drupal_add_js(array('wysiwygEditor' => array('configs' => array($profile->settings['editor'] => array($theme => $config)))), 'setting');
+    drupal_add_js(array('wysiwyg' => array('configs' => array($profile->settings['editor'] => array($theme => $config)))), 'setting');
     $themes[$theme] = TRUE;
   }
 }
@@ -363,7 +363,7 @@ function wysiwyg_editor_add_plugin_settings($profile) {
       $plugins = $editor['plugin settings callback']($editor, $profile, $info);
     }
 
-    drupal_add_js(array('wysiwygEditor' => array('plugins' => array($profile->settings['editor'] => $plugins))), 'setting');
+    drupal_add_js(array('wysiwyg' => array('plugins' => array($profile->settings['editor'] => $plugins))), 'setting');
 
     $plugins_added[$profile->settings['editor']] = TRUE;
   }

@@ -13,19 +13,19 @@ Drupal.wysiwyg.editor.init.tinymce = function(editorSettings) {
   // If JS compression is enabled, TinyMCE is unable to find its own base path
   // and exec mode, hence we need to define it manually.
   // @todo Move global library settings somewhere else.
-  tinyMCE.baseURL = Drupal.settings.wysiwygEditor.editorBasePath;
-  tinyMCE.srcMode = (Drupal.settings.wysiwygEditor.execMode == 'src' ? '_src' : '');
-  tinyMCE.gzipMode = (Drupal.settings.wysiwygEditor.execMode == 'gzip');
+  tinyMCE.baseURL = Drupal.settings.wysiwyg.editorBasePath;
+  tinyMCE.srcMode = (Drupal.settings.wysiwyg.execMode == 'src' ? '_src' : '');
+  tinyMCE.gzipMode = (Drupal.settings.wysiwyg.execMode == 'gzip');
 
   for (var theme in editorSettings) {
-    // @todo Remove; moved into wysiwygEditor.js.
+    // @todo Remove; moved into wysiwyg_editor.js.
     // Clone, so original settings are not overwritten.
     var config = Drupal.wysiwyg.clone(editorSettings[theme]);
     tinyMCE.init(config);
   }
   // @todo Move into global library settings.
-  for (var plugin in Drupal.settings.wysiwygEditor.plugins.tinymce) {
-    tinyMCE.loadPlugin(plugin, Drupal.settings.wysiwygEditor.plugins.tinymce[plugin]);
+  for (var plugin in Drupal.settings.wysiwyg.plugins.tinymce) {
+    tinyMCE.loadPlugin(plugin, Drupal.settings.wysiwyg.plugins.tinymce[plugin]);
   }
 };
 
@@ -40,7 +40,7 @@ Drupal.wysiwyg.editor.attach.tinymce = function(context, params, editorSettings)
     tinyMCE.settings[setting] = editorSettings[params.theme][setting];
   }
   // Attach editor control if default is on.
-  if (Drupal.settings.wysiwygEditor.status) {
+  if (Drupal.settings.wysiwyg.status) {
     tinyMCE.execCommand('mceAddControl', true, params.field);
   }
 };

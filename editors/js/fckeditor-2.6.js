@@ -15,7 +15,7 @@ Drupal.wysiwyg.editor.attach.fckeditor = function(context, params, settings) {
     FCKinstance.Config[setting] = settings[params.theme][setting];
   }
   // Attach editor control if default is on.
-  if (Drupal.settings.wysiwygEditor.status) {
+  if (Drupal.settings.wysiwyg.status) {
     FCKinstance.ReplaceTextarea();
   }
 };

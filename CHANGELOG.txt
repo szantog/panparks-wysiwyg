@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#319363 by sun: Changed JS settings namespace 'wysiwygEditor' to 'wysiwyg'.
 #319363 by sun: Code clean-up; fixed missing namespace change in tinymce-3.js.
 #273408 by quicksketch: Added blockquote button for TinyMCE 3.
 #319363 by sun: Changed JavaScript namespaces and centralized namespace

@@ -103,7 +103,7 @@ function wysiwyg_tinymce_version($editor) {
  *
  * @return
  *   A settings array to be populated in
- *   Drupal.settings.wysiwygEditor.configs.{editor}
+ *   Drupal.settings.wysiwyg.configs.{editor}
  */
 function wysiwyg_tinymce_settings($editor, $config, $theme) {
   $init = array(

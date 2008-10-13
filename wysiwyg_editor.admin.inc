@@ -180,14 +180,17 @@ function wysiwyg_editor_profile_form($form_state, $profile) {
   foreach ($plugins as $name => $meta) {
     if (isset($meta['buttons']) && is_array($meta['buttons'])) {
       foreach ($meta['buttons'] as $button => $title) {
-        // @todo Button icon locations are different in editors, editor versions,
-        //   and contrib/custom plugins (like Image Assist, f.e.).
-        $img_src = $meta['path'] ."/images/$name.gif";
-        // Handle plugins that have more than one button.
-        if (!file_exists($img_src)) {
-          $img_src = $meta['path'] ."/images/$button.gif";
+        $icon = '';
+        if (!empty($meta['path'])) {
+          // @todo Button icon locations are different in editors, editor versions,
+          //   and contrib/custom plugins (like Image Assist, f.e.).
+          $img_src = $meta['path'] ."/images/$name.gif";
+          // Handle plugins that have more than one button.
+          if (!file_exists($img_src)) {
+            $img_src = $meta['path'] ."/images/$button.gif";
+          }
+          $icon = file_exists($img_src) ? '<img src="'. base_path() . $img_src .'" title="'. $button .'" style="border: 1px solid grey; vertical-align: middle;" />' : '';
         }
-        $icon = file_exists($img_src) ? '<img src="'. base_path() . $img_src .'" title="'. $button .'" style="border: 1px solid grey; vertical-align: middle;" />' : '';
         $title = (isset($meta['url']) ? l($title, $meta['url'], array('target' => '_blank')) : $title);
         $title = (!empty($icon) ? $icon .' '. $title : $title);
         $form['buttons'][$name][$button] = array(

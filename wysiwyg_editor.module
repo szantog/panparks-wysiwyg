@@ -52,17 +52,7 @@ function wysiwyg_editor_help($path, $arg) {
  * Implementation of hook_perm().
  */
 function wysiwyg_editor_perm() {
-  $array = array('access wysiwyg editor');
-  $wysiwyg_editor_mod_path = drupal_get_path('module', 'wysiwyg_editor');
-
-  if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/imagemanager/')) {
-    $array[] = 'access tinymce imagemanager';
-  }
-  if (is_dir($wysiwyg_editor_mod_path .'/tinymce/jscripts/tiny_mce/plugins/filemanager/')) {
-    $array[] = 'access tinymce filemanager';
-  }
-
-  return $array;
+  return array('access wysiwyg editor');
 }
 
 /**
@@ -251,6 +241,7 @@ function wysiwyg_editor_load_editor($profile) {
     $editor = wysiwyg_get_editor($name);
     if ($editor) {
       // Determine library files to load.
+      // @todo Allow to configure the library/execMode to use.
       if (isset($profile->settings['library']) && isset($editor['libraries'][$profile->settings['library']])) {
         $library = $profile->settings['library'];
         $files = $editor['libraries'][$profile->settings['library']]['files'];
@@ -315,7 +306,7 @@ function wysiwyg_editor_load_editor($profile) {
     drupal_add_js(wysiwyg_get_path('wysiwyg_editor.js'), 'module', 'footer');
 
     // Add our stylesheet to stack editor buttons into one row.
-    // @todo This is TinyMCE specific at the moment.
+    // @todo This is TinyMCE 2.x specific at the moment.
     drupal_add_css(wysiwyg_get_path('wysiwyg_editor.css'));
 
     $settings_added = TRUE;
@@ -348,12 +339,10 @@ function wysiwyg_editor_add_settings($profile, $theme) {
 }
 
 /**
- * Load external plugins.
+ * Add settings for external plugins.
  * 
  * @param $profile
  *   A wysiwyg editor profile.
- *
- * Note: tinyMCE.loadPlugin() need not be invoked more than once.
  */
 function wysiwyg_editor_add_plugin_settings($profile) {
   static $plugins_added = array();
@@ -361,6 +350,7 @@ function wysiwyg_editor_add_plugin_settings($profile) {
   if (!isset($plugins_added[$profile->settings['editor']])) {
     $plugins = array();
     $editor = wysiwyg_get_editor($profile->settings['editor']);
+    // Collect editor plugins provided via hook_wysiwyg_plugin().
     $info = module_invoke_all('wysiwyg_plugin', $editor['name'], $editor['installed version']);
     // Only keep enabled plugins in this profile.
     foreach ($info as $plugin => $meta) {
@@ -432,12 +422,14 @@ function wysiwyg_editor_get_plugins($editor_name) {
   $plugins = array();
   if (!empty($editor_name)) {
     $editor = wysiwyg_get_editor($editor_name);
+    // Add internal editor plugins.
     if (isset($editor['plugin callback']) && function_exists($editor['plugin callback'])) {
       $plugins = $editor['plugin callback']($editor);
     }
     // Load our own plugins.
     include_once drupal_get_path('module', 'wysiwyg_editor') .'/wysiwyg_editor.plugins.inc';
   
+    // Add editor plugins provided via hook_wysiwyg_plugin().
     $plugins = array_merge($plugins, module_invoke_all('wysiwyg_plugin', $editor['name'], $editor['installed version']));
   }
   return $plugins;
@@ -553,9 +545,8 @@ function wysiwyg_editor_user_get_status($profile) {
 }
 
 /**
- * @defgroup wysiwyg_editor_api Wysiwyg Editor API
+ * @defgroup wysiwyg_api Wysiwyg API
  * @{
- * Description
  *
  * @todo Forked from Panels; abstract into a separate API module that allows
  *   contrib modules to define supported include/plugin types.
@@ -745,6 +736,6 @@ function _wysiwyg_process_include($module, $identifier, $path, $hook) {
 }
 
 /**
- * @} End of "defgroup wysiwyg_editor_api".
+ * @} End of "defgroup wysiwyg_api".
  */
 

@@ -8,7 +8,8 @@
  */
 Drupal.wysiwygInit = function() {
   jQuery.each(Drupal.wysiwyg.editor.init, function(editor) {
-    this(Drupal.settings.wysiwyg.configs[editor]);
+    // Clone, so original settings are not overwritten.
+    this(Drupal.wysiwyg.clone(Drupal.settings.wysiwyg.configs[editor]));
   });
 }
 

@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#316507 by sun: Code clean-up; editor settings should be cloned for init, too.
 #282717 by sun: Fixed FCKeditor default settings while FCKeditor maintainers get
   up and running.
 #319363 by sun: Changed JS settings namespace 'wysiwygEditor' to 'wysiwyg'.

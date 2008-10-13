@@ -18,14 +18,12 @@ Drupal.wysiwyg.editor.init.tinymce = function(editorSettings) {
   tinyMCE.srcMode = (Drupal.settings.wysiwyg.execMode == 'src' ? '_src' : '');
   tinyMCE.gzipMode = (Drupal.settings.wysiwyg.execMode == 'gzip');
 
+  // Initialize editor configurations.
   for (var theme in editorSettings) {
-    // Clone, so original settings are not overwritten.
-    var config = Drupal.wysiwyg.clone(editorSettings[theme]);
-    tinyMCE.init(config);
+    tinyMCE.init(editorSettings[theme]);
   }
-  // @todo Move into global library settings.
   for (var plugin in Drupal.settings.wysiwyg.plugins.tinymce) {
-    tinymce.PluginManager.load(plugin, Drupal.settings.wysiwyg.plugins.tinymce[plugin] + '/editor_plugin.js');
+    tinymce.PluginManager.load(plugin, Drupal.settings.wysiwyg.plugins.tinymce[plugin]);
   }
 };
 

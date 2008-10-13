@@ -263,14 +263,14 @@ function wysiwyg_tinymce_themes($editor, $profile) {
  * TinyMCE requires that external plugins (i.e. not residing in the editor's
  * directory) are loaded (once) after the editor has been initialized.
  */
-function wysiwyg_tinymce_plugin_settings($editor, $profile, $info) {
-  $plugins = array();
-  foreach ($info as $name => $plugin) {
+function wysiwyg_tinymce_plugin_settings($editor, $profile, $plugins) {
+  $settings = array();
+  foreach ($plugins as $name => $plugin) {
     if (!isset($plugin['internal'])) {
-      $plugins[$name] = base_path() . $plugin['path'];
+      $settings[$name] = base_path() . $plugin['path'];
     }
   }
-  return $plugins;
+  return $settings;
 }
 
 /**

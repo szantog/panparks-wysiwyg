@@ -6,9 +6,7 @@
  * See Drupal.wysiwyg.editor.attach.none() for a full desciption of this hook.
  */
 Drupal.wysiwyg.editor.attach.fckeditor = function(context, params, settings) {
-  // @todo Convert string into variable name w/o overwriting string?
-  //   workaround: build object via editors[this.id] = new ...
-  var FCKinstance = new FCKeditor(params.field);
+  var FCKinstance = new FCKeditor(params.field, settings[params.theme]['Width'], settings[params.theme]['Height']);
   // Configure settings for this theme.
   FCKinstance.BasePath = settings[params.theme].BasePath;
   for (var setting in settings[params.theme]) {

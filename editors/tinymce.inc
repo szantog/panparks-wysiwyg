@@ -148,12 +148,12 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
     // later.
     $init['extensions'] = array();
     // $init['extended_valid_elements'] are just stacked, unique'd later, and
-    // transformed into a comma-separated string in wysiwyg_editor_add_settings().
+    // transformed into a comma-separated string in wysiwyg_add_editor_settings().
     // @todo Needs a complete plugin API redesign using arrays for
     //   tag => attributes definitions and array_merge_recursive().
     $init['extended_valid_elements'] = array();
 
-    $plugins = wysiwyg_editor_get_plugins($editor['name']);
+    $plugins = wysiwyg_get_plugins($editor['name']);
     foreach ($config['buttons'] as $plugin => $buttons) {
       foreach ($buttons as $button => $enabled) {
         // Iterate separately over buttons and extensions properties.

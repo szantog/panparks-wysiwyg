@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/* TinyMCE */
+/* TinyMCE 2.x */
 .mceToolbarTop a, .mceToolbarBottom a { float: left; }
 .mceSeparatorLine { float: left; margin-top: 3px; }
 .mceSelectList { float: left; margin-bottom: 1px; }

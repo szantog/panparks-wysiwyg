@@ -1,5 +1,5 @@
 ; $Id$
-name = Wysiwyg Editor
-description = Allows users to edit contents with client-side editors.
+name = Wysiwyg Editor (UNINSTALL)
+description = Please uninstall this module after running update.php.
 package = User interface
 core = 6.x

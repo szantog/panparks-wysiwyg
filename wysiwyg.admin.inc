@@ -1,7 +1,6 @@
 <?php
 // $Id$
 
-
 /**
  * @file
  * Integrate Wysiwyg editors into Drupal.
@@ -12,7 +11,7 @@
  *
  * @todo Move into hook_menu(), resp. FAPI functions.
  */
-function wysiwyg_editor_admin($arg = '', $name = '') {
+function wysiwyg_admin($arg = '', $name = '') {
   switch ($arg) {
     case 'add':
       $breadcrumb[] = l(t('Home'), NULL);
@@ -22,27 +21,27 @@ function wysiwyg_editor_admin($arg = '', $name = '') {
       $breadcrumb[] = l(t('Wysiwyg Profiles'), 'admin/settings/wysiwyg/profile');
       drupal_set_breadcrumb($breadcrumb);
       $profile = new stdClass;
-      return drupal_get_form('wysiwyg_editor_profile_form', $profile);
+      return drupal_get_form('wysiwyg_profile_form', $profile);
 
     case 'edit':
       drupal_set_title(t('Edit Wysiwyg Editor profile'));
-      return drupal_get_form('wysiwyg_editor_profile_form', wysiwyg_editor_load_profile($name));
+      return drupal_get_form('wysiwyg_profile_form', wysiwyg_load_profile($name));
 
     case 'delete':
-      wysiwyg_editor_profile_delete($name);
+      wysiwyg_profile_delete($name);
       drupal_set_message(t('Wysiwyg profile %name has been deleted.', array('%name' => $name)));
       drupal_goto('admin/settings/wysiwyg/profile');
       break;
 
     default:
-      return wysiwyg_editor_profile_overview();
+      return wysiwyg_profile_overview();
   }
 }
 
 /**
  * Return an HTML form for profile configuration.
  */
-function wysiwyg_editor_profile_form($form_state, $profile) {
+function wysiwyg_profile_form($form_state, $profile) {
   // Merge in defaults.
   settype($profile, 'array');
   $profile += array(
@@ -172,10 +171,10 @@ function wysiwyg_editor_profile_form($form_state, $profile) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
-    '#theme' => 'wysiwyg_editor_admin_button_table',
+    '#theme' => 'wysiwyg_admin_button_table',
   );
 
-  $plugins = wysiwyg_editor_get_plugins($profile->settings['editor']);
+  $plugins = wysiwyg_get_plugins($profile->settings['editor']);
   // Generate the button list.
   foreach ($plugins as $name => $meta) {
     if (isset($meta['buttons']) && is_array($meta['buttons'])) {
@@ -354,11 +353,11 @@ function wysiwyg_editor_profile_form($form_state, $profile) {
 }
 
 /**
- * Form submit callback for wysiwyg_editor_profile_form_build().
+ * Submit callback for Wysiwyg profile form.
  *
- * @see wysiwyg_editor_profile_form()
+ * @see wysiwyg_profile_form()
  */
-function wysiwyg_editor_profile_form_submit($form, &$form_state) {
+function wysiwyg_profile_form_submit($form, &$form_state) {
   // Count enabled plugins for this profile.
   $plugin_count = 0;
   foreach ($form_state['values']['buttons'] as $plugin => $buttons) {
@@ -373,8 +372,8 @@ function wysiwyg_editor_profile_form_submit($form, &$form_state) {
 
   // Delete existing profile(s) with the current profile name.
   if (!empty($form_state['values']['old_name'])) {
-    db_query("DELETE FROM {wysiwyg_editor_profile} WHERE name = '%s' OR name = '%s'", $form_state['values']['name'], $form_state['values']['old_name']);
-    db_query("DELETE FROM {wysiwyg_editor_role} WHERE name = '%s' OR name = '%s'", $form_state['values']['name'], $form_state['values']['old_name']);
+    db_query("DELETE FROM {wysiwyg_profile} WHERE name = '%s' OR name = '%s'", $form_state['values']['name'], $form_state['values']['old_name']);
+    db_query("DELETE FROM {wysiwyg_role} WHERE name = '%s' OR name = '%s'", $form_state['values']['name'], $form_state['values']['old_name']);
   }
 
   // Remove FAPI values.
@@ -382,16 +381,16 @@ function wysiwyg_editor_profile_form_submit($form, &$form_state) {
   unset($form_state['values']['submit'], $form_state['values']['form_id'], $form_state['values']['op'], $form_state['values']['form_token']);
 
   // Insert new profile data.
-  db_query("INSERT INTO {wysiwyg_editor_profile} (name, settings, plugin_count) VALUES ('%s', '%s', %d)", $form_state['values']['name'], serialize($form_state['values']), $plugin_count);
+  db_query("INSERT INTO {wysiwyg_profile} (name, settings, plugin_count) VALUES ('%s', '%s', %d)", $form_state['values']['name'], serialize($form_state['values']), $plugin_count);
   foreach ($form_state['values']['rids'] as $rid => $value) {
-    db_query("INSERT INTO {wysiwyg_editor_role} (name, rid) VALUES ('%s', %d)", $form_state['values']['name'], $rid);
+    db_query("INSERT INTO {wysiwyg_role} (name, rid) VALUES ('%s', %d)", $form_state['values']['name'], $rid);
   }
 
   if (isset($form_state['values']['old_name'])) {
-    drupal_set_message(t('Wysiwyg Editor profile %name has been updated.', array('%name' => $form_state['values']['name'])));
+    drupal_set_message(t('Wysiwyg profile %name has been updated.', array('%name' => $form_state['values']['name'])));
   }
   else {
-    drupal_set_message(t('Wysiwyg Editor profile %name has been created.', array('%name' => $form_state['values']['name'])));
+    drupal_set_message(t('Wysiwyg profile %name has been created.', array('%name' => $form_state['values']['name'])));
   }
   drupal_goto('admin/settings/wysiwyg/profile');
 }
@@ -399,7 +398,7 @@ function wysiwyg_editor_profile_form_submit($form, &$form_state) {
 /**
  * Layout for the buttons in the Wysiwyg Editor profile form.
  */
-function theme_wysiwyg_editor_admin_button_table(&$form) {
+function theme_wysiwyg_admin_button_table(&$form) {
   $buttons = array();
 
   // Flatten forms array.
@@ -432,7 +431,7 @@ function theme_wysiwyg_editor_admin_button_table(&$form) {
 /**
  * Display overview of setup Wysiwyg Editor profiles; menu callback.
  */
-function wysiwyg_editor_profile_overview() {
+function wysiwyg_profile_overview() {
   $output = '';
   $usable = TRUE;
 
@@ -470,7 +469,7 @@ function wysiwyg_editor_profile_overview() {
     return $output;
   }
 
-  $profiles = wysiwyg_editor_load_profile();
+  $profiles = wysiwyg_load_profile();
   if ($profiles) {
     $roles = user_roles(FALSE, 'access wysiwyg editor');
     $header = array(t('Profile'), t('Editor'), t('Roles'), t('Operations'));
@@ -491,8 +490,8 @@ function wysiwyg_editor_profile_overview() {
 /**
  * Remove a profile from the database.
  */
-function wysiwyg_editor_profile_delete($name) {
-  db_query("DELETE FROM {wysiwyg_editor_profile} WHERE name = '%s'", $name);
-  db_query("DELETE FROM {wysiwyg_editor_role} WHERE name = '%s'", $name);
+function wysiwyg_profile_delete($name) {
+  db_query("DELETE FROM {wysiwyg_profile} WHERE name = '%s'", $name);
+  db_query("DELETE FROM {wysiwyg_role} WHERE name = '%s'", $name);
 }
 

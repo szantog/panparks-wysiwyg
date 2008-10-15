@@ -37,8 +37,11 @@ function wysiwyg_help($path, $arg) {
   switch ($path) {
     case 'admin/settings/wysiwyg/profile':
     case 'admin/help#wysiwyg':
-      $output = '<p>'. t('Profiles can be defined based on user roles. A Wysiwyg Editor profile can define which pages receive this Wysiwyg Editor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions. Lastly, only users with the %permission <a href="!url">user permission</a> are able to use Wysiwyg Editor.', array('%permission' => 'access wysiwyg editor', '!url' => url('admin/user/permissions'))) .'</p>';
-      return $output;
+      if (empty($arg[4])) {
+        $output = '<p>'. t('Profiles can be defined based on user roles. A Wysiwyg Editor profile can define which pages receive this Wysiwyg Editor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions. Lastly, only users with the %permission <a href="!url">user permission</a> are able to use Wysiwyg Editor.', array('%permission' => 'access wysiwyg editor', '!url' => url('admin/user/permissions'))) .'</p>';
+        return $output;
+      }
+      break;
   }
 }
 

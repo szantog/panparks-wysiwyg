@@ -28,10 +28,7 @@ function wysiwyg_admin($arg = '', $name = '') {
       return drupal_get_form('wysiwyg_profile_form', wysiwyg_load_profile($name));
 
     case 'delete':
-      wysiwyg_profile_delete($name);
-      drupal_set_message(t('Wysiwyg profile %name has been deleted.', array('%name' => $name)));
-      drupal_goto('admin/settings/wysiwyg/profile');
-      break;
+      return drupal_get_form('wysiwyg_profile_delete_confirm', $name);
 
     default:
       return wysiwyg_profile_overview();
@@ -472,19 +469,49 @@ function wysiwyg_profile_overview() {
   $profiles = wysiwyg_load_profile();
   if ($profiles) {
     $roles = user_roles(FALSE, 'access wysiwyg editor');
-    $header = array(t('Profile'), t('Editor'), t('Roles'), t('Operations'));
+    $header = array(t('Profile'), t('Editor'), t('Roles'), array('data' => t('Operations'), 'colspan' => 2));
     foreach ($profiles as $p) {
       $rows[] = array(
         array('data' => $p->name, 'valign' => 'top'),
         array('data' => $editors[$p->settings['editor']]['title'], 'valign' => 'top'),
         array('data' => implode("<br />\n", $p->rids)),
-        array('data' => l(t('Edit'), 'admin/settings/wysiwyg/profile/edit/'. urlencode($p->name)) .' '. l(t('Delete'), 'admin/settings/wysiwyg/profile/delete/'. urlencode($p->name)), 'valign' => 'top'));
+        array('data' => l(t('Edit'), 'admin/settings/wysiwyg/profile/edit/'. urlencode($p->name)), 'valign' => 'top'),
+        array('data' => l(t('Delete'), 'admin/settings/wysiwyg/profile/delete/'. urlencode($p->name)), 'valign' => 'top'),
+      );
     }
     $output .= theme('table', $header, $rows);
   }
   $output .= '<p>'. t('<a href="!create-profile-url">Create new profile</a>', array('!create-profile-url' => url('admin/settings/wysiwyg/profile/add'))) .'</p>';
 
   return $output;
+}
+
+/**
+ * Delete editor profile confirmation form.
+ */
+function wysiwyg_profile_delete_confirm(&$form_state, $name) {
+  $form = array();
+  $form['name'] = array(
+    '#type' => 'value',
+    '#value' => $name,
+  );
+  return confirm_form(
+    $form,
+    t('Are you sure you want to delete the editor profile %name?', array('%name' => $name)),
+    'admin/settings/wysiwyg/profile',
+    t('This action cannot be undone.'), t('Delete'), t('Cancel')
+  );
+}
+
+/**
+ * Submit callback for Wysiwyg profile delete form.
+ *
+ * @see wysiwyg_profile_delete_confirm()
+ */
+function wysiwyg_profile_delete_confirm_submit($form, &$form_state) {
+  wysiwyg_profile_delete($form_state['values']['name']);
+  drupal_set_message(t('Wysiwyg profile %name has been deleted.', array('%name' => $form_state['values']['name'])));
+  $form_state['redirect'] = 'admin/settings/wysiwyg/profile';
 }
 
 /**

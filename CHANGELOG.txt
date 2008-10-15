@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#320559 by markus_petrux, sun: Added confirmation form to delete profiles.
 
 
 Wysiwyg 6.x-0.4, 2008-10-14

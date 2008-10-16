@@ -56,9 +56,13 @@ Drupal.wysiwyg.editor.detach.tinymce = function(context, params) {
       editor.remove();
     }
   }
-  else if (tinyMCE.activeEditor) {
+  else {
+    // Save contents of all editors back into textareas.
     tinyMCE.triggerSave();
-    tinyMCE.activeEditor.remove();
+    // Remove all editor instances.
+    for (var instanceId in tinyMCE.editors) {
+      tinyMCE.editors[instanceId].remove();
+    }
   }
 };
 

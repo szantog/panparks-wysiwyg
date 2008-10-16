@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#316507 by sun: Fixed TinyMCE 3 not detached properly from AJAX contents.
 #320559 by markus_petrux, sun: Added confirmation form to delete profiles.
 
 

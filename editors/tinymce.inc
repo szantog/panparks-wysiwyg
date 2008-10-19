@@ -37,11 +37,13 @@ function wysiwyg_tinymce_editor() {
       '2.1' => array(
         // 'include files' => array('tinymce-2.inc'),
         'js files' => array('tinymce-2.js'),
+        'css files' => array('tinymce-2.css'),
         'download url' => 'http://sourceforge.net/project/showfiles.php?group_id=103281&package_id=111430&release_id=557383',
       ),
       '3.2' => array(
         // 'include files' => array('tinymce-3.inc'),
         'js files' => array('tinymce-3.js'),
+        'css files' => array('tinymce-3.css'),
         // 'plugin callback' => 'wysiwyg_tinymce_3_plugins',
         'libraries' => array(
           '' => array(
@@ -63,8 +65,6 @@ function wysiwyg_tinymce_editor() {
     // 'editor path' => wysiwyg_get_path('tinymce'), // Assumed by default.
     // 'js path' => wysiwyg_get_path('editors/js'), // Assumed by default.
     // 'css path' => wysiwyg_get_path('editors/css'), // Assumed by default.
-    // @todo Not yet implemented.
-    // 'css files' => array('tinymce.css'),
   );
   return $editor;
 }

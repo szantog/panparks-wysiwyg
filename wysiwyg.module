@@ -253,11 +253,20 @@ function wysiwyg_load_editor($profile) {
         drupal_add_js($editor['library path'] . '/' . $file);
       }
       // Load JavaScript integration files for this editor.
+      $files = array();
       if (isset($editor['js files'])) {
         $files = $editor['js files'];
       }
       foreach ($files as $file) {
         drupal_add_js($editor['js path'] . '/' . $file, 'module', 'footer');
+      }
+      // Load CSS stylesheets for this editor.
+      $files = array();
+      if (isset($editor['css files'])) {
+        $files = $editor['css files'];
+      }
+      foreach ($files as $file) {
+        drupal_add_css($editor['css path'] . '/' . $file, 'module', 'screen');
       }
 
       $status = wysiwyg_user_get_status($profile);
@@ -301,10 +310,6 @@ function wysiwyg_load_editor($profile) {
     // their callbacks, and BEFORE Drupal.behaviors are applied, this must come
     // last.
     drupal_add_js(wysiwyg_get_path('wysiwyg.js'), 'module', 'footer');
-
-    // Add our stylesheet to stack editor buttons into one row.
-    // @todo This is TinyMCE 2.x specific at the moment.
-    drupal_add_css(wysiwyg_get_path('wysiwyg.css'));
 
     $settings_added = TRUE;
   }

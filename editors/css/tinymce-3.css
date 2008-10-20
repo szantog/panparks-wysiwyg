@@ -9,13 +9,12 @@
 .mceToolbar td {
   display: inline;
 }
-.mceToolbar a {
-  float: left;
-}
+.mceToolbar a,
 .mceSeparator {
   float: left;
 }
-.mceListBox {
+.mceListBox,
+.mceSplitButton {
   float: left;
   margin-bottom: 1px;
 }

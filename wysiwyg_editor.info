@@ -1,5 +1,0 @@
-; $Id$
-name = Wysiwyg Editor (UNINSTALL)
-description = Please uninstall this module after running update.php.
-package = User interface
-core = 6.x

@@ -564,7 +564,7 @@ function wysiwyg_get_all_editors() {
       }
     }
     if (!$version) {
-      $editors[$editor]['error'] = t('The installed version of %editor is not supported.', array('%editor' => $properties['title']));
+      $editors[$editor]['error'] = t('The installed version %version of %editor is not supported.', array('%version' => $editors[$editor]['installed version'], '%editor' => $properties['title']));
       $editors[$editor]['installed'] = FALSE;
       continue;
     }

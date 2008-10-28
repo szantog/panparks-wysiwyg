@@ -16,6 +16,7 @@
 Drupal.wysiwyg.editor.attach.none = function(context, params, settings) {
   if (params.resizable) {
     $('#' + params.field).addClass('resizable');
+    $('#' + params.field).css({display: ''});
     Drupal.behaviors.textarea();
   }
 };

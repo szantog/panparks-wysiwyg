@@ -24,7 +24,7 @@ Drupal.wysiwyg.editor.attach.fckeditor = function(context, params, settings) {
  * See Drupal.wysiwyg.editor.detach.none() for a full desciption of this hook.
  */
 Drupal.wysiwyg.editor.detach.fckeditor = function(context, params) {
-  if (typeof params != 'undefined') {
+  if (typeof params != 'undefined' && typeof FCKeditorAPI != 'undefined') {
     var editor = FCKeditorAPI.GetInstance(params.field);
     if (editor) {
       $('#' + params.field).val(editor.GetXHTML()).show();

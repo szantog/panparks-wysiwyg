@@ -28,11 +28,6 @@ Bug reports, feature suggestions and latest developments:
 
 -- CONFIGURATION --
 
-* Configure user permissions in Administer > User management > Permissions
-  > Wysiwyg Editor.
-
-* Setup editor profiles in Administer > Site configuration > Wysiwyg Editor.
-
 * Go to Administer > Site configuration > Input formats and
 
   - either configure the Full HTML format, assign it to trusted roles, and
@@ -40,6 +35,8 @@ Bug reports, feature suggestions and latest developments:
 
   - or add a new input format, assign it to trusted roles, and ensure that above
     mentioned input filters are disabled.
+
+* Setup editor profiles in Administer > Site configuration > Wysiwyg.
 
 
 -- CONTACT --

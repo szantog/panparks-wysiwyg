@@ -6,22 +6,14 @@
  */
 function wysiwyg_schema() {
   $schema = array();
-  $schema['wysiwyg_profile'] = array(
-    'description' => t('Stores Wysiwyg Editor profiles.'),
+  $schema['wysiwyg'] = array(
+    'description' => t('Stores Wysiwyg profiles.'),
     'fields' => array(
-      'name' => array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => ''),
+      'format' => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'editor' => array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => ''),
       'settings' => array('type' => 'text', 'size' => 'normal'),
-      'plugin_count' => array('type' => 'int', 'size' => 'tiny', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
     ),
-    'primary key' => array('name'),
-  );
-  $schema['wysiwyg_role'] = array(
-    'description' => t('Stores user role access permissions for Wysiwyg Editor profiles.'),
-    'fields' => array(
-      'name' => array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => ''),
-      'rid' => array('type' => 'int', 'size' => 'tiny', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
-    ),
-    'primary key' => array('name', 'rid'),
+    'primary key' => array('format'),
   );
   return $schema;
 }
@@ -31,8 +23,7 @@ function wysiwyg_schema() {
  */
 function wysiwyg_install() {
   drupal_install_schema('wysiwyg');
-  // Import data from old editor modules.
-  wysiwyg_migrate_wysiwyg_editor();
+  // Import settings from old editor modules.
   wysiwyg_migrate_tinymce();
 }
 
@@ -44,53 +35,31 @@ function wysiwyg_uninstall() {
 }
 
 /**
- * Migrate from Wysiwyg Editor.
- */
-function wysiwyg_migrate_wysiwyg_editor() {
-  if (db_table_exists('wysiwyg_editor_profile')) {
-    // Import Wysiwyg Editor profiles.
-    db_query('INSERT INTO {wysiwyg_profile} (name, settings, plugin_count) SELECT name, settings, plugin_count FROM {wysiwyg_editor_profile}');
-    // Import Wysiwyg Editor profile role associations.
-    db_query('INSERT INTO {wysiwyg_role} (name, rid) SELECT name, rid FROM {wysiwyg_editor_role}');
-
-    // Disable Wysiwyg Editor module.
-    module_disable(array('wysiwyg_editor'));
-    drupal_set_message(t('Wysiwyg Editor module can be safely uninstalled now.'));
-  }
-}
-
-/**
  * Migrate from TinyMCE.
  */
 function wysiwyg_migrate_tinymce() {
   if (db_table_exists('tinymce_settings')) {
     $schema = db_result(db_query("SELECT schema_version FROM {system} WHERE name = 'tinymce'"));
     if ($schema >= 1) {
-      // Import TinyMCE settings.
-      db_query('INSERT INTO {wysiwyg_profile} (name, settings) SELECT name, settings FROM {tinymce_settings}');
-      // Import TinyMCE profile role associations.
-      db_query('INSERT INTO {wysiwyg_role} (name, rid) SELECT name, rid FROM {tinymce_role}');
-
       // Migrate profile configurations.
-      // Convert buttons/plugins into an associative array and fix plugin count.
-      $profiles = db_query("SELECT name, settings, plugin_count FROM {wysiwyg_profile}");
+      $profiles = db_query("SELECT settings FROM {tinymce_settings}");
       while ($profile = db_fetch_array($profiles)) {
         $settings = unserialize($profile['settings']);
-        if (isset($settings['form_id'])) {
-          $old_buttons = (isset($settings['buttons']) ? $settings['buttons'] : array());
-          $settings['buttons'] = array();
-          $plugin_count = 0;
-          foreach ($old_buttons as $old_button => $enabled) {
-            list($plugin, $button) = explode('-', $old_button, 2);
-            $settings['buttons'][$plugin][$button] = 1;
-            $plugin_count++;
-          }
+        // Convert buttons/plugins into an associative array.
+        $old_buttons = (isset($settings['buttons']) ? $settings['buttons'] : array());
+        $settings['buttons'] = array();
+        foreach ($old_buttons as $old_button => $enabled) {
+          list($plugin, $button) = explode('-', $old_button, 2);
+          $settings['buttons'][$plugin][$button] = 1;
+        }
+        foreach (_wysiwyg_install_get_formats() as $format => $name) {
           // We can't use update_sql() here because of curly braces in serialized
           // array.
-          db_query("UPDATE {wysiwyg_profile} SET settings = '%s', plugin_count = %d WHERE name = '%s'", serialize($settings), $plugin_count, $profile['name']);
+          db_query("INSERT INTO {wysiwyg} (format, editor, settings) VALUES (%d, 'tinymce', '%s')", $format, serialize($settings));
         }
+        // We can only migrate one profile.
+        break;
       }
-
       // Disable TinyMCE module.
       module_disable(array('tinymce'));
       drupal_set_message(t('TinyMCE module can be safely uninstalled now.'));
@@ -99,5 +68,96 @@ function wysiwyg_migrate_tinymce() {
       drupal_set_message(t('To migrate your existing TinyMCE settings to Wysiwyg Editor, please update TinyMCE module to the latest official release, and re-install Wysiwyg Editor module.'));
     }
   }
+}
+
+/**
+ * Retrieve a list of input formats to associate profiles to.
+ */
+function _wysiwyg_install_get_formats() {
+  $formats = array();
+  $result = db_query("SELECT format, name FROM {filter_formats}");
+  while ($format = db_fetch_object($result)) {
+    // Build a list of all formats.
+    $formats[$format->format] = $format->name;
+    // Fetch filters.
+    $result2 = db_query("SELECT module, delta FROM {filters} WHERE format = %d", $format->format);
+    while ($filter = db_fetch_object($result2)) {
+      // If PHP filter is enabled, remove this format.
+      if ($filter->module == 'php') {
+        unset($formats[$format->format]);
+        break;
+      }
+    }
+  }
+  return $formats;
+}
+
+/**
+ * Associate Wysiwyg profiles with input formats.
+ *
+ * Since there was no association yet, we can only assume that there is one
+ * profile only, and that profile must be duplicated and assigned to all input
+ * formats (except PHP code format).  Also, input formats already have
+ * titles/names, so Wysiwyg profiles do not need an own.
+ *
+ * Because input formats are already granted to certain user roles only, we can
+ * remove our custom Wysiwyg profile permissions.  A 1:1 relationship between
+ * input formats and permissions makes plugin_count obsolete, too.
+ *
+ * Since the resulting table is completely different, a new schema is installed.
+ */
+function wysiwyg_update_6001() {
+  $ret = array();
+  if (db_table_exists('wysiwyg')) {
+    return $ret;
+  }
+  // Install new schema.
+  db_create_table($ret, 'wysiwyg', array(
+    'description' => t('Stores Wysiwyg profiles.'),
+    'fields' => array(
+      'format' => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'editor' => array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => ''),
+      'settings' => array('type' => 'text', 'size' => 'normal'),
+    ),
+    'primary key' => array('format'),
+  ));
+
+  // Fetch all input formats.
+  $formats = _wysiwyg_install_get_formats();
+
+  // Fetch all profiles.
+  $result = db_query("SELECT name, settings FROM {wysiwyg_profile}");
+  while ($profile = db_fetch_object($result)) {
+    $profile->settings = unserialize($profile->settings);
+    // Extract editor name from profile settings.
+    $profile->editor = $profile->settings['editor'];
+    // Clean-up.
+    unset($profile->settings['editor']);
+    unset($profile->settings['old_name']);
+    unset($profile->settings['name']);
+    unset($profile->settings['rids']);
+    // Sorry.  There Can Be Only One. ;)
+    break;
+  }
+
+  if ($profile) {
+    // Rebuild profiles and associate with input formats.
+    foreach ($formats as $format => $name) {
+      // Insert profiles.
+      // We can't use update_sql() here because of curly braces in serialized
+      // array.
+      db_query("INSERT INTO {wysiwyg} (format, editor, settings) VALUES (%d, '%s', '%s')", $format, $profile->editor, serialize($profile->settings));
+      $ret[] = array(
+        'success' => TRUE,
+        'query' => t('Wysiwyg profile %profile converted and associated with input format %format.', array('%profile' => $profile->name, '%format' => $name)),
+      );
+    }
+  }
+
+  // Drop obsolete tables {wysiwyg_profile} and {wysiwyg_role}.
+  db_drop_table($ret, 'wysiwyg_profile');
+  db_drop_table($ret, 'wysiwyg_role');
+
+  return $ret;
 }
 

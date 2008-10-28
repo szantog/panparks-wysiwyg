@@ -26,7 +26,8 @@ function wysiwyg_menu() {
  */
 function wysiwyg_theme() {
   return array(
-    'wysiwyg_admin_button_table' => array('arguments' => array('form')),
+    'wysiwyg_profile_overview' => array('arguments' => array('form' => NULL)),
+    'wysiwyg_admin_button_table' => array('arguments' => array('form' => NULL)),
   );
 }
 
@@ -36,20 +37,12 @@ function wysiwyg_theme() {
 function wysiwyg_help($path, $arg) {
   switch ($path) {
     case 'admin/settings/wysiwyg/profile':
-    case 'admin/help#wysiwyg':
       if (empty($arg[4])) {
-        $output = '<p>'. t('Profiles can be defined based on user roles. A Wysiwyg Editor profile can define which pages receive this Wysiwyg Editor capability, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor functions. Lastly, only users with the %permission <a href="!url">user permission</a> are able to use Wysiwyg Editor.', array('%permission' => 'access wysiwyg editor', '!url' => url('admin/user/permissions'))) .'</p>';
+        $output = '<p>'. t('A Wysiwyg profile can be associated to an input format. A Wysiwyg profile defines, which client-side editor is loaded, can define what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor-specific functions.') .'</p>';
         return $output;
       }
       break;
   }
-}
-
-/**
- * Implementation of hook_perm().
- */
-function wysiwyg_perm() {
-  return array('access wysiwyg editor');
 }
 
 /**
@@ -72,11 +65,9 @@ function wysiwyg_perm() {
  */
 function wysiwyg_elements() {
   $type = array();
-  if (user_access('access wysiwyg editor')) {
-    // @todo Derive editor theme from input format.
-    $type['textarea'] = array('#wysiwyg_style' => 'advanced');
-    $type['form'] = array('#after_build' => array('wysiwyg_process_form'));
-  }
+  // @todo Derive editor theme from input format.
+  $type['textarea'] = array('#wysiwyg_style' => 'advanced');
+  $type['form'] = array('#after_build' => array('wysiwyg_process_form'));
   return $type;
 }
 
@@ -143,7 +134,7 @@ function wysiwyg_process_form(&$form) {
             // Fetch the profile associated to this input format.
             $profile = wysiwyg_get_profile($format);
             if ($profile) {
-              $editor = $profile->settings['editor'];
+              $editor = $profile->editor;
               // Check editor theme (and reset it if not/no longer available).
               $theme = wysiwyg_get_editor_themes($profile, $field['#wysiwyg_style']);
 
@@ -195,20 +186,9 @@ function wysiwyg_process_form(&$form) {
  *   A wysiwyg profile.
  *
  * @see wysiwyg_load_editor(), wysiwyg_get_editor()
- *
- * @todo Replace wysiwyg_current_profile() with a input format to profile
- *   association.
  */
 function wysiwyg_get_profile($format) {
-  // Determine whether this input format has PHP filter enabled.
-  // Temporary, until input format to profile associations are in place.
-  $filters = filter_list_format($format);
-  foreach ($filters as $filter) {
-    if ($filter->module == 'php') {
-      return FALSE;
-    }
-  }
-  if ($profile = wysiwyg_load_profile(wysiwyg_current_profile())) {
+  if ($profile = wysiwyg_load_profile($format)) {
     if (wysiwyg_load_editor($profile)) {
       return $profile;
     }
@@ -231,7 +211,7 @@ function wysiwyg_load_editor($profile) {
   static $settings_added;
   static $loaded = array();
 
-  $name = $profile->settings['editor'];
+  $name = $profile->editor;
   // Library files must be loaded only once.
   if (!isset($loaded[$name])) {
     // Load editor.
@@ -258,7 +238,7 @@ function wysiwyg_load_editor($profile) {
         $files = $editor['js files'];
       }
       foreach ($files as $file) {
-        drupal_add_js($editor['js path'] . '/' . $file, 'module', 'footer');
+        drupal_add_js($editor['js path'] . '/' . $file);
       }
       // Load CSS stylesheets for this editor.
       $files = array();
@@ -297,11 +277,11 @@ function wysiwyg_load_editor($profile) {
 
     // Initialize our namespaces in the *header* to do not force editor
     // integration scripts to check and define Drupal.wysiwyg on its own.
-    drupal_add_js(wysiwyg_get_path('wysiwyg.init.js'));
+    drupal_add_js(wysiwyg_get_path('wysiwyg.init.js'), 'core');
 
     // The 'none' editor is a special editor implementation, allowing us to
     // attach and detach regular Drupal behaviors just like any other editor.
-    drupal_add_js(wysiwyg_get_path('editors/js/none.js'), 'module', 'footer');
+    drupal_add_js(wysiwyg_get_path('editors/js/none.js'));
 
     // Add wysiwyg.js to the footer to ensure it's executed after the
     // Drupal.settings array has been rendered and populated. Also, since editor
@@ -321,9 +301,9 @@ function wysiwyg_load_editor($profile) {
  * Register a theme.
  */
 function wysiwyg_add_editor_settings($profile, $theme) {
-  static $themes = array();
+  static $editors = array();
 
-  if (!isset($themes[$theme])) {
+  if (!isset($editors[$profile->editor][$theme])) {
     $config = wysiwyg_get_editor_config($profile, $theme);
     // Convert the config values into the form expected by Wysiwyg Editor.
     // @todo Is this conversion TinyMCE specific?
@@ -335,8 +315,8 @@ function wysiwyg_add_editor_settings($profile, $theme) {
         $config[$key] = implode(',', $config[$key]);
       }
     }
-    drupal_add_js(array('wysiwyg' => array('configs' => array($profile->settings['editor'] => array($theme => $config)))), 'setting');
-    $themes[$theme] = TRUE;
+    drupal_add_js(array('wysiwyg' => array('configs' => array($profile->editor => array($theme => $config)))), 'setting');
+    $editors[$profile->editor][$theme] = TRUE;
   }
 }
 
@@ -349,9 +329,9 @@ function wysiwyg_add_editor_settings($profile, $theme) {
 function wysiwyg_add_plugin_settings($profile) {
   static $plugins_added = array();
   
-  if (!isset($plugins_added[$profile->settings['editor']])) {
+  if (!isset($plugins_added[$profile->editor])) {
     $plugins = array();
-    $editor = wysiwyg_get_editor($profile->settings['editor']);
+    $editor = wysiwyg_get_editor($profile->editor);
     // Collect editor plugins provided via hook_wysiwyg_plugin().
     $info = module_invoke_all('wysiwyg_plugin', $editor['name'], $editor['installed version']);
     // Only keep enabled plugins in this profile.
@@ -365,9 +345,9 @@ function wysiwyg_add_plugin_settings($profile) {
       $plugins = $editor['plugin settings callback']($editor, $profile, $info);
     }
 
-    drupal_add_js(array('wysiwyg' => array('plugins' => array($profile->settings['editor'] => $plugins))), 'setting');
+    drupal_add_js(array('wysiwyg' => array('plugins' => array($profile->editor => $plugins))), 'setting');
 
-    $plugins_added[$profile->settings['editor']] = TRUE;
+    $plugins_added[$profile->editor] = TRUE;
   }
 }
 
@@ -389,8 +369,8 @@ function wysiwyg_add_plugin_settings($profile) {
 function wysiwyg_get_editor_themes(&$profile, $selected_theme = NULL) {
   static $themes = array();
 
-  if (!isset($themes[$profile->settings['editor']])) {
-    $editor = wysiwyg_get_editor($profile->settings['editor']);
+  if (!isset($themes[$profile->editor])) {
+    $editor = wysiwyg_get_editor($profile->editor);
     if (isset($editor['themes callback']) && function_exists($editor['themes callback'])) {
       $themes[$editor['name']] = $editor['themes callback']($editor, $profile);
     }
@@ -403,12 +383,12 @@ function wysiwyg_get_editor_themes(&$profile, $selected_theme = NULL) {
   // Check optional $selected_theme argument, if given.
   if (isset($selected_theme)) {
     // If the passed theme name does not exist, use the first available.
-    if (!isset($themes[$profile->settings['editor']][$selected_theme])) {
-      $selected_theme = $profile->settings['theme'] = $themes[$profile->settings['editor']][0];
+    if (!isset($themes[$profile->editor][$selected_theme])) {
+      $selected_theme = $profile->settings['theme'] = $themes[$profile->editor][0];
     }
   }
 
-  return isset($selected_theme) ? $selected_theme : $themes[$profile->settings['editor']];
+  return isset($selected_theme) ? $selected_theme : $themes[$profile->editor];
 }
 
 /**
@@ -441,7 +421,7 @@ function wysiwyg_get_plugins($editor_name) {
  * Return an array of initial Wysiwyg Editor config options from the current role.
  */
 function wysiwyg_get_editor_config($profile, $theme) {
-  $editor = wysiwyg_get_editor($profile->settings['editor']);
+  $editor = wysiwyg_get_editor($profile->editor);
   $settings = array();
   if (!empty($editor['settings callback']) && function_exists($editor['settings callback'])) {
     $settings = $editor['settings callback']($editor, $profile->settings, $theme);
@@ -450,55 +430,30 @@ function wysiwyg_get_editor_config($profile, $theme) {
 }
 
 /**
- * Return the name of the current user's default profile.
- */
-function wysiwyg_current_profile() {
-  global $user;
-  static $profile_name;
-
-  if (!isset($profile_name)) {
-    $profile_name = db_result(db_query_range('SELECT p.name FROM {wysiwyg_profile} p INNER JOIN {wysiwyg_role} r ON r.name = p.name WHERE r.rid IN (%s) ORDER BY plugin_count DESC', implode(',', array_keys($user->roles)), 0, 1));
-  }
-  return $profile_name;
-}
-
-/**
  * Load all profiles. Just load one profile if $name is passed in.
  */
-function wysiwyg_load_profile($name = '') {
+function wysiwyg_load_profile($format = '') {
   static $profiles;
 
-  // If $name is passed from wysiwyg_current_profile(), it may be FALSE,
-  // which means the user is not allowed to use a wysiwyg editor.
-  if ($name === FALSE) {
-    return FALSE;
-  }
   if (!isset($profiles)) {
     $profiles = array();
-    $roles = user_roles();
-    $result = db_query('SELECT * FROM {wysiwyg_profile}');
+    $result = db_query('SELECT * FROM {wysiwyg}');
     while ($profile = db_fetch_object($result)) {
       $profile->settings = unserialize($profile->settings);
-      $result2 = db_query("SELECT rid FROM {wysiwyg_role} WHERE name = '%s'", $profile->name);
-      $profile_roles = array();
-      while ($role = db_fetch_object($result2)) {
-        $profile_roles[$role->rid] = $roles[$role->rid];
-      }
-      $profile->rids = $profile_roles;
-
-      $profiles[$profile->name] = $profile;
+      $profiles[$profile->format] = $profile;
     }
   }
 
-  return ($name && isset($profiles[$name]) ? $profiles[$name] : ($name ? FALSE : $profiles));
+  return ($format && isset($profiles[$format]) ? $profiles[$format] : ($format ? FALSE : $profiles));
 }
 
 /**
  * Implementation of hook_user().
  */
 function wysiwyg_user($type, &$edit, &$user, $category = NULL) {
-  if ($type == 'form' && $category == 'account' && user_access('access wysiwyg editor')) {
-    $profile = wysiwyg_user_get_profile($user);
+  if ($type == 'form' && $category == 'account') {
+    // @todo http://drupal.org/node/322433
+    $profile = new stdClass;
     if (isset($profile->settings['user_choose']) && $profile->settings['user_choose']) {
       $form['wysiwyg'] = array(
         '#type' => 'fieldset',
@@ -517,30 +472,19 @@ function wysiwyg_user($type, &$edit, &$user, $category = NULL) {
       return array('wysiwyg' => $form);
     }
   }
-  if ($type == 'validate') {
+  elseif ($type == 'validate' && isset($edit['wysiwyg_status'])) {
     return array('wysiwyg_status' => $edit['wysiwyg_status']);
-  }
-}
-
-function wysiwyg_user_get_profile($account) {
-  $profile_name = db_result(db_query('SELECT s.name FROM {wysiwyg_profile} s INNER JOIN {wysiwyg_role} r ON r.name = s.name WHERE r.rid IN (%s)', implode(',', array_keys($account->roles))));
-  if ($profile_name) {
-    return wysiwyg_load_profile($profile_name);
-  }
-  else {
-    return FALSE;
   }
 }
 
 function wysiwyg_user_get_status($profile) {
   global $user;
-  $settings = $profile->settings;
 
-  if ($settings['user_choose'] && isset($user->wysiwyg_status)) {
+  if ($profile->settings['user_choose'] && isset($user->wysiwyg_status)) {
     $status = $user->wysiwyg_status;
   }
   else {
-    $status = isset($settings['default']) ? $settings['default'] : FALSE;
+    $status = isset($profile->settings['default']) ? $profile->settings['default'] : FALSE;
   }
 
   return $status;

@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#327100 by sun: Associate editors/profiles with input formats. Major milestone.
 #325980 by markus_petrux: Added Spanish/Catalan translation for Break plugin.
 #323795 by sun: Removed obsolete Wysiwyg Editor module files.
 #308912 by sun: Fixed alignment of editor buttons in TinyMCE 3.

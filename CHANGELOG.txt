@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#327152 by sun: Fixed breadcrumbs for profile configuration pages.
 #323855 by Rob Loach, sun: Added jWYSIWYG support.
 #327100 by sun: Associate editors/profiles with input formats. Major milestone.
 #325980 by markus_petrux: Added Spanish/Catalan translation for Break plugin.

@@ -13,25 +13,25 @@
  */
 function wysiwyg_admin($arg = '', $format = '') {
   switch ($arg) {
-    case 'add':
-      $breadcrumb[] = l(t('Home'), NULL);
-      $breadcrumb[] = l(t('Administer'), 'admin');
-      $breadcrumb[] = l(t('Site configuration'), 'admin/settings');
-      $breadcrumb[] = l(t('Wysiwyg'), 'admin/settings/wysiwyg');
-      $breadcrumb[] = l(t('Wysiwyg Profiles'), 'admin/settings/wysiwyg/profile');
-      drupal_set_breadcrumb($breadcrumb);
-      $profile = new stdClass;
-      return drupal_get_form('wysiwyg_profile_form', $profile);
-
     case 'edit':
-      return drupal_get_form('wysiwyg_profile_form', wysiwyg_load_profile($format));
+      if ($profile = wysiwyg_load_profile($format)) {
+        $breadcrumb = array();
+        $breadcrumb[] = l(t('Home'), NULL);
+        $breadcrumb[] = l(t('Administer'), 'admin');
+        $breadcrumb[] = l(t('Site configuration'), 'admin/settings');
+        $breadcrumb[] = l(t('Wysiwyg profiles'), 'admin/settings/wysiwyg/profile');
+        drupal_set_breadcrumb($breadcrumb);
+        return drupal_get_form('wysiwyg_profile_form', $profile);
+      }
+      break;
 
     case 'delete':
       return drupal_get_form('wysiwyg_profile_delete_confirm', $format);
 
-    default:
+    case '':
       return drupal_get_form('wysiwyg_profile_overview');
   }
+  drupal_goto('admin/settings/wysiwyg/profile');
 }
 
 /**

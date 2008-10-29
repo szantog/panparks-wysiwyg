@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#323855 by sun: Increased supported version of jWYSIWYG to 0.5.
 #323671 by sun: Fixed TinyMCE editor not resized when browser is resized.
 #327152 by sun: Fixed breadcrumbs for profile configuration pages.
 #323855 by Rob Loach, sun: Added jWYSIWYG support.

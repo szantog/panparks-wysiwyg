@@ -8,7 +8,6 @@
 function wysiwyg_jwysiwyg_editor() {
   $editor = array();
   $editor['jwysiwyg'] = array(
-    // Required properties
     'title' => 'jWYSIWYG',
     'vendor url' => 'http://code.google.com/p/jwysiwyg/',
     'download url' => 'http://code.google.com/p/jwysiwyg/downloads/list',
@@ -26,7 +25,7 @@ function wysiwyg_jwysiwyg_editor() {
     'version callback' => 'wysiwyg_jwysiwyg_version',
     'css path' => wysiwyg_get_path('jwysiwyg'),
     'versions' => array(
-      '0.4' => array(
+      '0.5' => array(
         'js files' => array('jwysiwyg.js'),
         'css files' => array('jquery.wysiwyg.css'),
       ),

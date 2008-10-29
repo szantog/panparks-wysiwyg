@@ -362,13 +362,13 @@ function theme_wysiwyg_admin_button_table(&$form) {
   $total = count($buttons);
   $rows = array();
   for ($i = 0; $i < $total; $i++) {
-    $row    = array();
-    $row[]  = array('data' => $buttons[$i]);
+    $row = array();
+    $row[] = array('data' => $buttons[$i]);
     if (isset($buttons[++$i])) {
-      $row[]  = array('data' => $buttons[$i]);
+      $row[] = array('data' => $buttons[$i]);
     }
     if (isset($buttons[++$i])) {
-      $row[]  = array('data' => $buttons[$i]);
+      $row[] = array('data' => $buttons[$i]);
     }
     $rows[] = $row;
   }

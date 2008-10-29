@@ -4,6 +4,8 @@
 /**
  * hook_wysiwyg_plugin(). Return an array of editor plugins.
  *
+ * @todo Completely outdated; rewrite necessary.
+ *
  * Each wysiwyg editor as well as each contrib module implementing an editor
  * plugin has to return an associative array of available plugins. Each module
  * can add one or more plugins and editor buttons.

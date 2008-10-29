@@ -2,7 +2,12 @@
 
 /**
  * TinyMCE 2.x
- *
+ */
+table.mceEditor {
+  clear: left;
+}
+
+/**
  * Align all buttons and separators in a single row, so they wrap into multiple
  * rows if required.
  */

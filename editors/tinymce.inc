@@ -121,6 +121,7 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
     'remove_linebreaks' => $config['remove_linebreaks'],
     'theme' => $theme,
     'verify_html' => $config['verify_html'],
+    'width' => '100%',
   );
 
   if ($config['css_classes']) {

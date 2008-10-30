@@ -314,7 +314,7 @@ function _wysiwyg_tinymce_plugin_name($op, $name) {
  * Return internal plugins for TinyMCE; semi-implementation of hook_wysiwyg_plugin().
  */
 function wysiwyg_tinymce_plugins($editor) {
-  return array(
+  $plugins = array(
     'default' => array(
       'path' => $editor['library path'] .'/themes/advanced',
       'buttons' => array(
@@ -482,5 +482,15 @@ function wysiwyg_tinymce_plugins($editor) {
       'load' => TRUE,
     ),
   );
+  if ($editor['installed version'] > 3) {
+    $plugins['safari'] = array(
+      'path' => $editor['library path'] .'/plugins/safari',
+      'extensions' => array('safari' => t('Safari compatibility')),
+      'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/safari',
+      'internal' => TRUE,
+      'load' => TRUE,
+    );
+  }
+  return $plugins;
 }
 

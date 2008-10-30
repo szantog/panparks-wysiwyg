@@ -225,6 +225,16 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
   }
   unset($init['buttons']);
 
+  // Convert the config values into the form expected by TinyMCE.
+  foreach ($init as $key => $value) {
+    if (is_bool($value)) {
+      continue;
+    }
+    if (is_array($value)) {
+      $init[$key] = implode(',', $init[$key]);
+    }
+  }
+
   return $init;
 }
 

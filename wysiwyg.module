@@ -308,16 +308,6 @@ function wysiwyg_add_editor_settings($profile, $theme) {
 
   if (!isset($editors[$profile->editor][$theme])) {
     $config = wysiwyg_get_editor_config($profile, $theme);
-    // @todo Move into tinymce.inc
-    // Convert the config values into the form expected by editor.
-    foreach ($config as $key => $value) {
-      if (is_bool($value)) {
-        continue;
-      }
-      if (is_array($value)) {
-        $config[$key] = implode(',', $config[$key]);
-      }
-    }
     drupal_add_js(array('wysiwyg' => array('configs' => array($profile->editor => array($theme => $config)))), 'setting');
     $editors[$profile->editor][$theme] = TRUE;
   }

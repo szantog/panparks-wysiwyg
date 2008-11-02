@@ -136,7 +136,7 @@ function wysiwyg_process_form(&$form) {
             if ($profile) {
               $editor = $profile->editor;
               // Check editor theme (and reset it if not/no longer available).
-              $theme = wysiwyg_get_editor_themes($profile, $field['#wysiwyg_style']);
+              $theme = wysiwyg_get_editor_themes($profile, (isset($field['#wysiwyg_style']) ? $field['#wysiwyg_style'] : ''));
 
               // Add profile settings for this input format.
               wysiwyg_add_editor_settings($profile, $theme);

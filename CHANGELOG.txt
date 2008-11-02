@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#324366 by sun: Fixed "Illegal offset type" error on custom content-types.
 #328948 by sun: Fixed PHP notices when editors are assigned, but not configured.
 #327710 by sun: Fixed nicEdit version could not be detected.
 #328116 by sun: Added Safari plugin for TinyMCE 3.

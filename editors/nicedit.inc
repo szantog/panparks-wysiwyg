@@ -41,11 +41,8 @@ function wysiwyg_nicedit_editor() {
  */
 function wysiwyg_nicedit_version($editor) {
   $script = wysiwyg_get_path('nicedit') . '/nicedit.js';
-  // Note: This is 100% lame.  nicEdit developers: Please add version info.
-  $size = (filesize($script) / 1000);
-  if ($size > 41) {
-    return '0.9';
-  }
+  // @see http://nicedit.com/forums/viewtopic.php?t=425
+  return '0.9';
 }
 
 /**

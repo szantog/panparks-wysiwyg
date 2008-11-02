@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#327710 by sun: Fixed nicEdit version could not be detected.
 #328116 by sun: Added Safari plugin for TinyMCE 3.
 #327710 by sun: Added nicEdit support.
 #323855 by sun: Increased supported version of jWYSIWYG to 0.5.

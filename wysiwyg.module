@@ -253,7 +253,7 @@ function wysiwyg_load_editor($profile) {
       drupal_add_js(array('wysiwyg' => array(
         'configs' => array($editor['name'] => array()),
         // @todo Move into profile settings.
-        'showToggle' => $profile->settings['show_toggle'],
+        'showToggle' => isset($profile->settings['show_toggle']) ? $profile->settings['show_toggle'] : TRUE,
         // @todo http://drupal.org/node/322433
         'status' => $status,
         // @todo Move into (global) editor settings.
@@ -477,7 +477,7 @@ function wysiwyg_user_get_status($profile) {
     $status = $user->wysiwyg_status;
   }
   else {
-    $status = isset($profile->settings['default']) ? $profile->settings['default'] : FALSE;
+    $status = isset($profile->settings['default']) ? $profile->settings['default'] : TRUE;
   }
 
   return $status;

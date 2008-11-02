@@ -77,14 +77,16 @@ function wysiwyg_nicedit_settings($editor, $config, $theme) {
   }
 
   // Add editor content stylesheet.
-  if ($config['css_setting'] == 'theme') {
-    $css = path_to_theme() .'/style.css';
-    if (file_exists($css)) {
-      $settings['externalCSS'] = base_path() . $css;
+  if (isset($config['css_setting'])) {
+    if ($config['css_setting'] == 'theme') {
+      $css = path_to_theme() .'/style.css';
+      if (file_exists($css)) {
+        $settings['externalCSS'] = base_path() . $css;
+      }
     }
-  }
-  else if ($config['css_setting'] == 'self') {
-    $settings['externalCSS'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+    else if ($config['css_setting'] == 'self' && isset($config['css_path'])) {
+      $settings['externalCSS'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+    }
   }
 
   return $settings;

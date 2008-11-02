@@ -107,35 +107,51 @@ function wysiwyg_tinymce_version($editor) {
  */
 function wysiwyg_tinymce_settings($editor, $config, $theme) {
   $init = array(
-    'apply_source_formatting' => $config['apply_source_formatting'],
     'button_tile_map' => TRUE, // @todo Add a setting for this.
-    'convert_fonts_to_spans' => $config['convert_fonts_to_spans'],
     'document_base_url' => base_path(),
     'entity_encoding' => 'raw',
-    'language' => $config['language'],
     'mode' => 'none',
-    'paste_auto_cleanup_on_paste' => $config['paste_auto_cleanup_on_paste'],
     'plugins' => array(),
-    'preformatted' => $config['preformatted'],
     'relative_urls' => FALSE,
-    'remove_linebreaks' => $config['remove_linebreaks'],
     'theme' => $theme,
-    'verify_html' => $config['verify_html'],
     'width' => '100%',
   );
+  if (isset($config['apply_source_formatting'])) {
+    $init['apply_source_formatting'] = $config['apply_source_formatting'];
+  }
+  if (isset($config['convert_fonts_to_spans'])) {
+    $init['convert_fonts_to_spans'] = $config['convert_fonts_to_spans'];
+  }
+  if (isset($config['language'])) {
+    $init['language'] = $config['language'];
+  }
+  if (isset($config['paste_auto_cleanup_on_paste'])) {
+    $init['paste_auto_cleanup_on_paste'] = $config['paste_auto_cleanup_on_paste'];
+  }
+  if (isset($config['preformatted'])) {
+    $init['preformatted'] = $config['preformatted'];
+  }
+  if (isset($config['remove_linebreaks'])) {
+    $init['remove_linebreaks'] = $config['remove_linebreaks'];
+  }
+  if (isset($config['verify_html'])) {
+    $init['verify_html'] = $config['verify_html'];
+  }
 
-  if ($config['css_classes']) {
+  if (!empty($config['css_classes'])) {
     $init['theme_advanced_styles'] = implode(';', array_filter(explode("\n", str_replace("\r", '', $config['css_classes']))));
   }
 
-  if ($config['css_setting'] == 'theme') {
-    $css = path_to_theme() .'/style.css';
-    if (file_exists($css)) {
-      $init['content_css'] = base_path() . $css;
+  if (isset($config['css_setting'])) {
+    if ($config['css_setting'] == 'theme') {
+      $css = path_to_theme() .'/style.css';
+      if (file_exists($css)) {
+        $init['content_css'] = base_path() . $css;
+      }
     }
-  }
-  else if ($config['css_setting'] == 'self') {
-    $init['content_css'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+    else if ($config['css_setting'] == 'self' && isset($config['css_path'])) {
+      $init['content_css'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+    }
   }
 
   // Find the enabled buttons and the button row they belong on.
@@ -204,22 +220,36 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
   switch ($theme) {
     case 'advanced':
       $init += array(
-        'theme_advanced_blockformats' => $config['block_formats'] ? $config['block_formats'] : 'p,h2,h3,h4,h5,h6',
-        'theme_advanced_path_location' => $config['path_loc'],
-        'theme_advanced_resizing' => $config['resizing'],
         'theme_advanced_resize_horizontal' => FALSE,
         'theme_advanced_resizing_use_cookie' => FALSE,
-        'theme_advanced_toolbar_location' => $config['toolbar_loc'],
-        'theme_advanced_toolbar_align' => $config['toolbar_align'],
+      );
+      if (isset($config['block_formats'])) {
+        $init['theme_advanced_blockformats'] = $config['block_formats'];
+      }
+      if (isset($config['path_loc'])) {
+        $init['theme_advanced_path_location'] = $config['path_loc'];
+      }
+      if (isset($config['resizing'])) {
+        $init['theme_advanced_resizing'] = $config['resizing'];
+      }
+      if (isset($config['toolbar_loc'])) {
+        $init['theme_advanced_toolbar_location'] = $config['toolbar_loc'];
+      }
+      if (isset($config['toolbar_align'])) {
+        $init['theme_advanced_toolbar_align'] = $config['toolbar_align'];
+      }
+
+      if (isset($init['buttons'])) {
         // Note: These rows need to be set to NULL otherwise TinyMCE loads its
         // own buttons as defined in advanced theme.
-        'theme_advanced_buttons1' => array(),
-        'theme_advanced_buttons2' => array(),
-        'theme_advanced_buttons3' => array(),
-      );
-
-      for ($i = 0; $i < count($init['buttons']); $i++) {
-        $init['theme_advanced_buttons1'][] = $init['buttons'][$i];
+        $init += array(
+          'theme_advanced_buttons1' => array(),
+          'theme_advanced_buttons2' => array(),
+          'theme_advanced_buttons3' => array(),
+        );
+        for ($i = 0; $i < count($init['buttons']); $i++) {
+          $init['theme_advanced_buttons1'][] = $init['buttons'][$i];
+        }
       }
       break;
   }

@@ -90,9 +90,6 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
     'ToolbarStartExpanded' => TRUE,
     'EnterMode' => 'p',
     'ShiftEnterMode' => 'br',
-    'FontFormats' => strtr($config['block_formats'], array(',' => ';')),
-    'FormatSource' => $config['apply_source_formatting'],
-    'FormatOutput' => $config['preformatted'],
     'LinkBrowser' => FALSE,
     'LinkUpload' => FALSE,
     'ImageBrowser' => FALSE,
@@ -100,15 +97,26 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
     'FlashBrowser' => FALSE,
     'FlashUpload' => FALSE,
   );
-
-  if ($config['css_setting'] == 'theme') {
-    $css = path_to_theme() .'/style.css';
-    if (file_exists($css)) {
-      $init['EditorAreaCSS'] = base_path() . $css;
-    }
+  if (isset($config['block_formats'])) {
+    $init['FontFormats'] = strtr($config['block_formats'], array(',' => ';'));
   }
-  else if ($config['css_setting'] == 'self') {
-    $init['EditorAreaCSS'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+  if (isset($config['apply_source_formatting'])) {
+    $init['FormatSource'] = $config['apply_source_formatting'];
+  }
+  if (isset($config['preformatted'])) {
+    $init['FormatOutput'] = $config['preformatted'];
+  }
+
+  if (isset($config['css_setting'])) {
+    if ($config['css_setting'] == 'theme') {
+      $css = path_to_theme() .'/style.css';
+      if (file_exists($css)) {
+        $init['EditorAreaCSS'] = base_path() . $css;
+      }
+    }
+    else if ($config['css_setting'] == 'self' && isset($config['css_path'])) {
+      $init['EditorAreaCSS'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+    }
   }
 
   return $init;

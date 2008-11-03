@@ -126,7 +126,9 @@ function wysiwyg_process_form(&$form) {
           // guidelines, stored in the child 'format'.
           $formats = element_children($element);
           array_pop($formats);
-          unset($formats['format']);
+          if (($key = array_search('format', $formats)) !== FALSE) {
+            unset($formats[$key]);
+          }
           foreach ($formats as $format) {
             // Default to 'none' editor (Drupal's default behaviors).
             $editor = 'none';
@@ -149,8 +151,12 @@ function wysiwyg_process_form(&$form) {
             // Use a prefix/suffix for a single input format, or attach to input
             // format selector radio buttons.
             if (isset($element['format']['guidelines'])) {
-              $element[$format]['#prefix'] = '<div class="wysiwyg wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] . $theme . $extra_class .'">';
-              $element[$format]['#suffix'] = '</div>';
+              $element['format']['guidelines']['#prefix'] = '<div class="wysiwyg wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] . $theme . $extra_class .'">';
+              $element['format']['guidelines']['#suffix'] = '</div>';
+              // Edge-case: Default format contains no input filters.
+              if (empty($element['format']['guidelines']['#value'])) {
+                $element['format']['guidelines']['#value'] = ' ';
+              }
             }
             else {
               if (isset($element[$format]['#attributes']['class'])) {

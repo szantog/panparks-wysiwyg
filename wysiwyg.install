@@ -62,10 +62,10 @@ function wysiwyg_migrate_tinymce() {
       }
       // Disable TinyMCE module.
       module_disable(array('tinymce'));
-      drupal_set_message(t('TinyMCE module can be safely uninstalled now.'));
+      drupal_set_message('TinyMCE module can be safely uninstalled now.');
     }
     else {
-      drupal_set_message(t('To migrate your existing TinyMCE settings to Wysiwyg Editor, please update TinyMCE module to the latest official release, and re-install Wysiwyg Editor module.'));
+      drupal_set_message('To migrate your existing TinyMCE settings to Wysiwyg Editor, please update TinyMCE module to the latest official release, and re-install Wysiwyg Editor module.');
     }
   }
 }
@@ -113,7 +113,6 @@ function wysiwyg_update_6001() {
   }
   // Install new schema.
   db_create_table($ret, 'wysiwyg', array(
-    'description' => t('Stores Wysiwyg profiles.'),
     'fields' => array(
       'format' => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
       'editor' => array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => ''),
@@ -149,7 +148,7 @@ function wysiwyg_update_6001() {
       db_query("INSERT INTO {wysiwyg} (format, editor, settings) VALUES (%d, '%s', '%s')", $format, $profile->editor, serialize($profile->settings));
       $ret[] = array(
         'success' => TRUE,
-        'query' => t('Wysiwyg profile %profile converted and associated with input format %format.', array('%profile' => $profile->name, '%format' => $name)),
+        'query' => strtr('Wysiwyg profile %profile converted and associated with input format %format.', array('%profile' => check_plain($profile->name), '%format' => check_plain($name))),
       );
     }
   }

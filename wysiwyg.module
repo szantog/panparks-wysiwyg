@@ -15,7 +15,7 @@ function wysiwyg_menu() {
     'title' => 'Wysiwyg',
     'page callback' => 'wysiwyg_admin',
     'description' => 'Configure client-side editor profiles.',
-    'access arguments' => array('administer site configuration'),
+    'access arguments' => array('administer filters'),
     'file' => 'wysiwyg.admin.inc',
   );
   return $items;

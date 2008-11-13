@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#333521 by sun: Fixed TinyMCE version detection docs.
 #327100 by sun: Changed access permission for settings page to 'administer
   filters' to prevent incomplete updates.
 #322731 by sun: Fixed improper use of t() in module install file.

@@ -79,8 +79,10 @@ function wysiwyg_tinymce_editor() {
  *   The installed editor version.
  */
 function wysiwyg_tinymce_version($editor) {
+  // TinyMCE >= 3 uses changelog.txt.
   $changelog = wysiwyg_get_path('tinymce') . '/changelog.txt';
   if (!file_exists($changelog)) {
+    // TinyMCE < 3 uses changelog.
     $changelog = wysiwyg_get_path('tinymce') . '/changelog';
   }
   $changelog = fopen($changelog, 'r');

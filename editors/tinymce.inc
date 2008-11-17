@@ -79,17 +79,15 @@ function wysiwyg_tinymce_editor() {
  *   The installed editor version.
  */
 function wysiwyg_tinymce_version($editor) {
-  // TinyMCE >= 3 uses changelog.txt.
-  $changelog = wysiwyg_get_path('tinymce') . '/changelog.txt';
-  if (!file_exists($changelog)) {
-    // TinyMCE < 3 uses changelog.
-    $changelog = wysiwyg_get_path('tinymce') . '/changelog';
-  }
-  $changelog = fopen($changelog, 'r');
-  $line = fgets($changelog, 50);
-  if (preg_match('@^Version ([\d\.]+)@', $line, $version)) {
-    fclose($changelog);
-    return $version[1];
+  $script = $editor['library path'] .'/tiny_mce.js';
+  $script = fopen($script, 'r');
+  // Version is contained in the first 80 chars.
+  $line = fgets($script, 80);
+  // 2.x: this.majorVersion="2";this.minorVersion="1.3"
+  // 3.x: majorVersion:'3',minorVersion:'2.0.1'
+  if (preg_match('@majorVersion[=:]["\'](\d).+?minorVersion[=:]["\']([\d\.]+)@', $line, $version)) {
+    fclose($script);
+    return $version[1] .'.'. $version[2];
   }
 }
 

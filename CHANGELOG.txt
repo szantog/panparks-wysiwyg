@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#329657 by svendecabooter, sun: Added Whizzywig support.
 #333521 by sun: Fixed TinyMCE version detection docs.
 #327100 by sun: Changed access permission for settings page to 'administer
   filters' to prevent incomplete updates.

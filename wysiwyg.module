@@ -48,14 +48,6 @@ function wysiwyg_help($path, $arg) {
 /**
  * Implementation of hook_elements().
  *
- * Before Drupal 7, there is no way to easily identify form fields that are
- * input format enabled. This is a workaround: We assign a form #after_build
- * processing callback that is executed on all forms after they have been
- * completely built, so that form elements already are in their effective order
- * and position.
- *
- * @see wysiwyg_process_form()
- *
  * @todo Remove #wysiwyg_style; the GUI for an editor should be solely handled
  *   via profiles, when profiles are attached to an input format. It makes no
  *   sense to display TinyMCE's simple GUI/theme for the user signature, when
@@ -67,14 +59,22 @@ function wysiwyg_elements() {
   $type = array();
   // @todo Derive editor theme from input format.
   $type['textarea'] = array('#wysiwyg_style' => 'advanced');
-  $type['form'] = array('#after_build' => array('wysiwyg_process_form'));
   return $type;
 }
 
 /**
  * Implementation of hook_form_alter().
+ *
+ * Before Drupal 7, there is no way to easily identify form fields that are
+ * input format enabled. As a workaround, we assign a form #after_build
+ * processing callback that is executed on all forms after they have been
+ * completely built, so form elements are in their effective order
+ * and position already.
+ *
+ * @see wysiwyg_process_form()
  */
 function wysiwyg_form_alter(&$form, &$form_state) {
+  $form['#after_build'][] = 'wysiwyg_process_form';
   // Disable 'teaser' textarea.
   if (isset($form['body_field'])) {
     unset($form['body_field']['teaser_js']);

@@ -6,11 +6,11 @@
  * See Drupal.wysiwyg.editor.attach.none() for a full desciption of this hook.
  */
 Drupal.wysiwyg.editor.attach.fckeditor = function(context, params, settings) {
-  var FCKinstance = new FCKeditor(params.field, settings[params.theme]['Width'], settings[params.theme]['Height']);
-  // Configure settings for this theme.
-  FCKinstance.BasePath = settings[params.theme].BasePath;
-  for (var setting in settings[params.theme]) {
-    FCKinstance.Config[setting] = settings[params.theme][setting];
+  var FCKinstance = new FCKeditor(params.field, settings['Width'], settings['Height']);
+  // Configure editor settings for this input format.
+  FCKinstance.BasePath = settings.BasePath;
+  for (var setting in settings) {
+    FCKinstance.Config[setting] = settings[setting];
   }
   // Attach editor control if default is on.
   if (Drupal.settings.wysiwyg.status) {

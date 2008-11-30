@@ -7,9 +7,9 @@
  * calling tinyMCE.init() after the page is loaded breaks IE6.
  *
  * @param editorSettings
- *   An object containing editor settings for each enabled editor theme.
+ *   An object containing editor settings for each input format.
  */
-Drupal.wysiwyg.editor.init.tinymce = function(editorSettings) {
+Drupal.wysiwyg.editor.init.tinymce = function(settings) {
   // If JS compression is enabled, TinyMCE is unable to find its own base path
   // and exec mode, hence we need to define it manually.
   // @todo Move global library settings somewhere else.
@@ -18,8 +18,8 @@ Drupal.wysiwyg.editor.init.tinymce = function(editorSettings) {
   tinyMCE.gzipMode = (Drupal.settings.wysiwyg.execMode == 'gzip');
 
   // Initialize editor configurations.
-  for (var theme in editorSettings) {
-    tinyMCE.init(editorSettings[theme]);
+  for (var format in settings) {
+    tinyMCE.init(settings[format]);
   }
   for (var plugin in Drupal.settings.wysiwyg.plugins.tinymce) {
     tinyMCE.loadPlugin(plugin, Drupal.settings.wysiwyg.plugins.tinymce[plugin]);
@@ -31,10 +31,10 @@ Drupal.wysiwyg.editor.init.tinymce = function(editorSettings) {
  *
  * See Drupal.wysiwyg.editor.attach.none() for a full desciption of this hook.
  */
-Drupal.wysiwyg.editor.attach.tinymce = function(context, params, editorSettings) {
-  // Configure settings for this theme.
-  for (var setting in editorSettings[params.theme]) {
-    tinyMCE.settings[setting] = editorSettings[params.theme][setting];
+Drupal.wysiwyg.editor.attach.tinymce = function(context, params, settings) {
+  // Configure editor settings for this input format.
+  for (var setting in settings) {
+    tinyMCE.settings[setting] = settings[setting];
   }
   // Attach editor control if default is on.
   if (Drupal.settings.wysiwyg.status) {

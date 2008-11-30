@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#337569 by sun: Fixed different profiles for same editor are not respected.
 #340195 by sun: Fixed #after_build function not invoked on all forms.
 #333521 by sun: Fixed TinyMCE version detection to look at the actual script.
 #329657 by svendecabooter, sun: Added Whizzywig support.

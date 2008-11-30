@@ -46,23 +46,6 @@ function wysiwyg_help($path, $arg) {
 }
 
 /**
- * Implementation of hook_elements().
- *
- * @todo Remove #wysiwyg_style; the GUI for an editor should be solely handled
- *   via profiles, when profiles are attached to an input format. It makes no
- *   sense to display TinyMCE's simple GUI/theme for the user signature, when
- *   the input format allows users to use advanced HTML and hence, editor
- *   plugins.  Fix this here, in wysiwyg_process_element(), and lastly
- *   in wysiwyg_get_editor_config().
- */
-function wysiwyg_elements() {
-  $type = array();
-  // @todo Derive editor theme from input format.
-  $type['textarea'] = array('#wysiwyg_style' => 'advanced');
-  return $type;
-}
-
-/**
  * Implementation of hook_form_alter().
  *
  * Before Drupal 7, there is no way to easily identify form fields that are
@@ -132,26 +115,23 @@ function wysiwyg_process_form(&$form) {
           foreach ($formats as $format) {
             // Default to 'none' editor (Drupal's default behaviors).
             $editor = 'none';
-            $theme = '';
             // Fetch the profile associated to this input format.
             $profile = wysiwyg_get_profile($format);
             if ($profile) {
               $editor = $profile->editor;
               // Check editor theme (and reset it if not/no longer available).
-              $theme = wysiwyg_get_editor_themes($profile, (isset($field['#wysiwyg_style']) ? $field['#wysiwyg_style'] : ''));
+              $theme = wysiwyg_get_editor_themes($profile, (isset($profile->settings['theme']) ? $profile->settings['theme'] : ''));
 
               // Add profile settings for this input format.
               wysiwyg_add_editor_settings($profile, $theme);
               // Add plugin settings for this input format.
               wysiwyg_add_plugin_settings($profile);
-
-              $theme = ' wysiwyg-theme-'. $theme;
             }
 
             // Use a prefix/suffix for a single input format, or attach to input
             // format selector radio buttons.
             if (isset($element['format']['guidelines'])) {
-              $element['format']['guidelines']['#prefix'] = '<div class="wysiwyg wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] . $theme . $extra_class .'">';
+              $element['format']['guidelines']['#prefix'] = '<div class="wysiwyg wysiwyg-format-'. $format .' wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] . $extra_class .'">';
               $element['format']['guidelines']['#suffix'] = '</div>';
               // Edge-case: Default format contains no input filters.
               if (empty($element['format']['guidelines']['#value'])) {
@@ -165,7 +145,7 @@ function wysiwyg_process_form(&$form) {
               else {
                 $element[$format]['#attributes']['class'] = '';
               }
-              $element[$format]['#attributes']['class'] .= 'wysiwyg wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] . $theme . $extra_class;
+              $element[$format]['#attributes']['class'] .= 'wysiwyg wysiwyg-format-'. $format .' wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] . $extra_class;
             }
           }
         }
@@ -307,15 +287,17 @@ function wysiwyg_load_editor($profile) {
 }
 
 /**
- * Register a theme.
+ * Add editor settings for a given input format.
  */
 function wysiwyg_add_editor_settings($profile, $theme) {
-  static $editors = array();
+  static $formats = array();
 
-  if (!isset($editors[$profile->editor][$theme])) {
+  if (!isset($formats[$profile->format])) {
     $config = wysiwyg_get_editor_config($profile, $theme);
-    drupal_add_js(array('wysiwyg' => array('configs' => array($profile->editor => array($theme => $config)))), 'setting');
-    $editors[$profile->editor][$theme] = TRUE;
+    // drupal_to_js() does not properly convert numeric array keys, so we need
+    // to use a string instead of the format id.
+    drupal_add_js(array('wysiwyg' => array('configs' => array($profile->editor => array('format'. $profile->format => $config)))), 'setting');
+    $formats[$profile->format] = TRUE;
   }
 }
 
@@ -351,10 +333,9 @@ function wysiwyg_add_plugin_settings($profile) {
 }
 
 /**
- * Grab the themes available to Wysiwyg Editor.
+ * Retrieve available themes for an editor.
  *
- * Wysiwyg Editor themes control the functionality and buttons that are available to a
- * user. Themes are only looked for within the default Wysiwyg Editor theme directory.
+ * Editor themes control the visual presentation of an editor.
  *
  * @param $profile
  *   A wysiwyg editor profile; passed/altered by reference.
@@ -417,7 +398,7 @@ function wysiwyg_get_plugins($editor_name) {
 }
 
 /**
- * Return an array of initial Wysiwyg Editor config options from the current role.
+ * Return an array of initial editor settings for a Wysiwyg profile.
  */
 function wysiwyg_get_editor_config($profile, $theme) {
   $editor = wysiwyg_get_editor($profile->editor);

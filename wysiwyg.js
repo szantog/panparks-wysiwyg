@@ -19,7 +19,7 @@ Drupal.wysiwygInit = function() {
  * This behavior searches for input format selectors and formatting guidelines
  * that have been preprocessed by Wysiwyg API. All CSS classes of those elements
  * with the prefix 'wysiwyg-' are parsed into input format parameters, defining
- * the configured editor, editor theme, target element id, and variable other
+ * the input format, configured editor, target element id, and variable other
  * properties, which are passed to the attach/detach hooks of the corresponding
  * editor.
  *
@@ -45,6 +45,8 @@ Drupal.behaviors.attachWysiwyg = function(context) {
         params[parts[1]] = value;
       }
     }
+    // Convert format id to string.
+    params.format = 'format' + params.format;
     $this = $(this);
     // Directly attach this editor, if the input format is enabled or there is
     // only one input format at all.
@@ -81,7 +83,7 @@ Drupal.behaviors.attachWysiwyg = function(context) {
 Drupal.wysiwygAttach = function(context, params) {
   if (typeof Drupal.wysiwyg.editor.attach[params.editor] == 'function') {
     // Attach editor.
-    Drupal.wysiwyg.editor.attach[params.editor](context, params, Drupal.wysiwyg.clone(Drupal.settings.wysiwyg.configs[params.editor]));
+    Drupal.wysiwyg.editor.attach[params.editor](context, params, (Drupal.settings.wysiwyg.configs[params.editor] ? Drupal.wysiwyg.clone(Drupal.settings.wysiwyg.configs[params.editor][params.format]) : {}));
     // Display toggle link.
     $('#wysiwyg-toggle-' + params.field).show();
   }

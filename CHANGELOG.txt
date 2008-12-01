@@ -6,6 +6,10 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+
+
+Wysiwyg 6.x-0.5, 2008-12-01
+---------------------------
 #340758 by sun: Changed installation instructions to be displayed permanently.
 #322657 by sun: Fixed "Enabled by default" option does not work when disabled.
 #328052 by sun: Fixed switching input formats leads to wrong editor/state.

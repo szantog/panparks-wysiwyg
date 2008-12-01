@@ -115,10 +115,12 @@ function wysiwyg_process_form(&$form) {
           foreach ($formats as $format) {
             // Default to 'none' editor (Drupal's default behaviors).
             $editor = 'none';
+            $status = 1;
             // Fetch the profile associated to this input format.
             $profile = wysiwyg_get_profile($format);
             if ($profile) {
               $editor = $profile->editor;
+              $status = (int)wysiwyg_user_get_status($profile);
               // Check editor theme (and reset it if not/no longer available).
               $theme = wysiwyg_get_editor_themes($profile, (isset($profile->settings['theme']) ? $profile->settings['theme'] : ''));
 
@@ -131,7 +133,7 @@ function wysiwyg_process_form(&$form) {
             // Use a prefix/suffix for a single input format, or attach to input
             // format selector radio buttons.
             if (isset($element['format']['guidelines'])) {
-              $element['format']['guidelines']['#prefix'] = '<div class="wysiwyg wysiwyg-format-'. $format .' wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] . $extra_class .'">';
+              $element['format']['guidelines']['#prefix'] = '<div class="wysiwyg wysiwyg-format-'. $format .' wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] .' wysiwyg-status-'. $status . $extra_class .'">';
               $element['format']['guidelines']['#suffix'] = '</div>';
               // Edge-case: Default format contains no input filters.
               if (empty($element['format']['guidelines']['#value'])) {
@@ -145,7 +147,7 @@ function wysiwyg_process_form(&$form) {
               else {
                 $element[$format]['#attributes']['class'] = '';
               }
-              $element[$format]['#attributes']['class'] .= 'wysiwyg wysiwyg-format-'. $format .' wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] . $extra_class;
+              $element[$format]['#attributes']['class'] .= 'wysiwyg wysiwyg-format-'. $format .' wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] .' wysiwyg-status-'. $status . $extra_class;
             }
           }
         }
@@ -235,13 +237,10 @@ function wysiwyg_load_editor($profile) {
         drupal_add_css($editor['css path'] . '/' . $file, 'module', 'screen');
       }
 
-      $status = wysiwyg_user_get_status($profile);
       drupal_add_js(array('wysiwyg' => array(
         'configs' => array($editor['name'] => array()),
         // @todo Move into profile settings.
         'showToggle' => isset($profile->settings['show_toggle']) ? $profile->settings['show_toggle'] : TRUE,
-        // @todo http://drupal.org/node/322433
-        'status' => $status,
         // @todo Move into (global) editor settings.
         // If JS compression is enabled, at least TinyMCE is unable to determine
         // its own base path and exec mode since it can't find the script name.

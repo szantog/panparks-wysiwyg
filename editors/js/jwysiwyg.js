@@ -4,10 +4,8 @@
  * Attach this editor to a target element.
  */
 Drupal.wysiwyg.editor.attach.jwysiwyg = function(context, params, settings) {
-  // Attach editor control if default is on.
-  if (Drupal.settings.wysiwyg.status) {
-    $('#' + params.field).wysiwyg();
-  }
+  // Attach editor.
+  $('#' + params.field).wysiwyg();
 };
 
 /**

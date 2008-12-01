@@ -37,10 +37,8 @@ Drupal.wysiwyg.editor.attach.tinymce = function(context, params, settings) {
   for (var setting in settings) {
     tinyMCE.settings[setting] = settings[setting];
   }
-  // Attach editor control if default is on.
-  if (Drupal.settings.wysiwyg.status) {
-    tinyMCE.execCommand('mceAddControl', true, params.field);
-  }
+  // Attach editor.
+  tinyMCE.execCommand('mceAddControl', true, params.field);
 };
 
 /**

@@ -52,22 +52,19 @@ var o = function (id) {
  * Attach this editor to a target element.
  */
 Drupal.wysiwyg.editor.attach.whizzywig = function(context, params, settings) {
-  // Attach editor control if default is on.
-  if (Drupal.settings.wysiwyg.status) {
-    // Assign button images path, if available.
-    if (settings.buttonPath) {
-      window.buttonPath = settings.buttonPath;
-    }
-    // Create Whizzywig container.
-    wysiwygWhizzywig.currentField = params.field;
-    wysiwygWhizzywig.fields[wysiwygWhizzywig.currentField] = '';
-    // Attach editor.
-    makeWhizzyWig(params.field, (settings.buttons ? settings.buttons : 'all'));
-    // Whizzywig fails to detect and set initial textarea contents.
-    var instance = $('#whizzy' + params.field).get(0);
-    if (instance) {
-      instance.contentWindow.document.body.innerHTML = $('#' + params.field).val();
-    }
+  // Assign button images path, if available.
+  if (settings.buttonPath) {
+    window.buttonPath = settings.buttonPath;
+  }
+  // Create Whizzywig container.
+  wysiwygWhizzywig.currentField = params.field;
+  wysiwygWhizzywig.fields[wysiwygWhizzywig.currentField] = '';
+  // Attach editor.
+  makeWhizzyWig(params.field, (settings.buttons ? settings.buttons : 'all'));
+  // Whizzywig fails to detect and set initial textarea contents.
+  var instance = $('#whizzy' + params.field).get(0);
+  if (instance) {
+    instance.contentWindow.document.body.innerHTML = $('#' + params.field).val();
   }
 };
 

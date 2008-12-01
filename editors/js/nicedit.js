@@ -4,11 +4,9 @@
  * Attach this editor to a target element.
  */
 Drupal.wysiwyg.editor.attach.nicedit = function(context, params, settings) {
-  // Attach editor control if default is on.
-  if (Drupal.settings.wysiwyg.status) {
-    var editor = new nicEditor(settings);
-    editor.panelInstance(params.field);
-  }
+  // Attach editor.
+  var editor = new nicEditor(settings);
+  editor.panelInstance(params.field);
 };
 
 /**

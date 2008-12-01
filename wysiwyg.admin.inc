@@ -382,47 +382,44 @@ function theme_wysiwyg_admin_button_table(&$form) {
  * Display overview of setup Wysiwyg Editor profiles; menu callback.
  */
 function wysiwyg_profile_overview() {
+  include_once './includes/install.inc';
   $form = array();
-  $usable = TRUE;
 
   // Check which wysiwyg editors are installed.
   $editors = wysiwyg_get_all_editors();
   $count = count($editors);
-  $errors = array();
-  $links = array();
+  $status = array();
+  $options = array('' => t('No editor'));
   foreach ($editors as $editor => $properties) {
-    if (!$properties['installed']) {
+    $status[$editor] = array(
+      'severity' => (isset($properties['error']) ? REQUIREMENT_ERROR : ($properties['installed'] ? REQUIREMENT_OK : REQUIREMENT_INFO)),
+      'title' => t('<a href="!vendor-url">@editor</a> (<a href="!download-url">Download</a>)', array('!vendor-url' => $properties['vendor url'], '@editor' => $properties['title'], '!download-url' => $properties['download url'])),
+      'value' => (isset($properties['installed version']) ? $properties['installed version'] : t('Not installed.')),
+      'description' => (isset($properties['error']) ? $properties['error'] : ($properties['installed'] ? '' : t('Extract the archive and copy its contents into a new folder in the following location:<br /><code>@editor-path</code>', array('@editor-path' => $properties['editor path'])))),
+    );
+    if ($properties['installed']) {
+      $options[$editor] = $properties['title'] . (isset($properties['installed version']) ? ' ' . $properties['installed version'] : '');
+    }
+    else {
       $count--;
-      $links[$editor] = t('<a href="!vendor-url">@editor</a> (<a href="!download-url">Download</a>)<br />Extract the archive and copy the folder to the following location:<br /><code>@editor-path</code>', array('!vendor-url' => $properties['vendor url'], '@editor' => $properties['title'], '!download-url' => $properties['download url'], '@editor-path' => $properties['editor path']));
-    }
-    if (isset($properties['error'])) {
-      $errors[] = $properties['error'];
     }
   }
-  if ($errors) {
-    foreach ($errors as $message) {
-      drupal_set_message($message, 'error');
-    }
-  }
-  elseif (!$count) {
-    drupal_set_message(t('There are no editor libraries installed currently. The following list contains a list of currently supported editors:') . theme('item_list', $links), 'error');
-    $usable = FALSE;
-  }
+  $form['status'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Installation instructions'),
+    '#collapsible' => TRUE,
+    '#collapsed' => $count,
+    '#description' => (!$count ? t('There are no editor libraries installed currently. The following list contains a list of currently supported editors:') : ''),
+    '#weight' => 10,
+  );
+  $form['status']['report'] = array('#type' => 'markup', '#value' => theme('status_report', $status));
 
-  if (!$usable) {
+  if (!$count) {
     return $form;
   }
 
   $formats = filter_formats();
-
   $profiles = wysiwyg_load_profile();
-  $options = array('' => t('No editor'));
-  foreach ($editors as $name => $properties) {
-    if ($properties['installed']) {
-      $options[$name] = $properties['title'];
-    }
-  }
-
   $form['formats']['#tree'] = TRUE;
   foreach ($formats as $id => $format) {
     $form['formats'][$id]['name'] = array(
@@ -444,10 +441,7 @@ function wysiwyg_profile_overview() {
     }
   }
 
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
   return $form;
 }
 
@@ -455,6 +449,9 @@ function wysiwyg_profile_overview() {
  * Return HTML for the Wysiwyg profile overview form.
  */
 function theme_wysiwyg_profile_overview(&$form) {
+  if (!isset($form['formats'])) {
+    return;
+  }
   $output = '';
   $header = array(t('Input format'), t('Editor'), array('data' => t('Operations'), 'colspan' => 2));
   $rows = array();

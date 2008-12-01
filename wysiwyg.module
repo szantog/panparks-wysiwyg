@@ -550,7 +550,6 @@ function wysiwyg_get_all_editors() {
     // Apply library version specific definitions and overrides.
     $editors[$editor] = array_merge($editors[$editor], $editors[$editor]['versions'][$version]);
     unset($editors[$editor]['versions']);
-    $editors[$editor]['title'] = $editors[$editor]['title'] . ' ' . $editors[$editor]['installed version'];
   }
   return $editors;
 }

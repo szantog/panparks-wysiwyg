@@ -184,15 +184,15 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
             $init['buttons'][] = $button;
           }
           // Add external plugins to the list of extensions.
-          if ($type == 'buttons' && !isset($plugins[$plugin]['internal'])) {
+          if ($type == 'buttons' && empty($plugins[$plugin]['internal'])) {
             $init['extensions'][_wysiwyg_tinymce_plugin_name('add', $plugin)] = 1;
           }
           // Add internal buttons that also need to be loaded as extension.
-          else if ($type == 'buttons' && isset($plugins[$plugin]['load'])) {
+          else if ($type == 'buttons' && !empty($plugins[$plugin]['load'])) {
             $init['extensions'][$plugin] = 1;
           }
           // Add plain extensions.
-          else if ($type == 'extensions') {
+          else if ($type == 'extensions' && !empty($plugins[$plugin]['load'])) {
             $init['extensions'][$plugin] = 1;
           }
           // Allow plugins to add valid HTML elements.
@@ -404,6 +404,7 @@ function wysiwyg_tinymce_plugins($editor) {
       'extensions' => array('contextmenu' => t('Context menu')),
       'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/contextmenu',
       'internal' => TRUE,
+      'load' => TRUE,
     ),
     'directionality' => array(
       'path' => $editor['library path'] .'/plugins/directionality',

@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#341267 by sun: Added support for extensions that do not need to be loaded.
 
 
 Wysiwyg 6.x-0.5, 2008-12-01

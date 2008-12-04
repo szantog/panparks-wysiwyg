@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#341996 by sun: Fixed editor cannot be re-enabled with one input format only.
 #341267 by sun: Added support for extensions that do not need to be loaded.
 
 

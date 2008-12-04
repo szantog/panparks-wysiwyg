@@ -132,7 +132,7 @@ Drupal.wysiwygAttachToggleLink = function(context, params) {
       // Before enabling the editor, detach default behaviors.
       Drupal.wysiwyg.editor.detach.none(context, params);
       // Attach new editor using parameters of the currently selected input format.
-      Drupal.wysiwyg.getParams($('.wysiwyg-field-' + params.field + ':checked', context).get(0), params);
+      Drupal.wysiwyg.getParams($('.wysiwyg-field-' + params.field + ':checked, div.wysiwyg-field-' + params.field, context).get(0), params);
       params.status = true;
       Drupal.wysiwygAttach(context, params);
       $(this).html(Drupal.settings.wysiwyg.disable).blur();

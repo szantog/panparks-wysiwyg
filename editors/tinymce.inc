@@ -307,7 +307,7 @@ function wysiwyg_tinymce_themes($editor, $profile) {
 function wysiwyg_tinymce_plugin_settings($editor, $profile, $plugins) {
   $settings = array();
   foreach ($plugins as $name => $plugin) {
-    if (!isset($plugin['internal'])) {
+    if (empty($plugin['internal'])) {
       $settings[$name] = base_path() . $plugin['path'];
     }
   }

@@ -209,16 +209,21 @@ function wysiwyg_load_editor($profile) {
       // @todo Allow to configure the library/execMode to use.
       if (isset($profile->settings['library']) && isset($editor['libraries'][$profile->settings['library']])) {
         $library = $profile->settings['library'];
-        $files = $editor['libraries'][$profile->settings['library']]['files'];
+        $files = $editor['libraries'][$library]['files'];
       }
       else {
-        // Fallback to the first by default (external libraries can change).
+        // Fallback to the first defined library by default (external libraries can change).
         $library = key($editor['libraries']);
         $files = array_shift($editor['libraries']);
         $files = $files['files'];
       }
       foreach ($files as $file) {
         drupal_add_js($editor['library path'] . '/' . $file);
+      }
+      // If editor defines an additional load callback, invoke it.
+      // @todo Isn't the settings callback sufficient?
+      if (isset($editor['load callback']) && function_exists($editor['load callback'])) {
+        $editor['load callback']($editor, $library);
       }
       // Load JavaScript integration files for this editor.
       $files = array();

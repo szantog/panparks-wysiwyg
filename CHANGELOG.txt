@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#348986 by sun: Added CSS class for toggle link container.
 #342864 by davexoxide, sun: Added YUI editor support.
 #343217 by sun: Fixed improperly capitalized library script name for nicEdit.
 #341267 by sun: Fixed improper test for internal editor plugins.

@@ -115,7 +115,7 @@ Drupal.wysiwygAttachToggleLink = function(context, params) {
     var a = document.createElement('a');
     $(a).attr({id: 'wysiwyg-toggle-' + params.field, href: 'javascript:void(0);'}).append(text);
     var div = document.createElement('div');
-    $(div).append(a);
+    $(div).addClass('wysiwyg-toggle-wrapper').append(a);
     $('#' + params.field).after(div);
   }
   $('#wysiwyg-toggle-' + params.field).html(params.status ? Drupal.settings.wysiwyg.disable : Drupal.settings.wysiwyg.enable).show().unbind('click').click(function() {

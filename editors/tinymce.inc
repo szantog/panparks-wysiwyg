@@ -387,7 +387,7 @@ function wysiwyg_tinymce_plugins($editor) {
     'advlink' => array(
       'path' => $editor['library path'] .'/plugins/advlink',
       'extensions' => array('advlink' => t('Advanced link')),
-      'extended_valid_elements' => array('a[name|href|target|title|onclick]'),
+      'extended_valid_elements' => array('a[name|href|target|title|class|onfocus|onblur|onclick|ondlbclick|onmousedown|onmouseup|onmouseover|onmouseout|onkeypress|onkeydown|onkeyup|id|style|rel]'),
       'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/advlink',
       'internal' => TRUE,
       'load' => TRUE,

@@ -222,31 +222,23 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
       $init += array(
         'theme_advanced_resize_horizontal' => FALSE,
         'theme_advanced_resizing_use_cookie' => FALSE,
+        'theme_advanced_path_location' => isset($config['path_loc']) ? $config['path_loc'] : 'bottom',
+        'theme_advanced_resizing' => isset($config['resizing']) ? $config['resizing'] : 1,
+        'theme_advanced_toolbar_location' => isset($config['toolbar_loc']) ? $config['toolbar_loc'] : 'top',
+        'theme_advanced_toolbar_align' => isset($config['toolbar_align']) ? $config['toolbar_align'] : 'left',
       );
       if (isset($config['block_formats'])) {
         $init['theme_advanced_blockformats'] = $config['block_formats'];
       }
-      if (isset($config['path_loc'])) {
-        $init['theme_advanced_path_location'] = $config['path_loc'];
-      }
-      if (isset($config['resizing'])) {
-        $init['theme_advanced_resizing'] = $config['resizing'];
-      }
-      if (isset($config['toolbar_loc'])) {
-        $init['theme_advanced_toolbar_location'] = $config['toolbar_loc'];
-      }
-      if (isset($config['toolbar_align'])) {
-        $init['theme_advanced_toolbar_align'] = $config['toolbar_align'];
-      }
-
       if (isset($init['buttons'])) {
-        // Note: These rows need to be set to NULL otherwise TinyMCE loads its
-        // own buttons as defined in advanced theme.
+        // These rows explicitly need to be set to be empty, otherwise TinyMCE
+        // loads its default buttons of the advanced theme for each row.
         $init += array(
           'theme_advanced_buttons1' => array(),
           'theme_advanced_buttons2' => array(),
           'theme_advanced_buttons3' => array(),
         );
+        // @todo Allow to sort/arrange editor buttons.
         for ($i = 0; $i < count($init['buttons']); $i++) {
           $init['theme_advanced_buttons1'][] = $init['buttons'][$i];
         }

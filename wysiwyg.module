@@ -217,8 +217,14 @@ function wysiwyg_load_editor($profile) {
         $files = array_shift($editor['libraries']);
         $files = $files['files'];
       }
-      foreach ($files as $file) {
-        drupal_add_js($editor['library path'] . '/' . $file);
+      foreach ($files as $file => $options) {
+        if (is_array($options)) {
+          $options += array('type' => 'module', 'scope' => 'header', 'defer' => FALSE, 'cache' => TRUE, 'preprocess' => TRUE);
+          drupal_add_js($editor['library path'] . '/' . $file, $options['type'], $options['scope'], $options['defer'], $options['cache'], $options['preprocess']);
+        }
+        else {
+          drupal_add_js($editor['library path'] . '/' . $options);
+        }
       }
       // If editor defines an additional load callback, invoke it.
       // @todo Isn't the settings callback sufficient?

@@ -48,7 +48,9 @@ function wysiwyg_tinymce_editor() {
         'libraries' => array(
           '' => array(
             'title' => 'Minified',
-            'files' => array('tiny_mce.js'),
+            'files' => array(
+              'tiny_mce.js' => array('preprocess' => FALSE),
+            ),
           ),
           'jquery' => array(
             'title' => 'jQuery',

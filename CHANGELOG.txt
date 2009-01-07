@@ -6,6 +6,8 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#342376 by sun: Extended API to allow "preprocess" JavaScript option for some
+  editors.
 #352295 by sun: Added markItUp editor support.
 #352703 by sun: Fixed wrong default configuration options for TinyMCE 3.2.1+.
 #348317 by sun: Fixed TinyMCE's extended_valid_elements for advlink/advimage

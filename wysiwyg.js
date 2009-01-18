@@ -48,6 +48,12 @@ Drupal.behaviors.attachWysiwyg = function(context) {
         Drupal.wysiwygDetach(context, params);
         Drupal.wysiwygAttach(context, params);
       });
+      // IE triggers onChange after blur only.
+      if ($.browser.msie) {
+        $this.click(function () {
+          this.blur();
+        });
+      }
     }
     $this.addClass('wysiwyg-processed');
   });

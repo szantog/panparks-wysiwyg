@@ -6,6 +6,8 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-x.x, xxxx-xx-xx
 ---------------------------
+#360696 by sun: Fixed IE does not trigger onChange event when selecting an input
+  format.
 #342376 by sun: Extended API to allow "preprocess" JavaScript option for some
   editors.
 #352295 by sun: Added markItUp editor support.

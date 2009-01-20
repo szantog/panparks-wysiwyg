@@ -245,7 +245,7 @@ function wysiwyg_load_editor($profile) {
         $files = $editor['css files'];
       }
       foreach ($files as $file) {
-        drupal_add_css($editor['css path'] . '/' . $file, 'module', 'screen');
+        drupal_add_css($editor['css path'] . '/' . $file);
       }
 
       drupal_add_js(array('wysiwyg' => array(

@@ -8,7 +8,7 @@
 Drupal.wysiwyg.editor.attach.fckeditor = function(context, params, settings) {
   var FCKinstance = new FCKeditor(params.field, settings['Width'], settings['Height']);
   // Configure editor settings for this input format.
-  FCKinstance.BasePath = settings.BasePath;
+  FCKinstance.BasePath = settings.EditorPath;
   for (var setting in settings) {
     FCKinstance.Config[setting] = settings[setting];
   }

@@ -81,7 +81,7 @@ function wysiwyg_fckeditor_version($editor) {
  */
 function wysiwyg_fckeditor_settings($editor, $config, $theme) {
   $init = array(
-    'BasePath' => base_path() . $editor['editor path'] .'/',
+    'EditorPath' => base_path() . $editor['editor path'] .'/',
     'SkinPath' => base_path() . $editor['editor path'] .'/editor/skins/default/',
     'Width' => '100%',
     'Height' => 420,

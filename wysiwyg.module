@@ -470,7 +470,7 @@ function wysiwyg_user($type, &$edit, &$user, $category = NULL) {
 function wysiwyg_user_get_status($profile) {
   global $user;
 
-  if ($profile->settings['user_choose'] && isset($user->wysiwyg_status)) {
+  if (!empty($profile->settings['user_choose']) && isset($user->wysiwyg_status)) {
     $status = $user->wysiwyg_status;
   }
   else {

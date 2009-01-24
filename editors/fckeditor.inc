@@ -1,25 +1,24 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Editor integration functions for FCKeditor.
+ */
+
 
 /**
  * Plugin implementation of hook_editor().
- *
- * - Function signature and returned editor name nust match include filename.
- * - Returns an array of supported editor versions along with support files.
- *
- * @todo wysiwyg_<editor>_alter() to add/inject optional libraries like gzip.
  */
 function wysiwyg_fckeditor_editor() {
   $editor = array();
   $editor['fckeditor'] = array(
-    // Required properties
     'title' => 'FCKeditor',
     'vendor url' => 'http://www.fckeditor.net',
     'download url' => 'http://www.fckeditor.net/download',
     'library path' => wysiwyg_get_path('fckeditor'),
-    'libraries' => array( // We cannot assume that all editors need just one js library.
-      '' => array( // Key may be used in wysiwyg_fckeditor_settings() for exec mode.
+    'libraries' => array(
+      '' => array(
         'title' => 'Default',
         'files' => array('fckeditor.js'),
       ),
@@ -28,19 +27,11 @@ function wysiwyg_fckeditor_editor() {
     'themes callback' => 'wysiwyg_fckeditor_themes',
     'settings callback' => 'wysiwyg_fckeditor_settings',
     'plugin callback' => 'wysiwyg_fckeditor_plugins',
-    'plugin settings callback' => 'wysiwyg_fckeditor_plugin_settings',
-    'versions' => array( // Each version can override global editor properties.
+    'versions' => array(
       2.6 => array(
-        // 'include files' => array('fckeditor-2.inc'),
         'js files' => array('fckeditor-2.6.js'),
       ),
     ),
-    // Optional properties
-    // 'editor path' => wysiwyg_get_path('fckeditor'),
-    // 'js path' => wysiwyg_get_path('js'),
-    // 'css path' => wysiwyg_get_path('css'),
-    // @todo Not yet implemented.
-    // 'css files' => array('fckeditor.css'),
   );
   return $editor;
 }
@@ -57,12 +48,15 @@ function wysiwyg_fckeditor_editor() {
 function wysiwyg_fckeditor_version($editor) {
   $library = $editor['library path'] .'/fckeditor.js';
   $library = fopen($library, 'r');
-  while ($line = fgets($library, 60)) {
+  $max_lines = 100;
+  while ($max_lines && $line = fgets($library, 60)) {
     if (preg_match('@^FCKeditor.prototype.Version\s*= \'([\d\.]+)@', $line, $version)) {
       fclose($library);
       return $version[1];
     }
+    $max_lines--;
   }
+  fclose($library);
 }
 
 /**
@@ -80,9 +74,9 @@ function wysiwyg_fckeditor_version($editor) {
  *   Drupal.settings.wysiwyg.configs.{editor}
  */
 function wysiwyg_fckeditor_settings($editor, $config, $theme) {
-  $init = array(
-    'EditorPath' => base_path() . $editor['editor path'] .'/',
-    'SkinPath' => base_path() . $editor['editor path'] .'/editor/skins/default/',
+  $settings = array(
+    'EditorPath' => base_path() . $editor['library path'] .'/',
+    'SkinPath' => base_path() . $editor['library path'] .'/editor/skins/default/',
     'Width' => '100%',
     'Height' => 420,
     'DefaultLanguage' => 'en',
@@ -98,28 +92,28 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
     'FlashUpload' => FALSE,
   );
   if (isset($config['block_formats'])) {
-    $init['FontFormats'] = strtr($config['block_formats'], array(',' => ';'));
+    $settings['FontFormats'] = strtr($config['block_formats'], array(',' => ';'));
   }
   if (isset($config['apply_source_formatting'])) {
-    $init['FormatSource'] = $config['apply_source_formatting'];
+    $settings['FormatSource'] = $config['apply_source_formatting'];
   }
   if (isset($config['preformatted'])) {
-    $init['FormatOutput'] = $config['preformatted'];
+    $settings['FormatOutput'] = $config['preformatted'];
   }
 
   if (isset($config['css_setting'])) {
     if ($config['css_setting'] == 'theme') {
       $css = path_to_theme() .'/style.css';
       if (file_exists($css)) {
-        $init['EditorAreaCSS'] = base_path() . $css;
+        $settings['EditorAreaCSS'] = base_path() . $css;
       }
     }
     else if ($config['css_setting'] == 'self' && isset($config['css_path'])) {
-      $init['EditorAreaCSS'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+      $settings['EditorAreaCSS'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
     }
   }
 
-  return $init;
+  return $settings;
 }
 
 /**
@@ -136,17 +130,6 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
  */
 function wysiwyg_fckeditor_themes($editor, $profile) {
   return array('default', 'office2003', 'silver');
-}
-
-/**
- * Build a JS settings array of external plugins that need to be loaded separately.
- *
- * TinyMCE requires that external plugins (i.e. not residing in the editor's
- * directory) are loaded (once) after the editor has been initialized.
- */
-function wysiwyg_fckeditor_plugin_settings($editor, $profile, $info) {
-  $plugins = array();
-  return $plugins;
 }
 
 /**

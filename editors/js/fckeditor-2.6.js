@@ -2,8 +2,6 @@
 
 /**
  * Attach this editor to a target element.
- *
- * See Drupal.wysiwyg.editor.attach.none() for a full desciption of this hook.
  */
 Drupal.wysiwyg.editor.attach.fckeditor = function(context, params, settings) {
   var FCKinstance = new FCKeditor(params.field, settings['Width'], settings['Height']);
@@ -18,8 +16,6 @@ Drupal.wysiwyg.editor.attach.fckeditor = function(context, params, settings) {
 
 /**
  * Detach a single or all editors.
- *
- * See Drupal.wysiwyg.editor.detach.none() for a full desciption of this hook.
  */
 Drupal.wysiwyg.editor.detach.fckeditor = function(context, params) {
   if (typeof params != 'undefined' && typeof FCKeditorAPI != 'undefined') {

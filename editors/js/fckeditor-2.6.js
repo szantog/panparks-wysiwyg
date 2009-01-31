@@ -5,8 +5,16 @@
  */
 Drupal.wysiwyg.editor.attach.fckeditor = function(context, params, settings) {
   var FCKinstance = new FCKeditor(params.field, settings['Width'], settings['Height']);
-  // Configure editor settings for this input format.
+  // Apply editor instance settings.
   FCKinstance.BasePath = settings.EditorPath;
+  // Apply 'Wysiwyg' toolbar, if defined.
+  if (settings.buttons) {
+    FCKinstance.ToolbarSet = settings.ToolbarSet;
+  }
+
+  // Apply input format configuration.
+  FCKinstance.Config.format = params.format;
+  delete settings.buttons;
   for (var setting in settings) {
     FCKinstance.Config[setting] = settings[setting];
   }
@@ -27,9 +35,13 @@ Drupal.wysiwyg.editor.detach.fckeditor = function(context, params) {
       delete FCKeditorAPI.__Instances[params.field];
     }
   }
-//  else {
-//    tinyMCE.triggerSave();
-//    tinyMCE.remove();
-//  }
+  else {
+    for (instance in FCKeditorAPI.__Instances) {
+      $('#' + instance).val(editor.GetXHTML()).show();
+      $('#' + instance + '___Config').remove();
+      $('#' + instance + '___Frame').remove();
+      delete FCKeditorAPI.__Instances[instance];
+    }
+  }
 };
 

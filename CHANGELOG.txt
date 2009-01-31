@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#331089 by wwalc, sun: Added custom toolbar configuration support for FCKeditor.
 #331089 by sun: Fixed PHP notice for 'user_choose'; FCKeditor clean-up.
 #344230 by wwalc: Fixed wrong editor base path setting for FCKeditor.
 #361289 by sun: Fixed CSS files do not need to use media 'screen'.

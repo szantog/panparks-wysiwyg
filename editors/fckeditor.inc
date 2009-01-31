@@ -76,14 +76,9 @@ function wysiwyg_fckeditor_version($editor) {
 function wysiwyg_fckeditor_settings($editor, $config, $theme) {
   $settings = array(
     'EditorPath' => base_path() . $editor['library path'] .'/',
-    'SkinPath' => base_path() . $editor['library path'] .'/editor/skins/default/',
+    'SkinPath' => base_path() . $editor['library path'] .'/editor/skins/'. $theme .'/',
     'Width' => '100%',
     'Height' => 420,
-    'DefaultLanguage' => 'en',
-    'AutoDetectLanguage' => TRUE,
-    'ToolbarStartExpanded' => TRUE,
-    'EnterMode' => 'p',
-    'ShiftEnterMode' => 'br',
     'LinkBrowser' => FALSE,
     'LinkUpload' => FALSE,
     'ImageBrowser' => FALSE,
@@ -113,6 +108,34 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
     }
   }
 
+  if (!empty($config['buttons'])) {
+    // Use our custom toolbar set.
+    $settings['CustomConfigurationsPath'] = wysiwyg_get_path('editors/js/fckeditor.config.js', TRUE);
+    $settings['ToolbarSet'] = 'Wysiwyg';
+    // Populate our custom toolbar set for fckeditor.config.js.
+    $settings['buttons'] = array();
+    $plugins = wysiwyg_get_plugins($editor['name']);
+    foreach ($config['buttons'] as $plugin => $buttons) {
+      foreach ($buttons as $button => $enabled) {
+        // Iterate separately over buttons and extensions properties.
+        foreach (array('buttons', 'extensions') as $type) {
+          // Skip unavailable plugins.
+          if (!isset($plugins[$plugin][$type][$button])) {
+            continue;
+          }
+          // Add buttons.
+          if ($type == 'buttons') {
+            $settings['buttons'][] = $button;
+          }
+        }
+      }
+    }
+    // For now, all buttons are placed into one row.
+    if (!empty($settings['buttons'])) {
+      $settings['buttons'] = array($settings['buttons']);
+    }
+  }
+
   return $settings;
 }
 
@@ -137,6 +160,37 @@ function wysiwyg_fckeditor_themes($editor, $profile) {
  */
 function wysiwyg_fckeditor_plugins($editor) {
   return array(
+    'default' => array(
+      'buttons' => array(
+        'Bold' => t('Bold'), 'Italic' => t('Italic'), 'Underline' => t('Underline'),
+        'StrikeThrough' => t('Strike-through'),
+        'JustifyLeft' => t('Align left'), 'JustifyCenter' => t('Align center'), 'JustifyRight' => t('Align right'), 'JustifyFull' => t('Justify'),
+        'UnorderedList' => t('Bullet list'), 'OrderedList' => t('Numbered list'),
+        'Outdent' => t('Outdent'), 'Indent' => t('Indent'),
+        'Undo' => t('Undo'), 'Redo' => t('Redo'),
+        'Link' => t('Link'), 'Unlink' => t('Unlink'), 'Anchor' => t('Anchor'),
+        'Image' => t('Image'),
+        'TextColor' => t('Forecolor'), 'BGColor' => t('Backcolor'),
+        'Superscript' => t('Superscript'), 'Subscript' => t('Subscript'),
+        'Blockquote' => t('Blockquote'), 'Source' => t('Source code'),
+        'Rule' => t('Horizontal rule'),
+        'Cut' => t('Cut'), 'Copy' => t('Copy'), 'Paste' => t('Paste'),
+        'PasteText' => t('Paste Text'), 'PasteWord' => t('Paste from Word'),
+        'ShowBlocks' => t('Show blocks'),
+        'RemoveFormat' => t('Remove format'),
+        'SpecialChar' => t('Character map'),
+        'About' => t('About'),
+
+        'FontFormat' => t('HTML block format'), 'FontName' => t('Font'), 'FontSize' => t('Font size'), 'Style' => t('Font style'),
+        'Table' => t('Table'),
+        'Find' => t('Search'), 'Replace' => t('Replace'), 'SelectAll' => t('Select all'),
+        'CreateDiv' => t('Create DIV container'),
+        'Flash' => t('Flash'), 'Smiley' => t('Smiley'),
+        'FitWindow' => t('FitWindow'),
+        'SpellCheck' => t('Check spelling'),
+      ),
+      'internal' => TRUE,
+    ),
   );
 }
 

@@ -117,6 +117,7 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
     'relative_urls' => FALSE,
     'theme' => $theme,
     'width' => '100%',
+    'strict_loading_mode' => TRUE,
   );
   if (isset($config['apply_source_formatting'])) {
     $init['apply_source_formatting'] = $config['apply_source_formatting'];

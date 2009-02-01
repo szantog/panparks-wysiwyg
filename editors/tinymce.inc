@@ -147,10 +147,7 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
 
   if (isset($config['css_setting'])) {
     if ($config['css_setting'] == 'theme') {
-      $css = path_to_theme() .'/style.css';
-      if (file_exists($css)) {
-        $init['content_css'] = base_path() . $css;
-      }
+      $init['content_css'] = implode(',', wysiwyg_get_css());
     }
     else if ($config['css_setting'] == 'self' && isset($config['css_path'])) {
       $init['content_css'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));

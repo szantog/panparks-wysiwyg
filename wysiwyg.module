@@ -420,6 +420,32 @@ function wysiwyg_get_editor_config($profile, $theme) {
 }
 
 /**
+ * Retrieve stylesheets for HTML/IFRAME-based editors.
+ *
+ * This assumes that the content editing area only needs stylesheets defined
+ * for the scope 'theme'.
+ *
+ * @return
+ *   An array containing CSS files, including proper base path.
+ */
+function wysiwyg_get_css() {
+  static $files;
+
+  if (isset($files)) {
+    return $files;
+  }
+  $files = array();
+  foreach (drupal_add_css() as $media => $css) {
+    if ($media != 'print') {
+      foreach ($css['theme'] as $filepath => $preprocess) {
+        $files[] = base_path() . $filepath;
+      }
+    }
+  }
+  return $files;
+}
+
+/**
  * Load all profiles. Just load one profile if $name is passed in.
  */
 function wysiwyg_load_profile($format = '') {

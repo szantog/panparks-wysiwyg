@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#364782 by sun: Fixed theme stylesheets not properly loaded.
 #352938 by sun: Fixed JS error (blank page) in IE when plugins are loaded.
 #331089 by wwalc, sun: Added custom toolbar configuration support for FCKeditor.
 #331089 by sun: Fixed PHP notice for 'user_choose'; FCKeditor clean-up.

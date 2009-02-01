@@ -98,10 +98,7 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
 
   if (isset($config['css_setting'])) {
     if ($config['css_setting'] == 'theme') {
-      $css = path_to_theme() .'/style.css';
-      if (file_exists($css)) {
-        $settings['EditorAreaCSS'] = base_path() . $css;
-      }
+      $settings['EditorAreaCSS'] = implode(',', wysiwyg_get_css());
     }
     else if ($config['css_setting'] == 'self' && isset($config['css_path'])) {
       $settings['EditorAreaCSS'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));

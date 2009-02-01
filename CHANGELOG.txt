@@ -6,6 +6,10 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#319363 by sun, quicksketch: Rewrote editor plugin API.  The new plugin API
+  allows Drupal modules to expose editor plugins for ANY editor without
+  implementing editor-specific code.  Major milestone for better content-editing
+  in Drupal.
 #364782 by sun: Fixed theme stylesheets not properly loaded.
 #352938 by sun: Fixed JS error (blank page) in IE when plugins are loaded.
 #331089 by wwalc, sun: Added custom toolbar configuration support for FCKeditor.

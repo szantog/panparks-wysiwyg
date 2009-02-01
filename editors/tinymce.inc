@@ -33,6 +33,13 @@ function wysiwyg_tinymce_editor() {
     'settings callback' => 'wysiwyg_tinymce_settings',
     'plugin callback' => 'wysiwyg_tinymce_plugins',
     'plugin settings callback' => 'wysiwyg_tinymce_plugin_settings',
+    'proxy plugin' => array(
+      'drupal' => array(
+        'load' => TRUE,
+        'proxy' => TRUE,
+      ),
+    ),
+    'proxy plugin settings callback' => 'wysiwyg_tinymce_proxy_plugin_settings',
     'versions' => array( // Each version can override global editor properties.
       '2.1' => array(
         // 'include files' => array('tinymce-2.inc'),
@@ -183,8 +190,12 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
           if ($type == 'buttons') {
             $init['buttons'][] = $button;
           }
+          // Add external Drupal plugins to the list of extensions.
+          if ($type == 'buttons' && !empty($plugins[$plugin]['proxy'])) {
+            $init['extensions'][_wysiwyg_tinymce_plugin_name('add', $button)] = 1;
+          }
           // Add external plugins to the list of extensions.
-          if ($type == 'buttons' && empty($plugins[$plugin]['internal'])) {
+          else if ($type == 'buttons' && empty($plugins[$plugin]['internal'])) {
             $init['extensions'][_wysiwyg_tinymce_plugin_name('add', $plugin)] = 1;
           }
           // Add internal buttons that also need to be loaded as extension.
@@ -291,10 +302,10 @@ function wysiwyg_tinymce_themes($editor, $profile) {
 }
 
 /**
- * Build a JS settings array of external plugins that need to be loaded separately.
+ * Build a JS settings array of native external plugins that need to be loaded separately.
  *
  * TinyMCE requires that external plugins (i.e. not residing in the editor's
- * directory) are loaded (once) after the editor has been initialized.
+ * directory) are loaded (once) upon initializing the editor.
  */
 function wysiwyg_tinymce_plugin_settings($editor, $profile, $plugins) {
   $settings = array();
@@ -302,6 +313,24 @@ function wysiwyg_tinymce_plugin_settings($editor, $profile, $plugins) {
     if (empty($plugin['internal'])) {
       $settings[$name] = base_path() . $plugin['path'];
     }
+  }
+  return $settings;
+}
+
+/**
+ * Build a JS settings array for Drupal plugins loaded via the proxy plugin.
+ */
+function wysiwyg_tinymce_proxy_plugin_settings($editor, $profile, $plugins) {
+  $settings = array();
+  foreach ($plugins as $name => $plugin) {
+    // Populate required plugin settings.
+    $settings[$name] = $plugin['dialog settings'] + array(
+      'title' => $plugin['title'],
+      'icon' => base_path() . $plugin['icon path'] .'/'. $plugin['icon file'],
+      'iconTitle' => $plugin['icon title'],
+      // @todo These should only be set if the plugin defined them.
+      'css' => base_path() . $plugin['css path'] .'/'. $plugin['css file'],
+    );
   }
   return $settings;
 }

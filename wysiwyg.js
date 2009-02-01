@@ -76,8 +76,16 @@ Drupal.wysiwygAttach = function(context, params) {
   if (typeof Drupal.wysiwyg.editor.attach[params.editor] == 'function') {
     // (Re-)initialize field instance.
     Drupal.wysiwyg.instances[params.field] = {};
-    // Store new editor name and status for this field.
-    Drupal.wysiwyg.instances[params.field].editor = params.editor;
+    // Provide all input format parameters to editor instance.
+    jQuery.extend(Drupal.wysiwyg.instances[params.field], params);
+    // Provide editor callbacks for plugins, if available.
+    if (typeof Drupal.wysiwyg.editor.instance[params.editor] == 'object') {
+      jQuery.extend(Drupal.wysiwyg.instances[params.field], Drupal.wysiwyg.editor.instance[params.editor]);
+    }
+    // Store this field id, so (external) plugins can use it.
+    // @todo Wrong point in time. Probably can only supported by editors which
+    //   support a onFocus() or similar event.
+    Drupal.wysiwyg.activeId = params.field;
     // Attach or update toggle link.
     Drupal.wysiwygAttachToggleLink(context, params);
     // Attach editor, if enabled by default or last state was enabled.
@@ -131,6 +139,7 @@ Drupal.wysiwygAttachToggleLink = function(context, params) {
       Drupal.wysiwygDetach(context, params);
       // After disabling the editor, re-attach default behaviors.
       Drupal.wysiwyg.editor.attach.none(context, params);
+      Drupal.wysiwyg.instances[params.field] = Drupal.wysiwyg.editor.instance.none;
       Drupal.wysiwyg.instances[params.field].editor = 'none';
       $(this).html(Drupal.settings.wysiwyg.enable).blur();
     }

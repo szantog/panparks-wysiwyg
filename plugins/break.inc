@@ -1,6 +1,10 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Wysiwyg API integration on behalf of Node module.
+ */
 
 /**
  * Implementation of hook_wysiwyg_plugin().

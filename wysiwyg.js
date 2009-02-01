@@ -138,6 +138,7 @@ Drupal.wysiwygAttachToggleLink = function(context, params) {
       params.status = false;
       Drupal.wysiwygDetach(context, params);
       // After disabling the editor, re-attach default behaviors.
+      // @todo We HAVE TO invoke Drupal.wysiwygAttach() here.
       Drupal.wysiwyg.editor.attach.none(context, params);
       Drupal.wysiwyg.instances[params.field] = Drupal.wysiwyg.editor.instance.none;
       Drupal.wysiwyg.instances[params.field].editor = 'none';

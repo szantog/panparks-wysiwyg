@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#319363 by sun: Follow-up: Synced 1.x with 2.x where possible.
 #319363 by sun, quicksketch: Rewrote editor plugin API.  The new plugin API
   allows Drupal modules to expose editor plugins for ANY editor without
   implementing editor-specific code.  Major milestone for better content-editing

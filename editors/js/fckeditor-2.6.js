@@ -27,17 +27,17 @@ Drupal.wysiwyg.editor.attach.fckeditor = function(context, params, settings) {
  */
 Drupal.wysiwyg.editor.detach.fckeditor = function(context, params) {
   if (typeof params != 'undefined' && typeof FCKeditorAPI != 'undefined') {
-    var editor = FCKeditorAPI.GetInstance(params.field);
-    if (editor) {
-      $('#' + params.field).val(editor.GetXHTML()).show();
+    var instance = FCKeditorAPI.GetInstance(params.field);
+    if (instance) {
+      $('#' + params.field).val(instance.GetXHTML()).show();
       $('#' + params.field + '___Config').remove();
       $('#' + params.field + '___Frame').remove();
       delete FCKeditorAPI.__Instances[params.field];
     }
   }
   else {
-    for (instance in FCKeditorAPI.__Instances) {
-      $('#' + instance).val(editor.GetXHTML()).show();
+    for (var instance in FCKeditorAPI.__Instances) {
+      $('#' + instance).val(instance.GetXHTML()).show();
       $('#' + instance + '___Config').remove();
       $('#' + instance + '___Frame').remove();
       delete FCKeditorAPI.__Instances[instance];

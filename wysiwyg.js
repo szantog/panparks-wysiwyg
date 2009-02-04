@@ -11,7 +11,7 @@ Drupal.wysiwygInit = function() {
     // Clone, so original settings are not overwritten.
     this(Drupal.wysiwyg.clone(Drupal.settings.wysiwyg.configs[editor]));
   });
-}
+};
 
 /**
  * Attach editors to input formats and target elements (f.e. textareas).
@@ -57,7 +57,7 @@ Drupal.behaviors.attachWysiwyg = function(context) {
     }
     $this.addClass('wysiwyg-processed');
   });
-}
+};
 
 /**
  * Attach an editor to a target element.
@@ -98,7 +98,7 @@ Drupal.wysiwygAttach = function(context, params) {
       Drupal.wysiwyg.instances[params.field].editor = 'none';
     }
   }
-}
+};
 
 /**
  * Detach all editors from a target element.
@@ -113,7 +113,7 @@ Drupal.wysiwygDetach = function(context, params) {
   if (jQuery.isFunction(Drupal.wysiwyg.editor.detach[editor])) {
     Drupal.wysiwyg.editor.detach[editor](context, params);
   }
-}
+};
 
 /**
  * Append or update an editor toggle link to a target element.
@@ -158,7 +158,7 @@ Drupal.wysiwygAttachToggleLink = function(context, params) {
   if (params.editor == 'none') {
     $('#wysiwyg-toggle-' + params.field).hide();
   }
-}
+};
 
 /**
  * Parse the CSS classes of an input format DOM element into parameters.
@@ -186,7 +186,7 @@ Drupal.wysiwyg.getParams = function(element, params) {
   params.status = parseInt(params.status);
   params.resizable = parseInt(params.resizable);
   return params;
-}
+};
 
 /**
  * Clone a configuration object recursively.
@@ -208,7 +208,7 @@ Drupal.wysiwyg.clone = function(obj) {
     }
   }
   return clone;
-}
+};
 
 /**
  * Allow certain editor libraries to initialize before the DOM is loaded.

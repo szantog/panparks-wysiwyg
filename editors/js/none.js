@@ -53,7 +53,7 @@ Drupal.wysiwyg.editor.instance.none = {
     // IE support.
     if (document.selection) {
       editor.focus();
-      sel = document.selection.createRange();
+      var sel = document.selection.createRange();
       sel.text = content;
     }
     // Mozilla/Firefox/Netscape 7+ support.

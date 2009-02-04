@@ -45,7 +45,7 @@ Drupal.wysiwyg.plugins.break = {
    * Replace images with <!--break--> tags in content upon detaching editor.
    */
   detach: function(content, settings, instanceId) {
-    $content = $('<div>' + content + '</div>'); // No .outerHTML() in jQuery :(
+    var $content = $('<div>' + content + '</div>'); // No .outerHTML() in jQuery :(
     $('img.wysiwyg-break', $content).replaceWith('<!--break-->');
     return $content.html();
   },

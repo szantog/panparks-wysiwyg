@@ -183,8 +183,8 @@ Drupal.wysiwyg.getParams = function(element, params) {
   // Convert format id into string.
   params.format = 'format' + params.format;
   // Convert numeric values.
-  params.status = parseInt(params.status);
-  params.resizable = parseInt(params.resizable);
+  params.status = parseInt(params.status, 10);
+  params.resizable = parseInt(params.resizable, 10);
   return params;
 };
 

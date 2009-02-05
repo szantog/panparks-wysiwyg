@@ -87,7 +87,7 @@ Drupal.wysiwyg.editor.detach.whizzywig = function(context, params) {
     // Remove editor instance.
     $('#' + whizzies[id] + '-whizzywig').remove();
     whizzies.splice(id, 1);
-  }
+  };
 
   if (typeof params != 'undefined') {
     for (var id in whizzies) {

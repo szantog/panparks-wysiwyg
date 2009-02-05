@@ -166,7 +166,7 @@ Drupal.wysiwyg.editor.instance.tinymce = {
     // to prevent this editor from highlighting an internal button in addition
     // to the button of a Drupal plugin.
     var specialProperties = {
-      img: { class: 'mceItem' }
+      img: { 'class': 'mceItem' }
     };
     var $content = $('<div>' + content + '</div>'); // No .outerHTML() in jQuery :(
     jQuery.each(specialProperties, function(element, properties) {

@@ -123,7 +123,7 @@ Drupal.wysiwyg.editor.instance.tinymce = {
       // isNode: Return whether the plugin button should be enabled for the
       // current selection.
       handleNodeChange: function(editor_id, node, undo_index, undo_levels, visual_aid, any_selection) {
-        if (node == null) {
+        if (node === null) {
           return;
         }
         if (typeof Drupal.wysiwyg.plugins[plugin].isNode == 'function') {
@@ -167,7 +167,7 @@ Drupal.wysiwyg.editor.instance.tinymce = {
     // to prevent this editor from highlighting an internal button in addition
     // to the button of a Drupal plugin.
     var specialProperties = {
-      img: { name: 'mce_drupal' }
+      img: { 'name': 'mce_drupal' }
     };
     $content = $('<div>' + content + '</div>'); // No .outerHTML() in jQuery :(
     jQuery.each(specialProperties, function(element, properties) {

@@ -1,6 +1,7 @@
 // $Id$
 
-Drupal.wysiwyg.plugins.break = {
+// @todo Array syntax required; 'break' is a predefined token in JavaScript.
+Drupal.wysiwyg.plugins['break'] = {
 
   /**
    * Return whether the passed node belongs to this plugin.

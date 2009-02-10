@@ -23,8 +23,9 @@ Drupal.wysiwyg.editor.init.tinymce = function(settings) {
     tinyMCE.init(settings[format]);
   }
   // Load native external plugins.
-  for (var plugin in Drupal.settings.wysiwyg.plugins.tinymce.native) {
-    tinymce.PluginManager.load(plugin, Drupal.settings.wysiwyg.plugins.tinymce.native[plugin]);
+  // @todo Array syntax required; 'native' is a predefined token in JavaScript.
+  for (var plugin in Drupal.settings.wysiwyg.plugins.tinymce['native']) {
+    tinymce.PluginManager.load(plugin, Drupal.settings.wysiwyg.plugins.tinymce['native'][plugin]);
   }
   // Load Drupal plugins.
   for (var plugin in Drupal.settings.wysiwyg.plugins.tinymce.drupal) {

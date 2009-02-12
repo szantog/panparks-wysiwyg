@@ -278,7 +278,7 @@ function wysiwyg_profile_form($form_state, $profile) {
     '#default_value' => $profile->settings['block_formats'],
     '#size' => 40,
     '#maxlength' => 250,
-    '#description' => t('Comma separated list of HTML block formats. You can only remove elements, not add.'),
+    '#description' => t('Comma separated list of HTML block formats. Possible values: <code>@format-list</code>.', array('@format-list' => 'p,h1,h2,h3,h4,h5,h6,div,blockquote,address,pre,code,dt,dd')),
   );
 
   $form['css']['css_setting'] = array(

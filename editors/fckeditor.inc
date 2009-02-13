@@ -124,6 +124,10 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
           if ($type == 'buttons') {
             $settings['buttons'][] = $button;
           }
+          // Allow plugins to add or override global configuration settings.
+          if (!empty($plugins[$plugin]['options'])) {
+            $settings = array_merge($settings, $plugins[$plugin]['options']);
+          }
         }
       }
     }

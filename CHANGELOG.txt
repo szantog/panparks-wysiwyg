@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#373542 by sun: Fixed TinyMCE: entity_encoding 'raw' removes HTML entities.
 #372806 by sun: Fixed block format configuration form element description.
 #370277 by sun: Fixed "Uncaught SyntaxError: Unexpected token" in IE/Chrome.
 #367632 by sun: Fixed "Unexpected identifier, string or number" error in IE.

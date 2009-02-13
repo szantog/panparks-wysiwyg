@@ -118,7 +118,6 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
   $init = array(
     'button_tile_map' => TRUE, // @todo Add a setting for this.
     'document_base_url' => base_path(),
-    'entity_encoding' => 'raw',
     'mode' => 'none',
     'plugins' => array(),
     'relative_urls' => FALSE,

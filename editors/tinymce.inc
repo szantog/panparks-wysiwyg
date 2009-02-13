@@ -536,6 +536,13 @@ function wysiwyg_tinymce_plugins($editor) {
     ),
   );
   if ($editor['installed version'] > 3) {
+    $plugins['xhtmlxtras'] = array(
+      'path' => $editor['library path'] .'/plugins/xhtmlxtras',
+      'buttons' => array('cite' => t('Citation'), 'del' => t('Deleted'), 'abbr' => t('Abbreviation'), 'acronym' => t('Acronym'), 'ins' => t('Inserted')),
+      'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/xhtmlxtras',
+      'internal' => TRUE,
+      'load' => TRUE,
+    );
     $plugins['safari'] = array(
       'path' => $editor['library path'] .'/plugins/safari',
       'extensions' => array('safari' => t('Safari compatibility')),

@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#319363 by sun: Fixed missing spacer.gif for Teaser break plugin.
 #373672 by chawl: Added (native) xhtmlextras plugin for TinyMCE 3.
 #287025 by sun: Fixed native editor plugin options for TinyMCE and FCKeditor.
 #373542 by sun: Fixed TinyMCE: entity_encoding 'raw' removes HTML entities.

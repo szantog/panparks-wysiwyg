@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#367632 by sun: Fixed $this and i JavaScript variables defined in global scope.
 #319363 by sun: Fixed missing spacer.gif for Teaser break plugin.
 #373672 by chawl: Added (native) xhtmlextras plugin for TinyMCE 3.
 #287025 by sun: Fixed native editor plugin options for TinyMCE and FCKeditor.

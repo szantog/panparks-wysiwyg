@@ -35,7 +35,7 @@ Drupal.wysiwygInit = function() {
 Drupal.behaviors.attachWysiwyg = function(context) {
   $('.wysiwyg:not(.wysiwyg-processed)', context).each(function() {
     var params = Drupal.wysiwyg.getParams(this);
-    $this = $(this);
+    var $this = $(this);
     // Directly attach this editor, if the input format is enabled or there is
     // only one input format at all.
     if (($this.is(':input') && $this.is(':checked')) || $this.is('div')) {
@@ -199,7 +199,7 @@ Drupal.wysiwyg.getParams = function(element, params) {
  */
 Drupal.wysiwyg.clone = function(obj) {
   var clone = {};
-  for (i in obj) {
+  for (var i in obj) {
     if ((typeof obj[i] == 'object') || (typeof obj[i] == 'array')) {
       clone[i] = Drupal.wysiwyg.clone(obj[i]);
     }

@@ -53,7 +53,7 @@ function wysiwyg_help($path, $arg) {
   switch ($path) {
     case 'admin/settings/wysiwyg/profile':
       if (empty($arg[4])) {
-        $output = '<p>'. t('A Wysiwyg profile can be associated to an input format. A Wysiwyg profile defines, which client-side editor is loaded, can define what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor-specific functions.') .'</p>';
+        $output = '<p>'. t('A Wysiwyg profile can be associated to an input format. A Wysiwyg profile defines which client-side editor is loaded, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor-specific functions.') .'</p>';
         return $output;
       }
       break;

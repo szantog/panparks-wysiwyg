@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: German translation of WYSIWYG editor\n"
 "POT-Creation-Date: 2009-03-02 01:23+0100\n"
-"PO-Revision-Date: 2009-03-02 01:24+0100\n"
+"PO-Revision-Date: 2009-03-02 01:48+0100\n"
 "Last-Translator: Alexander Haß\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
@@ -57,7 +57,7 @@ msgstr "Standardmäßig aktiviert"
 #: wysiwyg.admin.inc:97
 #, fuzzy
 msgid "The default editor state for users having access to this profile. Users are able to override this state if the next option is enabled."
-msgstr "Standardstatus des Editors für Benutzer in diesem Profil. Benutzer können diese Einstellung überschreiben, wenn die nachfolgende Option aktiviert ist."
+msgstr "Standardstatus des Editors für Benutzer in diesem Profil. Benutzer können diese Einstellung übersteuern, wenn die nachfolgende Option aktiviert ist."
 
 #: wysiwyg.admin.inc:102
 msgid "Allow users to choose default"
@@ -75,16 +75,15 @@ msgstr "<em>Ein-/Auschalter</em> für Rich-Text anzeigen"
 
 #: wysiwyg.admin.inc:113
 msgid "Whether or not to show the <em>enable/disable rich text</em> toggle link below a textarea. If disabled, the user setting or global default is used (see above)."
-msgstr "Ob der <em>Rich-Text aktivieren/deaktivieren</em>-Link unterhalb eines Textfeldes angezeigt werden soll oder nicht. Sollte diese Einstellung „deaktiviert“ sein, werden die Benutzereinstellungen oder globalen Standardwerte verwendet (siehe oberhalb)."
+msgstr "Ob der <em>Rich-Text aktivieren/deaktivieren</em>-Link unterhalb eines Textfeldes angezeigt werden soll oder nicht. Sollte diese Einstellung deaktiviert sein, werden die Benutzereinstellungen oder globalen Standardwerte verwendet (siehe oberhalb)."
 
 #: wysiwyg.admin.inc:123
 msgid "Language"
 msgstr "Sprache"
 
 #: wysiwyg.admin.inc:126
-#, fuzzy
 msgid "The language to use for the editor interface. Language codes are based on the <a href=\"http://www.loc.gov/standards/iso639-2/englangn.html\">ISO-639-2</a> format."
-msgstr "Die Sprache für die Eingabeoberfläche der Editors. Sprachcodes basieren auf dem <a href=\"http://www.loc.gov/standards/iso639-2/englangn.html\">ISO-639-2</a>-Format."
+msgstr "Die für die Eingabeoberfläche der Editors zu verwendende Sprache. Die Sprachcodes basieren auf dem <a href=\"http://www.loc.gov/standards/iso639-2/englangn.html\">ISO-639-2</a>-Format."
 
 #: wysiwyg.admin.inc:131
 msgid "Buttons and plugins"
@@ -176,7 +175,7 @@ msgstr "Sollte diese Option auf „wahr“ eingestellt sein, wird der Editor fü
 
 #: wysiwyg.admin.inc:238
 msgid "Convert &lt;font&gt; tags to styles"
-msgstr "&lt;font&gt; Tags zu Styles konvertieren"
+msgstr "&lt;font&gt;-Tags zu Styles konvertieren"
 
 #: wysiwyg.admin.inc:241
 #, fuzzy
@@ -333,9 +332,8 @@ msgid "Cancel"
 msgstr "Abbrechen"
 
 #: wysiwyg.admin.inc:507
-#, fuzzy
 msgid "Wysiwyg profile for %name has been deleted."
-msgstr "Das WYSIWYG-Editor-Profil wurde aktualisiert."
+msgstr "Das WYSIWYG-Profil für %name wurde gelöscht."
 
 #: wysiwyg.plugins.inc:15
 msgid "Teaser break"
@@ -380,9 +378,8 @@ msgid "Wysiwyg"
 msgstr "WYSIWYG"
 
 #: wysiwyg.module:17
-#, fuzzy
 msgid "Configure client-side editor profiles."
-msgstr "Den Rich-Editor konfigurieren."
+msgstr "Client-seitige Editor-Profile konfigurieren."
 
 #: wysiwyg.module:0
 msgid "wysiwyg"
@@ -507,6 +504,7 @@ msgstr "Rückgängig"
 msgid "Redo"
 msgstr "Wiederholen"
 
+# not literally
 #: editors/fckeditor.inc:172
 #: editors/markitup.inc:95;143
 #: editors/nicedit.inc:113
@@ -514,13 +512,13 @@ msgstr "Wiederholen"
 #: editors/whizzywig.inc:118
 #: editors/yui.inc:232
 msgid "Link"
-msgstr "Link"
+msgstr "Link einfügen"
 
 #: editors/fckeditor.inc:172
 #: editors/nicedit.inc:113
 #: editors/tinymce.inc:354
 msgid "Unlink"
-msgstr "Hyperlink entfernen"
+msgstr "Link entfernen"
 
 #: editors/fckeditor.inc:172
 #: editors/tinymce.inc:354
@@ -742,7 +740,7 @@ msgstr "Erweitertes Bild"
 #: editors/tinymce.inc:386
 #, fuzzy
 msgid "Advanced link"
-msgstr "Erweiterter Hyperlink"
+msgstr "Erweiterter Link"
 
 #: editors/tinymce.inc:394
 msgid "Auto save"
@@ -784,17 +782,21 @@ msgstr "Zeit einfügen"
 msgid "Insert layer"
 msgstr "Layer einfügen"
 
+# oder "In den Vordergrund"?
 #: editors/tinymce.inc:465
+#, fuzzy
 msgid "Move forward"
-msgstr ""
+msgstr "Eine Ebene nach vorne"
 
+# oder "In den Hintergrund"?
 #: editors/tinymce.inc:465
+#, fuzzy
 msgid "Move backward"
-msgstr ""
+msgstr "Eine Ebene nach hinten"
 
 #: editors/tinymce.inc:465
 msgid "Absolute"
-msgstr ""
+msgstr "Absolut"
 
 #: editors/tinymce.inc:472
 msgid "Paste text"
@@ -824,9 +826,10 @@ msgstr "Abkürzung"
 msgid "Acronym"
 msgstr "Akronym"
 
+# NICHT Eingefügt
 #: editors/tinymce.inc:516
 msgid "Inserted"
-msgstr "Eingefügt"
+msgstr ""
 
 #: editors/tinymce.inc:523
 msgid "Safari compatibility"

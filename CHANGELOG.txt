@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#390224 by hass: Fixed JS error YAHOO.widget.Editor is not a constructor.
 #359626 by sun: Fixed external/Drupal plugins are not loaded for all profiles.
 #369115 by sun: Fixed TinyMCE's URL conversion magic breaks some input filters.
 #376400 by TwoD: Fixed bad grammar in help text on profile overview page.

@@ -18,7 +18,7 @@ function wysiwyg_yui_editor() {
         'files' => array(
           'yahoo-dom-event/yahoo-dom-event.js',
           'animation/animation-min.js',
-          'element/element-beta-min.js',
+          'element/element-min.js',
           'container/container-min.js',
           'menu/menu-min.js',
           'button/button-min.js',
@@ -30,7 +30,7 @@ function wysiwyg_yui_editor() {
         'files' => array(
           'yahoo-dom-event/yahoo-dom-event.js',
           'animation/animation.js',
-          'element/element-beta.js',
+          'element/element.js',
           'container/container.js',
           'menu/menu.js',
           'button/button.js',

@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#390460 by sun: Fixed broken plugin loading due to #359626.
 #385736 by sun: Fixed markItUp: Wrong editor library location.
 #308912 by sun: Fixed TinyMCE: Buttons do not wrap in IE/Chrome.
 #380586 by sun, hass: YUI editor: Fixed version detection.

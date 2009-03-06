@@ -21,15 +21,17 @@ Drupal.wysiwyg.editor.init.tinymce = function(settings) {
   // Initialize editor configurations.
   for (var format in settings) {
     tinyMCE.init(settings[format]);
-  }
-  // Load native external plugins.
-  // @todo Array syntax required; 'native' is a predefined token in JavaScript.
-  for (var plugin in Drupal.settings.wysiwyg.plugins.tinymce['native']) {
-    tinymce.PluginManager.load(plugin, Drupal.settings.wysiwyg.plugins.tinymce['native'][plugin]);
-  }
-  // Load Drupal plugins.
-  for (var plugin in Drupal.settings.wysiwyg.plugins.tinymce.drupal) {
-    Drupal.wysiwyg.editor.instance.tinymce.addPlugin(plugin, Drupal.settings.wysiwyg.plugins.tinymce.drupal[plugin], Drupal.settings.wysiwyg.plugins.drupal[plugin]);
+    if (Drupal.settings.wysiwyg.plugins[format]) {
+      // Load native external plugins.
+      // Array syntax required; 'native' is a predefined token in JavaScript.
+      for (var plugin in Drupal.settings.wysiwyg.plugins[format]['native']) {
+        tinymce.PluginManager.load(plugin, Drupal.settings.wysiwyg.plugins[format]['native'][plugin]);
+      }
+      // Load Drupal plugins.
+      for (var plugin in Drupal.settings.wysiwyg.plugins[format].drupal) {
+        Drupal.wysiwyg.editor.instance.tinymce.addPlugin(plugin, Drupal.settings.wysiwyg.plugins[format].drupal[plugin], Drupal.settings.wysiwyg.plugins.drupal[plugin]);
+      }
+    }
   }
 };
 

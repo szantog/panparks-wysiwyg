@@ -353,6 +353,12 @@ function wysiwyg_add_editor_settings($profile, $theme) {
 function wysiwyg_add_plugin_settings($profile) {
   static $plugins_native = array();
   static $plugins_drupal = array();
+  static $processed_formats = array();
+
+  // Each input format must only processed once.
+  if (isset($processed_formats[$profile->format])) {
+    return;
+  }
 
   $editor = wysiwyg_get_editor($profile->editor);
   // Assume that this editor does not support neither native external plugins
@@ -376,7 +382,7 @@ function wysiwyg_add_plugin_settings($profile) {
   // settings for native external plugins with custom, required values.
   $settings_native = $editor['plugin settings callback']($editor, $profile, $plugins_native[$editor['name']]);
 
-  drupal_add_js(array('wysiwyg' => array('plugins' => array($profile->editor => array('native' => $settings_native)))), 'setting');
+  drupal_add_js(array('wysiwyg' => array('plugins' => array('format' . $profile->format => array('native' => $settings_native)))), 'setting');
 
   // If this editor does not define a proxy plugin and a proxy plugin settings
   // callback, it does not support Drupal plugins.
@@ -407,7 +413,9 @@ function wysiwyg_add_plugin_settings($profile) {
   // the settings for Drupal plugins with custom, required values.
   $settings_drupal = $editor['proxy plugin settings callback']($editor, $profile, $proxy_plugins);
 
-  drupal_add_js(array('wysiwyg' => array('plugins' => array($profile->editor => array('drupal' => $settings_drupal)))), 'setting');
+  drupal_add_js(array('wysiwyg' => array('plugins' => array('format' . $profile->format => array('drupal' => $settings_drupal)))), 'setting');
+
+  $processed_formats[$profile->format] = TRUE;
 }
 
 /**

@@ -295,7 +295,7 @@ function wysiwyg_profile_form($form_state, $profile) {
     '#default_value' => $profile->settings['css_path'],
     '#size' => 40,
     '#maxlength' => 255,
-    '#description' => t('If "Define CSS" has been selected above, enter path to a CSS file or a list of CSS files seperated by a comma.') .'<br />'. t('Available tokens: %b (base path, f.e.: /), %t (path to theme, f.e.: themes/garland)') .'<br />'. t('Examples:') .' css/editor.css,/themes/garland/style.css,%b%t/style.css,http://example.com/external.css',
+    '#description' => t('If "Define CSS" was selected above, enter path to a CSS file or a list of CSS files seperated by a comma.') . '<br />' . t('Available tokens: <code>%b</code> (base path, eg: <code>/</code>), <code>%t</code> (path to theme, eg: <code>themes/garland</code>)') . '<br />' . t('Example:') . ' css/editor.css,/themes/garland/style.css,%b%t/style.css,http://example.com/external.css',
   );
 
   $form['css']['css_classes'] = array(

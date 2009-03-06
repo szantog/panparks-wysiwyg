@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#385736 by sun: Fixed markItUp: Wrong editor library location.
 #308912 by sun: Fixed TinyMCE: Buttons do not wrap in IE/Chrome.
 #380586 by sun, hass: YUI editor: Fixed version detection.
 #390224 by hass: Fixed JS error YAHOO.widget.Editor is not a constructor.

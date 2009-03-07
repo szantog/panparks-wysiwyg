@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#394068 by StephaneC: markItUp: Fixed icons not displayed due to #385736.
 #385974 by sun: Fixed form element description for CSS path (for Define CSS).
 #390460 by sun: Fixed broken plugin loading due to #359626.
 #385736 by sun: Fixed markItUp: Wrong editor library location.

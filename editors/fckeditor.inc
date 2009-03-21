@@ -27,6 +27,14 @@ function wysiwyg_fckeditor_editor() {
     'themes callback' => 'wysiwyg_fckeditor_themes',
     'settings callback' => 'wysiwyg_fckeditor_settings',
     'plugin callback' => 'wysiwyg_fckeditor_plugins',
+    'plugin settings callback' => 'wysiwyg_fckeditor_plugin_settings',
+    'proxy plugin' => array(
+      'drupal' => array(
+        'load' => TRUE,
+        'proxy' => TRUE,
+      ),
+    ),
+    'proxy plugin settings callback' => 'wysiwyg_fckeditor_proxy_plugin_settings',
     'versions' => array(
       2.6 => array(
         'js files' => array('fckeditor-2.6.js'),
@@ -154,6 +162,35 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
  */
 function wysiwyg_fckeditor_themes($editor, $profile) {
   return array('default', 'office2003', 'silver');
+}
+
+/**
+ * Build a JS settings array of native external plugins that need to be loaded separately.
+ *
+ * @todo Required for FCKeditor?  If not, wysiwyg_add_plugin_settings() needs
+ *   an overhaul.
+ */
+function wysiwyg_fckeditor_plugin_settings($editor, $profile, $plugins) {
+  $settings = array();
+  return $settings;
+}
+
+/**
+ * Build a JS settings array for Drupal plugins loaded via the proxy plugin.
+ */
+function wysiwyg_fckeditor_proxy_plugin_settings($editor, $profile, $plugins) {
+  $settings = array();
+  foreach ($plugins as $name => $plugin) {
+    // Populate required plugin settings.
+    $settings[$name] = $plugin['dialog settings'] + array(
+      'title' => $plugin['title'],
+      'icon' => base_path() . $plugin['icon path'] .'/'. $plugin['icon file'],
+      'iconTitle' => $plugin['icon title'],
+      // @todo These should only be set if the plugin defined them.
+      'css' => base_path() . $plugin['css path'] .'/'. $plugin['css file'],
+    );
+  }
+  return $settings;
 }
 
 /**

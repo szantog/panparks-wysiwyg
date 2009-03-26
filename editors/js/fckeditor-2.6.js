@@ -15,6 +15,7 @@ Drupal.wysiwyg.editor.attach.fckeditor = function(context, params, settings) {
 
   // Load Drupal plugins and apply format specific settings.
   // @see fckeditor.config.js
+  // @see Drupal.wysiwyg.editor.instance.fckeditor.init()
 
   // Attach editor.
   FCKinstance.ReplaceTextarea();
@@ -36,17 +37,51 @@ Drupal.wysiwyg.editor.detach.fckeditor = function(context, params) {
   }
 
   for (var instanceName in instances) {
-    // Shut down the instance and give plugins a chance to detach by changing status first.
-    instances[instanceName].SetStatus(FCK_STATUS_NOTLOADED);
     instances[instanceName].UpdateLinkedField();
-    $('#' + instanceName).show();
     $('#' + instanceName + '___Config').remove();
     $('#' + instanceName + '___Frame').remove();
-    delete FCKeditorAPI.__Instances[instanceName];
+    $('#' + instanceName).show();
+    delete instances[instanceName];
   }
 };
 
 Drupal.wysiwyg.editor.instance.fckeditor = {
+  init: function(instance) {
+    // Create a custom data processor to wrap the default one and allow Drupal
+    // plugins modify the editor contents.
+    var wysiwygDataProcessor = function() {};
+    wysiwygDataProcessor.prototype = new instance.FCKDataProcessor();
+    // Attach: Convert text into HTML.
+    wysiwygDataProcessor.prototype.ConvertToHtml = function(data) {
+      // Called from SetData() with stripped comments/scripts, revert those
+      // manipulations and attach Drupal plugins.
+      var data = instance.FCKConfig.ProtectedSource.Revert(data);
+      for (var plugin in Drupal.settings.wysiwyg.plugins[instance.wysiwygFormat].drupal) {
+        if (typeof Drupal.wysiwyg.plugins[plugin].attach == 'function') {
+          data = Drupal.wysiwyg.plugins[plugin].attach(data, Drupal.settings.wysiwyg.plugins.drupal[plugin], instance.FCK.Name);
+          data = Drupal.wysiwyg.editor.instance.fckeditor.prepareContent(data);
+        }
+      }
+      // Re-protect the source and use the original data processor to convert it
+      // into XHTML.
+      data = instance.FCKConfig.ProtectedSource.Protect(data);
+      return instance.FCKDataProcessor.prototype.ConvertToHtml.call(this, data);
+    };
+    // Detach: Convert HTML into text.
+    wysiwygDataProcessor.prototype.ConvertToDataFormat = function(rootNode, excludeRoot) {
+      // Called from GetData(), convert the content's DOM into a XHTML string
+      // using the original data processor and detach Drupal plugins.
+      var data = instance.FCKDataProcessor.prototype.ConvertToDataFormat.call(this, rootNode, excludeRoot);
+      for (var plugin in Drupal.settings.wysiwyg.plugins[instance.wysiwygFormat].drupal) {
+        if (typeof Drupal.wysiwyg.plugins[plugin].detach == 'function') {
+          data = Drupal.wysiwyg.plugins[plugin].detach(data, Drupal.settings.wysiwyg.plugins.drupal[plugin], instance.FCK.Name);
+        }
+      }
+      return data;
+    };
+    instance.FCK.DataProcessor = new wysiwygDataProcessor();
+  },
+
   addPlugin: function(plugin, settings, pluginSettings, instance) {
     if (typeof Drupal.wysiwyg.plugins[plugin] != 'object') {
       return;
@@ -72,11 +107,10 @@ Drupal.wysiwyg.editor.instance.fckeditor = {
       // current selection.
       // @see FCKUnlinkCommand.prototype.GetState()
       GetState: function () {
-        // Disabled if not in WYSIWYG mode.
+        // Always disabled if not in WYSIWYG mode.
         if (instance.FCK.EditMode != FCK_EDITMODE_WYSIWYG) {
           return FCK_TRISTATE_DISABLED;
         }
-
         var state = instance.FCK.GetNamedCommandState(this.Name);
         if (state == FCK_TRISTATE_OFF && instance.FCK.EditMode == FCK_EDITMODE_WYSIWYG) {
           if (typeof Drupal.wysiwyg.plugins[plugin].isNode == 'function') {
@@ -94,7 +128,7 @@ Drupal.wysiwyg.editor.instance.fckeditor = {
     });
 
     // Register the plugin button.
-    // var FCKToolbarButton = function(commandName, label, tooltip, style, sourceView, contextSensitive, icon)
+    // Arguments: commandName, label, tooltip, style, sourceView, contextSensitive, icon.
     instance.FCKToolbarItems.RegisterItem(plugin, new instance.FCKToolbarButton(plugin, settings.iconTitle, settings.iconTitle, null, false, true, settings.icon));
   },
 

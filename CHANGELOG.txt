@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#380698 by TwoD: Added Drupal plugin support for FCKeditor.
 #380698 by TwoD, sun: Added Drupal plugin support for FCKeditor (part I).
 #398848 by sun: Added support for TinyMCE 3.1.
 #394068 by StephaneC: markItUp: Fixed icons not displayed due to #385736.

@@ -26,6 +26,11 @@ for (var setting in wysiwygSettings) {
 }
 
 /**
+ * Initialize this editor instance.
+ */
+Drupal.wysiwyg.editor.instance.fckeditor.init(window);
+
+/**
  * Register Drupal plugins for this input format.
  *
  * Parameters to addPlugin() are:

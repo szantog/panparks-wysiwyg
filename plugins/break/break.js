@@ -47,7 +47,8 @@ Drupal.wysiwyg.plugins['break'] = {
    */
   detach: function(content, settings, instanceId) {
     var $content = $('<div>' + content + '</div>'); // No .outerHTML() in jQuery :(
-    $('img.wysiwyg-break', $content).replaceWith('<!--break-->');
+    // document.createComment() required or IE will strip the comment.
+    $('img.wysiwyg-break', $content).replaceWith(document.createComment('break'));
     return $content.html();
   },
 

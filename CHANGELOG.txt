@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#416742 by sun: Fixed type casting of $profile in profile configuration form.
 #404532 by TwoD: Fixed Teaser break comment stripped in IE.
 #380698 by TwoD: Added Drupal plugin support for FCKeditor.
 #380698 by TwoD, sun: Added Drupal plugin support for FCKeditor (part I).

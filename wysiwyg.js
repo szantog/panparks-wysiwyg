@@ -7,6 +7,11 @@
  * init hook gives them a chance to do so.
  */
 Drupal.wysiwygInit = function() {
+  // This breaks in Konqueror. Prevent it from running.
+  if (/KDE/.test(navigator.vendor)) {
+    return;
+  }
+
   jQuery.each(Drupal.wysiwyg.editor.init, function(editor) {
     // Clone, so original settings are not overwritten.
     this(Drupal.wysiwyg.clone(Drupal.settings.wysiwyg.configs[editor]));
@@ -33,6 +38,11 @@ Drupal.wysiwygInit = function() {
  *   A DOM element, supplied by Drupal.attachBehaviors().
  */
 Drupal.behaviors.attachWysiwyg = function(context) {
+  // This breaks in Konqueror. Prevent it from running.
+  if (/KDE/.test(navigator.vendor)) {
+    return;
+  }
+
   $('.wysiwyg:not(.wysiwyg-processed)', context).each(function() {
     var params = Drupal.wysiwyg.getParams(this);
     var $this = $(this);

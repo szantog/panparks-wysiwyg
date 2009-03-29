@@ -73,10 +73,9 @@ function wysiwyg_help($path, $arg) {
  */
 function wysiwyg_form_alter(&$form, &$form_state) {
   $form['#after_build'][] = 'wysiwyg_process_form';
-  // Disable 'teaser' textarea.
+  // Teaser splitter is unconditionally removed and NOT supported.
   if (isset($form['body_field'])) {
     unset($form['body_field']['teaser_js']);
-    $form['body_field']['teaser_include'] = array();
   }
 }
 

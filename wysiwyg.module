@@ -372,14 +372,15 @@ function wysiwyg_add_plugin_settings($profile) {
     $plugins_native[$editor['name']] = module_invoke_all('wysiwyg_plugin', $editor['name'], $editor['installed version']);
   }
   // Only keep native external plugins that are enabled in this profile.
+  $profile_plugins_native = array();
   foreach ($plugins_native[$editor['name']] as $plugin => $meta) {
-    if (!isset($profile->settings['buttons'][$plugin])) {
-      unset($plugins_native[$editor['name']][$plugin]);
+    if (isset($profile->settings['buttons'][$plugin])) {
+      $profile_plugins_native[$plugin] = $plugins_native[$editor['name']][$plugin];
     }
   }
   // Invoke the editor's plugin settings callback, so it can populate the
   // settings for native external plugins with custom, required values.
-  $settings_native = $editor['plugin settings callback']($editor, $profile, $plugins_native[$editor['name']]);
+  $settings_native = $editor['plugin settings callback']($editor, $profile, $profile_plugins_native);
 
   drupal_add_js(array('wysiwyg' => array('plugins' => array('format' . $profile->format => array('native' => $settings_native)))), 'setting');
 

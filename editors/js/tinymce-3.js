@@ -11,6 +11,10 @@
  *   An object containing editor settings for each input format.
  */
 Drupal.wysiwyg.editor.init.tinymce = function(settings) {
+  // @see #454992: drupal_get_js() must not use 'q' as query string.
+  if (tinymce.query == 'q') {
+    tinymce.query = '';
+  }
   // If JS compression is enabled, TinyMCE is unable to find its own base path
   // and exec mode, hence we need to define it manually.
   // @todo Move global library settings somewhere else.

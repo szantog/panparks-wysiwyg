@@ -516,6 +516,9 @@ function wysiwyg_get_css() {
   if (isset($files)) {
     return $files;
   }
+  // In node form previews, the theme has not been initialized yet.
+  init_theme();
+
   $files = array();
   foreach (drupal_add_css() as $media => $css) {
     if ($media != 'print') {

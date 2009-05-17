@@ -17,14 +17,14 @@ Drupal.wysiwyg.editor.attach.none = function(context, params, settings) {
   if (params.resizable) {
     $('#' + params.field).addClass('resizable');
     $('#' + params.field).css({display: ''});
-    Drupal.behaviors.textarea();
+    if (Drupal.behaviors.textarea) {
+      Drupal.behaviors.textarea();
+    }
   }
 };
 
 /**
  * Detach a single or all editors.
- *
- * See Drupal.wysiwyg.editor.attach.none() for a full desciption of arguments.
  *
  * @param context
  *   A DOM element, supplied by Drupal.attachBehaviors().

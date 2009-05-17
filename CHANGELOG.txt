@@ -6,6 +6,10 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+
+
+Wysiwyg 6.x-2.0-ALPHA1, 2009-05-17
+----------------------------------
 #403728 by jfduchesneau: Fixed none.js breaks if textarea.js is not loaded.
 #454992 by sun: Fixed drupal_get_js() query string 'q' breaks plugin loading.
 #419696 by sun: Fixed native plugins plugins are not loaded for all profiles.

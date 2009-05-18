@@ -70,10 +70,6 @@ function wysiwyg_tinymce_editor() {
         ),
       ),
     ),
-    // Optional properties
-    // 'editor path' => wysiwyg_get_path('tinymce'), // Assumed by default.
-    // 'js path' => wysiwyg_get_path('editors/js'), // Assumed by default.
-    // 'css path' => wysiwyg_get_path('editors/css'), // Assumed by default.
   );
   return $editor;
 }

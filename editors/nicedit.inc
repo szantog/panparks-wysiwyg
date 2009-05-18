@@ -11,7 +11,6 @@ function wysiwyg_nicedit_editor() {
     'title' => 'NicEdit',
     'vendor url' => 'http://nicedit.com',
     'download url' => 'http://nicedit.com/download.php',
-    'library path' => wysiwyg_get_path('nicedit'),
     'libraries' => array(
       '' => array(
         'title' => 'Source',
@@ -60,7 +59,7 @@ function wysiwyg_nicedit_version($editor) {
  */
 function wysiwyg_nicedit_settings($editor, $config, $theme) {
   $settings = array(
-    'iconsPath' => wysiwyg_get_path('nicedit', TRUE) . '/nicEditorIcons.gif',
+    'iconsPath' => base_path() . $editor['library path'] . '/nicEditorIcons.gif',
   );
 
   // Add configured buttons or all available.

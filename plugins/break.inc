@@ -17,8 +17,6 @@ function wysiwyg_break_plugin() {
     'icon file' => 'break.gif',
     'icon title' => t('Separate the teaser and body of this content'),
     'settings' => array(
-      // Path is set by default.
-      // 'path' => wysiwyg_get_path('plugins/break', TRUE),
     ),
   );
   return $plugins;

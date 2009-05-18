@@ -11,7 +11,6 @@ function wysiwyg_jwysiwyg_editor() {
     'title' => 'jWYSIWYG',
     'vendor url' => 'http://code.google.com/p/jwysiwyg/',
     'download url' => 'http://code.google.com/p/jwysiwyg/downloads/list',
-    'library path' => wysiwyg_get_path('jwysiwyg'),
     'libraries' => array(
       '' => array(
         'title' => 'Source',
@@ -23,6 +22,7 @@ function wysiwyg_jwysiwyg_editor() {
       ),
     ),
     'version callback' => 'wysiwyg_jwysiwyg_version',
+    // @todo Wrong property; add separate properties for editor requisites.
     'css path' => wysiwyg_get_path('jwysiwyg'),
     'versions' => array(
       '0.5' => array(
@@ -44,7 +44,7 @@ function wysiwyg_jwysiwyg_editor() {
  *   The installed editor version.
  */
 function wysiwyg_jwysiwyg_version($editor) {
-  $script = wysiwyg_get_path('jwysiwyg') . '/jquery.wysiwyg.js';
+  $script = $editor['library path'] . '/jquery.wysiwyg.js';
   $script = fopen($script, 'r');
   fgets($script);
   $line = fgets($script);

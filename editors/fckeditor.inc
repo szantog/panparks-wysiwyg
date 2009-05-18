@@ -16,7 +16,6 @@ function wysiwyg_fckeditor_editor() {
     'title' => 'FCKeditor',
     'vendor url' => 'http://www.fckeditor.net',
     'download url' => 'http://www.fckeditor.net/download',
-    'library path' => wysiwyg_get_path('fckeditor'),
     'libraries' => array(
       '' => array(
         'title' => 'Default',
@@ -54,7 +53,7 @@ function wysiwyg_fckeditor_editor() {
  *   The installed editor version.
  */
 function wysiwyg_fckeditor_version($editor) {
-  $library = $editor['library path'] .'/fckeditor.js';
+  $library = $editor['library path'] . '/fckeditor.js';
   $library = fopen($library, 'r');
   $max_lines = 100;
   while ($max_lines && $line = fgets($library, 60)) {
@@ -115,7 +114,7 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
 
   if (!empty($config['buttons'])) {
     // Use our custom toolbar set.
-    $settings['CustomConfigurationsPath'] = wysiwyg_get_path('editors/js/fckeditor.config.js', TRUE);
+    $settings['CustomConfigurationsPath'] = base_path() . drupal_get_path('module', 'wysiwyg') . '/editors/js/fckeditor.config.js';
     $settings['ToolbarSet'] = 'Wysiwyg';
     // Populate our custom toolbar set for fckeditor.config.js.
     $settings['buttons'] = array();

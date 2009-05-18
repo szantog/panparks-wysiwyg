@@ -288,13 +288,14 @@ function wysiwyg_load_editor($profile) {
       'enable' => t('Enable rich-text'),
     )), 'setting');
 
+    $path = drupal_get_path('module', 'wysiwyg');
     // Initialize our namespaces in the *header* to do not force editor
     // integration scripts to check and define Drupal.wysiwyg on its own.
-    drupal_add_js(wysiwyg_get_path('wysiwyg.init.js'), 'core');
+    drupal_add_js($path . '/wysiwyg.init.js', 'core');
 
     // The 'none' editor is a special editor implementation, allowing us to
     // attach and detach regular Drupal behaviors just like any other editor.
-    drupal_add_js(wysiwyg_get_path('editors/js/none.js'));
+    drupal_add_js($path . '/editors/js/none.js');
 
     // Add wysiwyg.js to the footer to ensure it's executed after the
     // Drupal.settings array has been rendered and populated. Also, since editor
@@ -302,7 +303,7 @@ function wysiwyg_load_editor($profile) {
     // and Drupal.wysiwygInit() must be executed AFTER editors registered
     // their callbacks and BEFORE Drupal.behaviors are applied, this must come
     // last.
-    drupal_add_js(wysiwyg_get_path('wysiwyg.js'), 'module', 'footer');
+    drupal_add_js($path . '/wysiwyg.js', 'module', 'footer');
 
     $settings_added = TRUE;
   }
@@ -631,8 +632,8 @@ function wysiwyg_get_all_editors() {
       'title' => '',
       'vendor url' => '',
       'download url' => '',
-      'editor path' => wysiwyg_get_path($properties['name']),
-      'library path' => wysiwyg_get_path($properties['name']),
+      'editor path' => wysiwyg_get_path($editors[$editor]['name']),
+      'library path' => wysiwyg_get_path($editors[$editor]['name']),
       'libraries' => array(),
       'version callback' => NULL,
       'themes callback' => NULL,
@@ -640,16 +641,16 @@ function wysiwyg_get_all_editors() {
       'plugin callback' => NULL,
       'plugin settings callback' => NULL,
       'versions' => array(),
-      'js path' => $properties['path'] .'/js',
-      'css path' => $properties['path'] .'/css',
+      'js path' => $editors[$editor]['path'] . '/js',
+      'css path' => $editors[$editor]['path'] . '/css',
     );
     // Check whether library is present.
-    if (!($editors[$editor]['installed'] = file_exists($properties['library path']))) {
+    if (!($editors[$editor]['installed'] = file_exists($editors[$editor]['library path']))) {
       continue;
     }
     // Detect library version.
     if (function_exists($editors[$editor]['version callback'])) {
-      $editors[$editor]['installed version'] = $editors[$editor]['version callback']($properties);
+      $editors[$editor]['installed version'] = $editors[$editor]['version callback']($editors[$editor]);
     }
     if (empty($editors[$editor]['installed version'])) {
       $editors[$editor]['error'] = t('The version of %editor could not be detected.', array('%editor' => $properties['title']));
@@ -665,7 +666,7 @@ function wysiwyg_get_all_editors() {
       }
     }
     if (!$version) {
-      $editors[$editor]['error'] = t('The installed version %version of %editor is not supported.', array('%version' => $editors[$editor]['installed version'], '%editor' => $properties['title']));
+      $editors[$editor]['error'] = t('The installed version %version of %editor is not supported.', array('%version' => $editors[$editor]['installed version'], '%editor' => $editors[$editor]['title']));
       $editors[$editor]['installed'] = FALSE;
       continue;
     }
@@ -731,7 +732,7 @@ function wysiwyg_get_all_plugins() {
 function wysiwyg_load_includes($type = 'editors', $hook = 'editor', $file = NULL) {
   // Determine implementations.
   $directories = wysiwyg_get_directories($type);
-  $directories['wysiwyg_'] = wysiwyg_get_path($type);
+  $directories['wysiwyg_'] = drupal_get_path('module', 'wysiwyg') . '/' . $type;
   $file_list = array();
   foreach ($directories as $module => $path) {
     $file_list[$module] = drupal_system_listing("$file" . '.inc$', $path, 'name', 0);
@@ -752,21 +753,101 @@ function wysiwyg_load_includes($type = 'editors', $hook = 'editor', $file = NULL
 }
 
 /**
- * Helper function to build module/file paths.
+ * Helper function to build paths to libraries.
  *
- * @param $file
- *   A file or directory in a module to return.
+ * @param $library
+ *   The external library name to return the path for.
  * @param $base_path
  *   Whether to prefix the resulting path with base_path().
- * @param $module
- *   The module name to use as prefix.
  *
  * @return
- *   The path to the specified file in a module.
+ *   The path to the specified library.
+ *
+ * @ingroup libraries
  */
-function wysiwyg_get_path($file = '', $base_path = FALSE, $module = 'wysiwyg') {
-  $base_path = ($base_path ? base_path() : '');
-  return $base_path . drupal_get_path('module', $module) . '/' . $file;
+function wysiwyg_get_path($library, $base_path = FALSE) {
+  static $libraries;
+
+  if (!isset($libraries)) {
+    $libraries = wysiwyg_get_libraries();
+  }
+  if (!isset($libraries[$library])) {
+    // Most often, external libraries can be shared across multiple sites.
+    return 'sites/all/libraries/' . $library;
+  }
+
+  $path = ($base_path ? base_path() : '');
+  $path .= $libraries[$library];
+
+  return $path;
+}
+
+/**
+ * Return an array of library directories.
+ *
+ * Returns an array of library directories from the all-sites directory
+ * (i.e. sites/all/libraries/), the profiles directory, and site-specific
+ * directory (i.e. sites/somesite/libraries/). The returned array will be keyed
+ * by the library name. Site-specific libraries are prioritized over libraries
+ * in the default directories. That is, if a library with the same name appears
+ * in both the site-wide directory and site-specific directory, only the
+ * site-specific version will be listed.
+ *
+ * @return
+ *   A list of library directories.
+ *
+ * @ingroup libraries
+ */
+function wysiwyg_get_libraries() {
+  global $profile;
+
+  // When this function is called during Drupal's initial installation process,
+  // the name of the profile that is about to be installed is stored in the
+  // global $profile variable. At all other times, the regular system variable
+  // contains the name of the current profile, and we can call variable_get()
+  // to determine the profile.
+  if (!isset($profile)) {
+    $profile = variable_get('install_profile', 'default');
+  }
+
+  $directory = 'libraries';
+  $searchdir = array();
+  $config = conf_path();
+
+  // The 'profiles' directory contains pristine collections of modules and
+  // themes as organized by a distribution.  It is pristine in the same way
+  // that /modules is pristine for core; users should avoid changing anything
+  // there in favor of sites/all or sites/<domain> directories.
+  if (file_exists("profiles/$profile/$directory")) {
+    $searchdir[] = "profiles/$profile/$directory";
+  }
+
+  // Always search sites/all/*.
+  $searchdir[] = 'sites/all/'. $directory;
+
+  // Also search sites/<domain>/*.
+  if (file_exists("$config/$directory")) {
+    $searchdir[] = "$config/$directory";
+  }
+
+  // Retrieve list of directories.
+  // @todo Core: Allow to scan for directories.
+  $directories = array();
+  $nomask = array('CVS');
+  foreach ($searchdir as $dir) {
+    if (is_dir($dir) && $handle = opendir($dir)) {
+      while (FALSE !== ($file = readdir($handle))) {
+        if (!in_array($file, $nomask) && $file[0] != '.') {
+          if (is_dir("$dir/$file")) {
+            $directories[$file] = "$dir/$file";
+          }
+        }
+      }
+      closedir($handle);
+    }
+  }
+
+  return $directories;
 }
 
 /**

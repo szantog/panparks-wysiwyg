@@ -11,7 +11,6 @@ function wysiwyg_whizzywig_editor() {
     'title' => 'Whizzywig',
     'vendor url' => 'http://www.unverse.net',
     'download url' => 'http://www.unverse.net/whizzywig-download.html',
-    'library path' => wysiwyg_get_path('whizzywig'),
     'libraries' => array(
       '' => array(
         'title' => 'Default',
@@ -40,7 +39,7 @@ function wysiwyg_whizzywig_editor() {
  *   The installed editor version.
  */
 function wysiwyg_whizzywig_version($editor) {
-  $script = wysiwyg_get_path('whizzywig') . '/whizzywig.js';
+  $script = $editor['library path'] . '/whizzywig.js';
   $script = fopen($script, 'r');
   $line = fgets($script, 43);
   if (preg_match('@Whizzywig v([0-9]+)@', $line, $version)) {
@@ -67,8 +66,8 @@ function wysiwyg_whizzywig_settings($editor, $config, $theme) {
   $settings = array();
 
   // Add path to button images, if available.
-  if (is_dir(wysiwyg_get_path('whizzywig') . '/btn')) {
-    $settings['buttonPath'] = wysiwyg_get_path('whizzywig', TRUE) . '/btn/';
+  if (is_dir($editor['library path'] . '/btn')) {
+    $settings['buttonPath'] = base_path() . $editor['library path'] . '/btn/';
   }
 
   // Add configured buttons or all available.

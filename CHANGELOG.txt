@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#320562 by sun: Changed location for external editor libraries.
 #449134 by sun: Fixed stylesheets of theme missing in node form previews.
 
 

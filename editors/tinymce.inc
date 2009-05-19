@@ -124,6 +124,11 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
     // TinyMCE's URL conversion magic breaks Drupal modules that use a special
     // syntax for paths. This makes 'relative_urls' obsolete.
     'convert_urls' => FALSE,
+    // The default entity_encoding ('named') converts too many characters in
+    // languages (like Greek). Since Drupal supports Unicode, we only convert
+    // HTML control characters and invisible characters. TinyMCE always converts
+    // XML default characters '&', '<', '>'.
+    'entities' => '160,nbsp,173,shy,8194,ensp,8195,emsp,8201,thinsp,8204,zwnj,8205,zwj,8206,lrm,8207,rlm',
   );
   if (isset($config['apply_source_formatting'])) {
     $init['apply_source_formatting'] = $config['apply_source_formatting'];

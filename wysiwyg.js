@@ -14,7 +14,7 @@ Drupal.wysiwygInit = function() {
 
   jQuery.each(Drupal.wysiwyg.editor.init, function(editor) {
     // Clone, so original settings are not overwritten.
-    this(Drupal.wysiwyg.clone(Drupal.settings.wysiwyg.configs[editor]));
+    this(jQuery.extend(true, {}, Drupal.settings.wysiwyg.configs[editor]));
   });
 };
 
@@ -100,7 +100,7 @@ Drupal.wysiwygAttach = function(context, params) {
     Drupal.wysiwygAttachToggleLink(context, params);
     // Attach editor, if enabled by default or last state was enabled.
     if (params.status) {
-      Drupal.wysiwyg.editor.attach[params.editor](context, params, (Drupal.settings.wysiwyg.configs[params.editor] ? Drupal.wysiwyg.clone(Drupal.settings.wysiwyg.configs[params.editor][params.format]) : {}));
+      Drupal.wysiwyg.editor.attach[params.editor](context, params, (Drupal.settings.wysiwyg.configs[params.editor] ? jQuery.extend(true, {}, Drupal.settings.wysiwyg.configs[params.editor][params.format]) : {}));
     }
     // Otherwise, attach default behaviors.
     else {
@@ -196,28 +196,6 @@ Drupal.wysiwyg.getParams = function(element, params) {
   params.status = parseInt(params.status, 10);
   params.resizable = parseInt(params.resizable, 10);
   return params;
-};
-
-/**
- * Clone a configuration object recursively.
- *
- * @param obj
- *   The object to clone.
- *
- * @return
- *   A copy of the passed in object.
- */
-Drupal.wysiwyg.clone = function(obj) {
-  var clone = {};
-  for (var i in obj) {
-    if ((typeof obj[i] == 'object') || (typeof obj[i] == 'array')) {
-      clone[i] = Drupal.wysiwyg.clone(obj[i]);
-    }
-    else {
-      clone[i] = obj[i];
-    }
-  }
-  return clone;
 };
 
 /**

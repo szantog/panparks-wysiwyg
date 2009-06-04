@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#470928 by jfh, sun: Fixed Drupal.wysiwyg.clone turns arrays into objects.
 #445826 by TwoD: Fixed FCKeditor: Drupal.wysiwyg.activeId not updated.
 #478324 by jeffschuler: Fixed typo in profile configuration form.
 #373542 by sun: Fixed encoding of HTML entities for certain languages.

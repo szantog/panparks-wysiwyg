@@ -84,6 +84,7 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
   $settings = array(
     'EditorPath' => base_path() . $editor['library path'] .'/',
     'SkinPath' => base_path() . $editor['library path'] .'/editor/skins/'. $theme .'/',
+    'CustomConfigurationsPath' => base_path() . drupal_get_path('module', 'wysiwyg') . '/editors/js/fckeditor.config.js',
     'Width' => '100%',
     'Height' => 420,
     'LinkBrowser' => FALSE,
@@ -121,7 +122,6 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
 
   if (!empty($config['buttons'])) {
     // Use our custom toolbar set.
-    $settings['CustomConfigurationsPath'] = base_path() . drupal_get_path('module', 'wysiwyg') . '/editors/js/fckeditor.config.js';
     $settings['ToolbarSet'] = 'Wysiwyg';
     // Populate our custom toolbar set for fckeditor.config.js.
     $settings['buttons'] = array();

@@ -430,6 +430,7 @@ function wysiwyg_profile_overview() {
       '#default_value' => isset($profiles[$id]) ? $profiles[$id]->editor : '',
       '#options' => $options,
       '#id' => "edit-editor-$id",
+      '#disabled' => isset($profiles[$id]) ? (bool) $profiles[$id]->editor : FALSE,
     );
     if (isset($profiles[$id]) && !empty($profiles[$id]->editor)) {
       $form['formats'][$id]['edit'] = array(

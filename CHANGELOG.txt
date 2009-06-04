@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#332139 by sun: Fixed editor must not be changed when profile is configured.
 #362137 by jfh: Added WYMeditor support.
 #470928 by jfh, sun: Fixed Drupal.wysiwyg.clone turns arrays into objects.
 #445826 by TwoD: Fixed FCKeditor: Drupal.wysiwyg.activeId not updated.

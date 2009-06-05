@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#342864 by davexoxide, sun: Added YUI editor support.
 #332139 by sun: Fixed editor must not be changed when profile is configured.
 #362137 by jfh: Added WYMeditor support.
 #470928 by jfh, sun: Fixed Drupal.wysiwyg.clone turns arrays into objects.

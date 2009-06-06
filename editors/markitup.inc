@@ -36,7 +36,6 @@ function wysiwyg_markitup_editor() {
         'js files' => array('markitup.js'),
       ),
     ),
-    'css files' => array('markitup-1.css'),
   );
   return $editor;
 }
@@ -88,14 +87,48 @@ function wysiwyg_markitup_settings($editor, $config, $theme) {
 
   // Add configured buttons or all available.
   $default_buttons = array(
-    'bold' => array('name' => t('Bold'), 'className' => 'markitup-bold', 'key' => 'B', 'openWith' => '(!(<strong>|!|<b>)!)', 'closeWith' => '(!(</strong>|!|</b>)!)'),
-    'italic' => array('name' => t('Italic'), 'className' => 'markitup-italic', 'key' => 'I', 'openWith' => '(!(<em>|!|<i>)!)', 'closeWith' => '(!(</em>|!|</i>)!)'),
-    'stroke' => array('name' => t('Strike-through'), 'className' => 'markitup-stroke', 'key' => 'S', 'openWith' => '<del>', 'closeWith' => '</del>'),
-    'image' => array('name' => t('Image'), 'className' => 'markitup-image', 'key' => 'P', 'replaceWith' => '<img src="[![Source:!:http://]!]" alt="[![Alternative text]!]" />'),
-    'link' => array('name' => t('Link'), 'className' => 'markitup-link', 'key' => 'K', 'openWith' => '<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>', 'closeWith' => '</a>', 'placeHolder' => 'Your text to link...'),
+    'bold' => array(
+      'name' => t('Bold'),
+      'className' => 'markitup-bold',
+      'key' => 'B',
+      'openWith' => '(!(<strong>|!|<b>)!)',
+      'closeWith' => '(!(</strong>|!|</b>)!)',
+    ),
+    'italic' => array(
+      'name' => t('Italic'),
+      'className' => 'markitup-italic',
+      'key' => 'I',
+      'openWith' => '(!(<em>|!|<i>)!)',
+      'closeWith' => '(!(</em>|!|</i>)!)',
+    ),
+    'stroke' => array(
+      'name' => t('Strike-through'),
+      'className' => 'markitup-stroke',
+      'key' => 'S',
+      'openWith' => '<del>',
+      'closeWith' => '</del>',
+    ),
+    'image' => array(
+      'name' => t('Image'),
+      'className' => 'markitup-image',
+      'key' => 'P',
+      'replaceWith' => '<img src="[![Source:!:http://]!]" alt="[![Alternative text]!]" />',
+    ),
+    'link' => array(
+      'name' => t('Link'),
+      'className' => 'markitup-link',
+      'key' => 'K',
+      'openWith' => '<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>',
+      'closeWith' => '</a>',
+      'placeHolder' => 'Your text to link...',
+    ),
     // @todo
     // 'cleanup' => array('name' => t('Clean-up'), 'className' => 'markitup-cleanup', 'replaceWith' => 'function(markitup) { return markitup.selection.replace(/<(.*?)>/g, "") }'),
-    'preview' => array('name' => t('Preview'), 'className' => 'markitup-preview', 'call' => 'preview'),
+    'preview' => array(
+      'name' => t('Preview'),
+      'className' => 'markitup-preview',
+      'call' => 'preview',
+    ),
   );
       
   if (!empty($config['buttons'])) {

@@ -78,7 +78,13 @@ function wysiwyg_wymeditor_version($editor) {
  *   Drupal.settings.wysiwyg.configs.{editor}
  */
 function wysiwyg_wymeditor_settings($editor, $config, $theme) {
+  // @todo Setup $library in wysiwyg_load_editor() already.
+  $library = (isset($editor['library']) ? $editor['library'] : key($editor['libraries']));
   $settings = array(
+    'basePath' => base_path() . $editor['library path'] . '/',
+    'wymPath' => $editor['libraries'][$library]['files'][0],
+    // @todo Does not work in Drupal; jQuery can live anywhere.
+    'jQueryPath' => base_path() . 'misc/jquery.js',
     'updateSelector' => '.form-submit',
     'skin' => $theme,
   );

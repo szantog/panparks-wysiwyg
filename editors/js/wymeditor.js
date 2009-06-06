@@ -4,6 +4,9 @@
  * Attach this editor to a target element.
  */
 Drupal.wysiwyg.editor.attach.wymeditor = function(context, params, settings) {
+  // Prepend basePath to wymPath.
+  settings.wymPath = settings.basePath + settings.wymPath;
+  // Attach editor.
   $('#' + params.field).wymeditor(settings);
 };
 

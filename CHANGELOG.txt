@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#362137 by jfh, sun: Fixed WYMeditor broken when JS/CSS aggregation is enabled.
 #328252 by sun: Added TinyMCE plugin BBCode for 3.x.
 #429926 by TwoD, sun: Fixed TinyMCE broken due to renamed Flash/Media plugin.
 #342864 by davexoxide, sun: Added YUI editor support.

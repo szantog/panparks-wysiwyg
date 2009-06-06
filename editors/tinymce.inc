@@ -559,6 +559,13 @@ function wysiwyg_tinymce_plugins($editor) {
     );
   }
   if (version_compare($editor['installed version'], '3', '>')) {
+    $plugins['bbcode'] = array(
+      'path' => $editor['library path'] .'/plugins/bbcode',
+      'extensions' => array('bbcode' => t('BBCode')),
+      'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/bbcode',
+      'internal' => TRUE,
+      'load' => TRUE,
+    );
     $plugins['safari'] = array(
       'path' => $editor['library path'] .'/plugins/safari',
       'extensions' => array('safari' => t('Safari compatibility')),

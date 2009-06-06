@@ -447,14 +447,6 @@ function wysiwyg_tinymce_plugins($editor) {
       'internal' => TRUE,
       'load' => TRUE,
     ),
-    'flash' => array(
-      'path' => $editor['library path'] .'/plugins/flash',
-      'buttons' => array('flash' => t('Flash')),
-      'extended_valid_elements' => array('img[class|src|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name|obj|param|embed]'),
-      'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/flash',
-      'internal' => TRUE,
-      'load' => TRUE,
-    ),
     'font' => array(
       'path' => $editor['library path'] .'/plugins/font',
       'buttons' => array('formatselect' => t('HTML block format'), 'fontselect' => t('Font'), 'fontsizeselect' => t('Font size'), 'styleselect' => t('Font style')),
@@ -540,7 +532,24 @@ function wysiwyg_tinymce_plugins($editor) {
       'load' => TRUE,
     ),
   );
-  if ($editor['installed version'] > 3) {
+  if (version_compare($editor['installed version'], '3', '<')) {
+    $plugins['flash'] = array(
+      'path' => $editor['library path'] .'/plugins/flash',
+      'buttons' => array('flash' => t('Flash')),
+      'extended_valid_elements' => array('img[class|src|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name|obj|param|embed]'),
+      'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/flash',
+      'internal' => TRUE,
+      'load' => TRUE,
+    );
+  }
+  if (version_compare($editor['installed version'], '2.0.6', '>')) {
+    $plugins['media'] = array(
+      'path' => $editor['library path'] .'/plugins/media',
+      'buttons' => array('media' => t('Media')),
+      'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/media',
+      'internal' =>  TRUE,
+      'load' => TRUE,
+    );
     $plugins['xhtmlxtras'] = array(
       'path' => $editor['library path'] .'/plugins/xhtmlxtras',
       'buttons' => array('cite' => t('Citation'), 'del' => t('Deleted'), 'abbr' => t('Abbreviation'), 'acronym' => t('Acronym'), 'ins' => t('Inserted')),
@@ -548,6 +557,8 @@ function wysiwyg_tinymce_plugins($editor) {
       'internal' => TRUE,
       'load' => TRUE,
     );
+  }
+  if (version_compare($editor['installed version'], '3', '>')) {
     $plugins['safari'] = array(
       'path' => $editor['library path'] .'/plugins/safari',
       'extensions' => array('safari' => t('Safari compatibility')),

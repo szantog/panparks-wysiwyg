@@ -130,11 +130,13 @@ function wysiwyg_process_form(&$form) {
             // Default to 'none' editor (Drupal's default behaviors).
             $editor = 'none';
             $status = 1;
+            $toggle = 1;
             // Fetch the profile associated to this input format.
             $profile = wysiwyg_get_profile($format);
             if ($profile) {
               $editor = $profile->editor;
-              $status = (int)wysiwyg_user_get_status($profile);
+              $status = (int) wysiwyg_user_get_status($profile);
+              $toggle = (int) $profile->settings['show_toggle'];
               // Check editor theme (and reset it if not/no longer available).
               $theme = wysiwyg_get_editor_themes($profile, (isset($profile->settings['theme']) ? $profile->settings['theme'] : ''));
 
@@ -147,7 +149,7 @@ function wysiwyg_process_form(&$form) {
             // Use a prefix/suffix for a single input format, or attach to input
             // format selector radio buttons.
             if (isset($element['format']['guidelines'])) {
-              $element['format']['guidelines']['#prefix'] = '<div class="wysiwyg wysiwyg-format-'. $format .' wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] .' wysiwyg-status-'. $status . $extra_class .'">';
+              $element['format']['guidelines']['#prefix'] = '<div class="wysiwyg wysiwyg-format-' . $format . ' wysiwyg-editor-' . $editor . ' wysiwyg-field-' . $field['#id'] . ' wysiwyg-status-' . $status . ' wysiwyg-toggle-' . $toggle . $extra_class . '">';
               $element['format']['guidelines']['#suffix'] = '</div>';
               // Edge-case: Default format contains no input filters.
               if (empty($element['format']['guidelines']['#value'])) {
@@ -155,13 +157,8 @@ function wysiwyg_process_form(&$form) {
               }
             }
             else {
-              if (isset($element[$format]['#attributes']['class'])) {
-                $element[$format]['#attributes']['class'] .= ' ';
-              }
-              else {
-                $element[$format]['#attributes']['class'] = '';
-              }
-              $element[$format]['#attributes']['class'] .= 'wysiwyg wysiwyg-format-'. $format .' wysiwyg-editor-'. $editor .' wysiwyg-field-'. $field['#id'] .' wysiwyg-status-'. $status . $extra_class;
+              $element[$format]['#attributes']['class'] = (isset($element[$format]['#attributes']['class']) ? $element[$format]['#attributes']['class'] . ' ' : '');
+              $element[$format]['#attributes']['class'] .= 'wysiwyg wysiwyg-format-' . $format . ' wysiwyg-editor-' . $editor . ' wysiwyg-field-' . $field['#id'] . ' wysiwyg-status-' . $status . ' wysiwyg-toggle-' . $toggle . $extra_class;
             }
           }
         }

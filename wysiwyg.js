@@ -94,10 +94,16 @@ Drupal.wysiwygAttach = function(context, params) {
     }
     // Store this field id, so (external) plugins can use it.
     // @todo Wrong point in time. Probably can only supported by editors which
-    //   support a onFocus() or similar event.
+    //   support an onFocus() or similar event.
     Drupal.wysiwyg.activeId = params.field;
-    // Attach or update toggle link.
-    Drupal.wysiwygAttachToggleLink(context, params);
+    // Attach or update toggle link, if enabled.
+    if (params.toggle) {
+      Drupal.wysiwygAttachToggleLink(context, params);
+    }
+    // Otherwise, ensure that toggle link is hidden.
+    else {
+      $('#wysiwyg-toggle-' + params.field).hide();
+    }
     // Attach editor, if enabled by default or last state was enabled.
     if (params.status) {
       Drupal.wysiwyg.editor.attach[params.editor](context, params, (Drupal.settings.wysiwyg.configs[params.editor] ? jQuery.extend(true, {}, Drupal.settings.wysiwyg.configs[params.editor][params.format]) : {}));
@@ -134,36 +140,38 @@ Drupal.wysiwygDetach = function(context, params) {
  *   An object containing input format parameters.
  */
 Drupal.wysiwygAttachToggleLink = function(context, params) {
-  if (!$('#wysiwyg-toggle-' + params.field).size()) {
+  if (!$('#wysiwyg-toggle-' + params.field).length) {
     var text = document.createTextNode(params.status ? Drupal.settings.wysiwyg.disable : Drupal.settings.wysiwyg.enable);
     var a = document.createElement('a');
-    $(a).attr({id: 'wysiwyg-toggle-' + params.field, href: 'javascript:void(0);'}).append(text);
+    $(a).attr({ id: 'wysiwyg-toggle-' + params.field, href: 'javascript:void(0);' }).append(text);
     var div = document.createElement('div');
     $(div).addClass('wysiwyg-toggle-wrapper').append(a);
     $('#' + params.field).after(div);
   }
-  $('#wysiwyg-toggle-' + params.field).html(params.status ? Drupal.settings.wysiwyg.disable : Drupal.settings.wysiwyg.enable).show().unbind('click').click(function() {
-    if (params.status) {
-      // Detach current editor.
-      params.status = false;
-      Drupal.wysiwygDetach(context, params);
-      // After disabling the editor, re-attach default behaviors.
-      // @todo We HAVE TO invoke Drupal.wysiwygAttach() here.
-      Drupal.wysiwyg.editor.attach.none(context, params);
-      Drupal.wysiwyg.instances[params.field] = Drupal.wysiwyg.editor.instance.none;
-      Drupal.wysiwyg.instances[params.field].editor = 'none';
-      $(this).html(Drupal.settings.wysiwyg.enable).blur();
-    }
-    else {
-      // Before enabling the editor, detach default behaviors.
-      Drupal.wysiwyg.editor.detach.none(context, params);
-      // Attach new editor using parameters of the currently selected input format.
-      Drupal.wysiwyg.getParams($('.wysiwyg-field-' + params.field + ':checked, div.wysiwyg-field-' + params.field, context).get(0), params);
-      params.status = true;
-      Drupal.wysiwygAttach(context, params);
-      $(this).html(Drupal.settings.wysiwyg.disable).blur();
-    }
-  });
+  $('#wysiwyg-toggle-' + params.field)
+    .html(params.status ? Drupal.settings.wysiwyg.disable : Drupal.settings.wysiwyg.enable).show()
+    .unbind('click').click(function() {
+      if (params.status) {
+        // Detach current editor.
+        params.status = false;
+        Drupal.wysiwygDetach(context, params);
+        // After disabling the editor, re-attach default behaviors.
+        // @todo We HAVE TO invoke Drupal.wysiwygAttach() here.
+        Drupal.wysiwyg.editor.attach.none(context, params);
+        Drupal.wysiwyg.instances[params.field] = Drupal.wysiwyg.editor.instance.none;
+        Drupal.wysiwyg.instances[params.field].editor = 'none';
+        $(this).html(Drupal.settings.wysiwyg.enable).blur();
+      }
+      else {
+        // Before enabling the editor, detach default behaviors.
+        Drupal.wysiwyg.editor.detach.none(context, params);
+        // Attach new editor using parameters of the currently selected input format.
+        Drupal.wysiwyg.getParams($('.wysiwyg-field-' + params.field + ':checked, div.wysiwyg-field-' + params.field, context).get(0), params);
+        params.status = true;
+        Drupal.wysiwygAttach(context, params);
+        $(this).html(Drupal.settings.wysiwyg.disable).blur();
+      }
+    });
   // Hide toggle link in case no editor is attached.
   if (params.editor == 'none') {
     $('#wysiwyg-toggle-' + params.field).hide();
@@ -194,6 +202,7 @@ Drupal.wysiwyg.getParams = function(element, params) {
   params.format = 'format' + params.format;
   // Convert numeric values.
   params.status = parseInt(params.status, 10);
+  params.toggle = parseInt(params.toggle, 10);
   params.resizable = parseInt(params.resizable, 10);
   return params;
 };

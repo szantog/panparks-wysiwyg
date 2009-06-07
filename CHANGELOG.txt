@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#479514 by TwoD, sun: Added native plugin support for FCKeditor.
 #341054 by sun: Fixed toggle link configuration setting not working.
 by sun: Fixed markItUp button icons are not displayed.
 by sun: Added openWYSIWYG editor support.

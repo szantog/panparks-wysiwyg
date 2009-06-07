@@ -172,12 +172,22 @@ function wysiwyg_fckeditor_themes($editor, $profile) {
 
 /**
  * Build a JS settings array of native external plugins that need to be loaded separately.
- *
- * @todo Required for FCKeditor?  If not, wysiwyg_add_plugin_settings() needs
- *   an overhaul.
  */
 function wysiwyg_fckeditor_plugin_settings($editor, $profile, $plugins) {
   $settings = array();
+  foreach ($plugins as $name => $plugin) {
+    // Register all plugins that need to be loaded.
+    if (!empty($plugin['load'])) {
+      $settings[$name] = array();
+      // Add path for native external plugins; internal ones do not need a path.
+      if (empty($plugin['internal']) && isset($plugin['path'])) {
+        $settings[$name]['path'] = base_path() . $plugin['path'];
+      }
+      if (!empty($plugin['languages'])) {
+        $settings[$name]['languages'] = $plugin['languages'];
+      }
+    }
+  }
   return $settings;
 }
 
@@ -203,7 +213,7 @@ function wysiwyg_fckeditor_proxy_plugin_settings($editor, $profile, $plugins) {
  * Return internal plugins for FCKeditor; semi-implementation of hook_wysiwyg_plugin().
  */
 function wysiwyg_fckeditor_plugins($editor) {
-  return array(
+  $plugins = array(
     'default' => array(
       'buttons' => array(
         'Bold' => t('Bold'), 'Italic' => t('Italic'), 'Underline' => t('Underline'),
@@ -235,6 +245,50 @@ function wysiwyg_fckeditor_plugins($editor) {
       ),
       'internal' => TRUE,
     ),
+    'autogrow' => array(
+      'path' => $editor['library path'] . '/editor/plugins',
+      'extensions' => array(
+        'autogrow' => t('Autogrow'),
+      ),
+      'options' => array(
+        'AutoGrowMax' => 800,
+      ),
+      'internal' => TRUE,
+      'load' => TRUE,
+    ),
+    'bbcode' => array(
+      'path' => $editor['library path'] . '/editor/plugins',
+      'extensions' => array(
+        'bbcode' => t('BBCode'),
+      ),
+      'internal' => TRUE,
+      'load' => TRUE,
+    ),
+    'dragresizetable' => array(
+      'path' => $editor['library path'] . '/editor/plugins',
+      'extensions' => array(
+        'dragresizetable' => t('Table drag/resize'),
+      ),
+      'internal' => TRUE,
+      'load' => TRUE,
+    ),
+    'tablecommands' => array(
+      'path' => $editor['library path'] . '/editor/plugins',
+      'buttons' => array(
+        'TableCellProp' => t('Table: Cell properties'),
+        'TableInsertRowAfter' => t('Table: Insert row after'),
+        'TableInsertColumnAfter' => t('Table: Insert column after'),
+        'TableInsertCellAfter' => t('Table: Insert cell after'),
+        'TableDeleteRows' => t('Table: Delete rows'),
+        'TableDeleteColumns' => t('Table: Delete columns'),
+        'TableDeleteCells' => t('Table: Delete cells'),
+        'TableMergeCells' => t('Table: Merge cells'),
+        'TableHorizontalSplitCell' => t('Table: Horizontal split cell'),
+      ),
+      'internal' => TRUE,
+      'load' => TRUE,
+    ),
   );
+  return $plugins;
 }
 

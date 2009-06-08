@@ -10,13 +10,38 @@
  * Implementation of hook_menu().
  */
 function wysiwyg_menu() {
-  $items = array();
-  $items['admin/settings/wysiwyg/profile'] = array(
+  $items['admin/settings/wysiwyg'] = array(
     'title' => 'Wysiwyg',
-    'page callback' => 'wysiwyg_admin',
-    'description' => 'Configure client-side editor profiles.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wysiwyg_profile_overview'),
+    'description' => 'Configure client-side editors.',
     'access arguments' => array('administer filters'),
     'file' => 'wysiwyg.admin.inc',
+  );
+  $items['admin/settings/wysiwyg/profile'] = array(
+    'title' => 'Profiles',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  $items['admin/settings/wysiwyg/profile/%wysiwyg_profile/edit'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wysiwyg_profile_form', 4),
+    'access arguments' => array('administer filters'),
+    'file' => 'wysiwyg.admin.inc',
+    'tab_root' => 'admin/settings/wysiwyg/profile',
+    'tab_parent' => 'admin/settings/wysiwyg/profile/%wysiwyg_profile',
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/settings/wysiwyg/profile/%wysiwyg_profile/delete'] = array(
+    'title' => 'Remove',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wysiwyg_profile_delete_confirm', 4),
+    'access arguments' => array('administer filters'),
+    'file' => 'wysiwyg.admin.inc',
+    'tab_root' => 'admin/settings/wysiwyg/profile',
+    'tab_parent' => 'admin/settings/wysiwyg/profile/%wysiwyg_profile',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10,
   );
   $items['wysiwyg/%'] = array(
     'page callback' => 'wysiwyg_dialog',
@@ -51,12 +76,9 @@ function wysiwyg_theme() {
  */
 function wysiwyg_help($path, $arg) {
   switch ($path) {
-    case 'admin/settings/wysiwyg/profile':
-      if (empty($arg[4])) {
-        $output = '<p>'. t('A Wysiwyg profile can be associated to an input format. A Wysiwyg profile defines which client-side editor is loaded, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor-specific functions.') .'</p>';
-        return $output;
-      }
-      break;
+    case 'admin/settings/wysiwyg':
+      $output = '<p>'. t('A Wysiwyg profile can be associated to an input format. A Wysiwyg profile defines which client-side editor is loaded, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor-specific functions.') .'</p>';
+      return $output;
   }
 }
 
@@ -187,7 +209,7 @@ function wysiwyg_process_form(&$form) {
  * @see wysiwyg_load_editor(), wysiwyg_get_editor()
  */
 function wysiwyg_get_profile($format) {
-  if ($profile = wysiwyg_load_profile($format)) {
+  if ($profile = wysiwyg_profile_load($format)) {
     if (wysiwyg_load_editor($profile)) {
       return $profile;
     }
@@ -539,21 +561,38 @@ function wysiwyg_get_css() {
 }
 
 /**
- * Load all profiles. Just load one profile if $name is passed in.
+ * Load profile for a given input format.
  */
-function wysiwyg_load_profile($format = '') {
+function wysiwyg_profile_load($format) {
   static $profiles;
 
-  if (!isset($profiles)) {
-    $profiles = array();
-    $result = db_query('SELECT * FROM {wysiwyg}');
+  if (!isset($profiles) || !array_key_exists($format, $profiles)) {
+    $result = db_query('SELECT format, editor, settings FROM {wysiwyg} WHERE format = %d', $format);
     while ($profile = db_fetch_object($result)) {
       $profile->settings = unserialize($profile->settings);
       $profiles[$profile->format] = $profile;
     }
   }
 
-  return ($format && isset($profiles[$format]) ? $profiles[$format] : ($format ? FALSE : $profiles));
+  return (isset($profiles[$format]) ? $profiles[$format] : FALSE);
+}
+
+/**
+ * Load all profiles.
+ */
+function wysiwyg_profile_load_all() {
+  static $profiles;
+
+  if (!isset($profiles)) {
+    $profiles = array();
+    $result = db_query('SELECT format, editor, settings FROM {wysiwyg}');
+    while ($profile = db_fetch_object($result)) {
+      $profile->settings = unserialize($profile->settings);
+      $profiles[$profile->format] = $profile;
+    }
+  }
+
+  return $profiles;
 }
 
 /**

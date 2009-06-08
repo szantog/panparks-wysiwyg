@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#434590 by sun: Fixed path admin/settings/wysiwyg not found.
 #479514 by TwoD, sun: Added native plugin support for FCKeditor.
 #341054 by sun: Fixed toggle link configuration setting not working.
 by sun: Fixed markItUp button icons are not displayed.

@@ -314,8 +314,10 @@ function wysiwyg_tinymce_themes($editor, $profile) {
 function wysiwyg_tinymce_plugin_settings($editor, $profile, $plugins) {
   $settings = array();
   foreach ($plugins as $name => $plugin) {
-    if (empty($plugin['internal'])) {
-      if (isset($plugin['path'])) {
+    if (!empty($plugin['load'])) {
+      // Add path for native external plugins; internal ones are loaded
+      // automatically.
+      if (empty($plugin['internal']) && isset($plugin['path'])) {
         $settings[$name] = base_path() . $plugin['path'];
       }
     }

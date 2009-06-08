@@ -364,25 +364,44 @@ function wysiwyg_profile_overview() {
   $count = count($editors);
   $status = array();
   $options = array('' => t('No editor'));
-  foreach ($editors as $editor => $properties) {
-    $status[$editor] = array(
-      'severity' => (isset($properties['error']) ? REQUIREMENT_ERROR : ($properties['installed'] ? REQUIREMENT_OK : REQUIREMENT_INFO)),
-      'title' => t('<a href="!vendor-url">@editor</a> (<a href="!download-url">Download</a>)', array('!vendor-url' => $properties['vendor url'], '@editor' => $properties['title'], '!download-url' => $properties['download url'])),
-      'value' => (isset($properties['installed version']) ? $properties['installed version'] : t('Not installed.')),
-      'description' => (isset($properties['error']) ? $properties['error'] : ($properties['installed'] ? '' : t('Extract the archive and copy its contents into a new folder in the following location:<br /><code>@editor-path</code>', array('@editor-path' => $properties['editor path'])))),
+
+  foreach ($editors as $name => $editor) {
+    $status[$name] = array(
+      'severity' => (isset($editor['error']) ? REQUIREMENT_ERROR : ($editor['installed'] ? REQUIREMENT_OK : REQUIREMENT_INFO)),
+      'title' => t('<a href="!vendor-url">@editor</a> (<a href="!download-url">Download</a>)', array('!vendor-url' => $editor['vendor url'], '@editor' => $editor['title'], '!download-url' => $editor['download url'])),
+      'value' => (isset($editor['installed version']) ? $editor['installed version'] : t('Not installed.')),
+      'description' => (isset($editor['error']) ? $editor['error'] : ''),
     );
-    if ($properties['installed']) {
-      $options[$editor] = $properties['title'] . (isset($properties['installed version']) ? ' ' . $properties['installed version'] : '');
+    if ($editor['installed']) {
+      $options[$name] = $editor['title'] . (isset($editor['installed version']) ? ' ' . $editor['installed version'] : '');
     }
     else {
+      // Build on-site installation instructions.
+      // @todo Setup $library in wysiwyg_load_editor() already.
+      $library = (isset($editor['library']) ? $editor['library'] : key($editor['libraries']));
+      $targs = array(
+        '@editor-path' => $editor['editor path'],
+        '@library-filepath' => $editor['library path'] . '/' . $editor['libraries'][$library]['files'][0],
+      );
+      $instructions = '<p>' . t('Extract the archive and copy its contents into a new folder in the following location:<br /><code>@editor-path</code>', $targs) . '</p>';
+      $instructions .= '<p>' . t('So the actual library can be found at:<br /><code>@library-filepath</code>', $targs) . '</p>';
+
+      $status[$name]['description'] .= $instructions;
       $count--;
     }
+    // In case there is an error, always show installation instructions.
+    if (isset($editor['error'])) {
+      $show_instructions = TRUE;
+    }
+  }
+  if (!$count) {
+    $show_instructions = TRUE;
   }
   $form['status'] = array(
     '#type' => 'fieldset',
     '#title' => t('Installation instructions'),
     '#collapsible' => TRUE,
-    '#collapsed' => $count,
+    '#collapsed' => !isset($show_instructions),
     '#description' => (!$count ? t('There are no editor libraries installed currently. The following list contains a list of currently supported editors:') : ''),
     '#weight' => 10,
   );

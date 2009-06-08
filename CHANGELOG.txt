@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#407014 by sun: Fixed/removed migration from other editor integration modules.
 #485264 by sun: Changed installation instructions to be more concise.
 #479514 by sun: Fixed native plugin loading for TinyMCE (follow-up).
 #434590 by sun: Fixed path admin/settings/wysiwyg not found.

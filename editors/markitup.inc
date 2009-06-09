@@ -6,12 +6,10 @@
  * Editor integration functions for markItUp.
  */
 
-
 /**
  * Plugin implementation of hook_editor().
  */
 function wysiwyg_markitup_editor() {
-  $editor = array();
   $editor['markitup'] = array(
     'title' => 'markItUp',
     'vendor url' => 'http://markitup.jaysalvat.com',
@@ -28,8 +26,8 @@ function wysiwyg_markitup_editor() {
       ),
     ),
     'version callback' => 'wysiwyg_markitup_version',
-    'settings callback' => 'wysiwyg_markitup_settings',
     'themes callback' => 'wysiwyg_markitup_themes',
+    'settings callback' => 'wysiwyg_markitup_settings',
     'plugin callback' => 'wysiwyg_markitup_plugins',
     'versions' => array(
       '1.1.5' => array(
@@ -61,6 +59,22 @@ function wysiwyg_markitup_version($editor) {
 }
 
 /**
+ * Determine available editor themes or check/reset a given one.
+ *
+ * @param $editor
+ *   A processed hook_editor() array of editor properties.
+ * @param $profile
+ *   A wysiwyg editor profile.
+ *
+ * @return
+ *   An array of theme names. The first returned name should be the default
+ *   theme name.
+ */
+function wysiwyg_markitup_themes($editor, $profile) {
+  return array('simple', 'markitup');
+}
+
+/**
  * Return runtime editor settings for a given wysiwyg profile.
  *
  * @param $editor
@@ -78,7 +92,7 @@ function wysiwyg_markitup_settings($editor, $config, $theme) {
   // Whoever is guilty for adding this horrible CSS-file-without-filepath
   // override "feature" to Drupal core... stand in the corner!
   drupal_add_css($editor['library path'] . '/skins/' . $theme . '/style.css', 'theme');
-  
+
   $settings = array(
     'root' => base_path() . $editor['library path'] . '/',
     'nameSpace' => $theme,
@@ -130,7 +144,7 @@ function wysiwyg_markitup_settings($editor, $config, $theme) {
       'call' => 'preview',
     ),
   );
-      
+
   if (!empty($config['buttons'])) {
     foreach ($config['buttons'] as $plugin) {
       foreach ($plugin as $button => $enabled) {
@@ -145,22 +159,6 @@ function wysiwyg_markitup_settings($editor, $config, $theme) {
   }
 
   return $settings;
-}
-
-/**
- * Determine available editor themes or check/reset a given one.
- *
- * @param $editor
- *   A processed hook_editor() array of editor properties.
- * @param $profile
- *   A wysiwyg editor profile.
- *
- * @return
- *   An array of theme names. The first returned name should be the default
- *   theme name.
- */
-function wysiwyg_markitup_themes($editor, $profile) {
-  return array('simple', 'markitup');
 }
 
 /**

@@ -1,12 +1,15 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Editor integration functions for Whizzywig.
+ */
 
 /**
  * Plugin implementation of hook_editor().
  */
 function wysiwyg_whizzywig_editor() {
-  $editor = array();
   $editor['whizzywig'] = array(
     'title' => 'Whizzywig',
     'vendor url' => 'http://www.unverse.net',
@@ -46,6 +49,7 @@ function wysiwyg_whizzywig_version($editor) {
     fclose($script);
     return $version[1];
   }
+  fclose($script);
 }
 
 /**
@@ -85,7 +89,7 @@ function wysiwyg_whizzywig_settings($editor, $config, $theme) {
   // Add editor content stylesheet.
   if (isset($config['css_setting'])) {
     if ($config['css_setting'] == 'theme') {
-      $css = path_to_theme() .'/style.css';
+      $css = path_to_theme() . '/style.css';
       if (file_exists($css)) {
         $settings['externalCSS'] = base_path() . $css;
       }
@@ -99,7 +103,7 @@ function wysiwyg_whizzywig_settings($editor, $config, $theme) {
 }
 
 /**
- * Return internal plugins for Whizzywig; semi-implementation of hook_wysiwyg_plugin().
+ * Return internal plugins for this editor; semi-implementation of hook_wysiwyg_plugin().
  */
 function wysiwyg_whizzywig_plugins($editor) {
   return array(

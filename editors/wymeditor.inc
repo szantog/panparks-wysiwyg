@@ -10,7 +10,6 @@
  * Plugin implementation of hook_editor().
  */
 function wysiwyg_wymeditor_editor() {
-  $editor = array();
   $editor['wymeditor'] = array(
     'title' => 'WYMeditor',
     'vendor url' => 'http://www.wymeditor.org/',
@@ -31,11 +30,11 @@ function wysiwyg_wymeditor_editor() {
       ),
     ),
     'version callback' => 'wysiwyg_wymeditor_version',
-    'settings callback' => 'wysiwyg_wymeditor_settings',
     'themes callback' => 'wysiwyg_wymeditor_themes',
+    'settings callback' => 'wysiwyg_wymeditor_settings',
     'versions' => array(
       '0.5-rc1' => array(
-        'js files' => array('wymeditor.js')
+        'js files' => array('wymeditor.js'),
       ),
     ),
   );
@@ -61,6 +60,22 @@ function wysiwyg_wymeditor_version($editor) {
     return $version[1];
   }
   fclose($script);
+}
+
+/**
+ * Determine available editor themes or check/reset a given one.
+ *
+ * @param $editor
+ *   A processed hook_editor() array of editor properties.
+ * @param $profile
+ *   A wysiwyg editor profile.
+ *
+ * @return
+ *   An array of theme names. The first returned name should be the default
+ *   theme name.
+ */
+function wysiwyg_wymeditor_themes($editor, $profile) {
+  return array('compact', 'default', 'minimal', 'silver', 'twopanels');
 }
 
 /**
@@ -128,21 +143,5 @@ function wysiwyg_wymeditor_settings($editor, $config, $theme) {
   }
 
   return $settings;
-}
-
-/**
- * Determine available editor themes or check/reset a given one.
- *
- * @param $editor
- *   A processed hook_editor() array of editor properties.
- * @param $profile
- *   A wysiwyg editor profile.
- *
- * @return
- *   An array of theme names. The first returned name should be the default
- *   theme name.
- */
-function wysiwyg_wymeditor_themes($editor, $profile) {
-  return array('compact', 'default', 'minimal', 'silver', 'twopanels');
 }
 

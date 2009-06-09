@@ -2,10 +2,14 @@
 // $Id$
 
 /**
+ * @file
+ * Editor integration functions for openWYSIWYG.
+ */
+
+/**
  * Plugin implementation of hook_editor().
  */
 function wysiwyg_openwysiwyg_editor() {
-  $editor = array();
   $editor['openwysiwyg'] = array(
     'title' => 'openWYSIWYG',
     'vendor url' => 'http://www.openwebware.com',
@@ -21,7 +25,6 @@ function wysiwyg_openwysiwyg_editor() {
     'themes callback' => 'wysiwyg_openwysiwyg_themes',
     'settings callback' => 'wysiwyg_openwysiwyg_settings',
     'plugin callback' => 'wysiwyg_openwysiwyg_plugins',
-    'plugin settings callback' => 'wysiwyg_openwysiwyg_plugin_settings',
     'versions' => array(
       '1.4.7' => array(
         'js files' => array('openwysiwyg.js'),
@@ -42,7 +45,7 @@ function wysiwyg_openwysiwyg_editor() {
  *   The installed editor version.
  */
 function wysiwyg_openwysiwyg_version($editor) {
-  $changelog = $editor['editor path'] .'/changelog';
+  $changelog = $editor['editor path'] . '/changelog';
   $changelog = fopen($changelog, 'r');
   $line = fgets($changelog, 20);
   if (preg_match('@v([\d\.]+)@', $line, $version)) {
@@ -50,6 +53,22 @@ function wysiwyg_openwysiwyg_version($editor) {
     return $version[1];
   }
   fclose($changelog);
+}
+
+/**
+ * Determine available editor themes or check/reset a given one.
+ *
+ * @param $editor
+ *   A processed hook_editor() array of editor properties.
+ * @param $profile
+ *   A wysiwyg editor profile.
+ *
+ * @return
+ *   An array of theme names. The first returned name should be the default
+ *   theme name.
+ */
+function wysiwyg_openwysiwyg_themes($editor, $profile) {
+  return array('default');
 }
 
 /**
@@ -113,22 +132,6 @@ function wysiwyg_openwysiwyg_settings($editor, $config, $theme) {
 }
 
 /**
- * Determine available editor themes or check/reset a given one.
- *
- * @param $editor
- *   A processed hook_editor() array of editor properties.
- * @param $profile
- *   A wysiwyg editor profile.
- *
- * @return
- *   An array of theme names. The first returned name should be the default
- *   theme name.
- */
-function wysiwyg_openwysiwyg_themes($editor, $profile) {
-  return array('default');
-}
-
-/**
  * Return internal plugins for this editor; semi-implementation of hook_wysiwyg_plugin().
  */
 function wysiwyg_openwysiwyg_plugins($editor) {
@@ -152,12 +155,13 @@ function wysiwyg_openwysiwyg_plugins($editor) {
         'visualaid' => t('Visual aid'),
         'removeformat' => t('Remove format'),
         'charmap' => t('Character map'),
-        'help' => t('Help')),
         'headings' => t('HTML block format'), 'font' => t('Font'), 'fontsize' => t('Font size'),
         'maximize' => t('Fullscreen'),
         'preview' => t('Preview'),
         'print' => t('Print'),
         'inserttable' => t('Table'),
+        'help' => t('Help'),
+      ),
       'internal' => TRUE,
     ),
   );

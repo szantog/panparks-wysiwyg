@@ -6,12 +6,10 @@
  * Editor integration functions for FCKeditor.
  */
 
-
 /**
  * Plugin implementation of hook_editor().
  */
 function wysiwyg_fckeditor_editor() {
-  $editor = array();
   $editor['fckeditor'] = array(
     'title' => 'FCKeditor',
     'vendor url' => 'http://www.fckeditor.net',
@@ -35,7 +33,7 @@ function wysiwyg_fckeditor_editor() {
     ),
     'proxy plugin settings callback' => 'wysiwyg_fckeditor_proxy_plugin_settings',
     'versions' => array(
-      2.6 => array(
+      '2.6' => array(
         'js files' => array('fckeditor-2.6.js'),
       ),
     ),
@@ -67,6 +65,22 @@ function wysiwyg_fckeditor_version($editor) {
 }
 
 /**
+ * Determine available editor themes or check/reset a given one.
+ *
+ * @param $editor
+ *   A processed hook_editor() array of editor properties.
+ * @param $profile
+ *   A wysiwyg editor profile.
+ *
+ * @return
+ *   An array of theme names. The first returned name should be the default
+ *   theme name.
+ */
+function wysiwyg_fckeditor_themes($editor, $profile) {
+  return array('default', 'office2003', 'silver');
+}
+
+/**
  * Return runtime editor settings for a given wysiwyg profile.
  *
  * @param $editor
@@ -82,8 +96,8 @@ function wysiwyg_fckeditor_version($editor) {
  */
 function wysiwyg_fckeditor_settings($editor, $config, $theme) {
   $settings = array(
-    'EditorPath' => base_path() . $editor['library path'] .'/',
-    'SkinPath' => base_path() . $editor['library path'] .'/editor/skins/'. $theme .'/',
+    'EditorPath' => base_path() . $editor['library path'] . '/',
+    'SkinPath' => base_path() . $editor['library path'] . '/editor/skins/' . $theme . '/',
     'CustomConfigurationsPath' => base_path() . drupal_get_path('module', 'wysiwyg') . '/editors/js/fckeditor.config.js',
     'Width' => '100%',
     'Height' => 420,
@@ -155,22 +169,6 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
 }
 
 /**
- * Determine available editor themes or check/reset a given one.
- *
- * @param $editor
- *   A processed hook_editor() array of editor properties.
- * @param $profile
- *   A wysiwyg editor profile.
- *
- * @return
- *   An array of theme names. The first returned name should be the default
- *   theme name.
- */
-function wysiwyg_fckeditor_themes($editor, $profile) {
-  return array('default', 'office2003', 'silver');
-}
-
-/**
  * Build a JS settings array of native external plugins that need to be loaded separately.
  */
 function wysiwyg_fckeditor_plugin_settings($editor, $profile, $plugins) {
@@ -200,17 +198,17 @@ function wysiwyg_fckeditor_proxy_plugin_settings($editor, $profile, $plugins) {
     // Populate required plugin settings.
     $settings[$name] = $plugin['dialog settings'] + array(
       'title' => $plugin['title'],
-      'icon' => base_path() . $plugin['icon path'] .'/'. $plugin['icon file'],
+      'icon' => base_path() . $plugin['icon path'] . '/' . $plugin['icon file'],
       'iconTitle' => $plugin['icon title'],
       // @todo These should only be set if the plugin defined them.
-      'css' => base_path() . $plugin['css path'] .'/'. $plugin['css file'],
+      'css' => base_path() . $plugin['css path'] . '/' . $plugin['css file'],
     );
   }
   return $settings;
 }
 
 /**
- * Return internal plugins for FCKeditor; semi-implementation of hook_wysiwyg_plugin().
+ * Return internal plugins for this editor; semi-implementation of hook_wysiwyg_plugin().
  */
 function wysiwyg_fckeditor_plugins($editor) {
   $plugins = array(
@@ -234,7 +232,6 @@ function wysiwyg_fckeditor_plugins($editor) {
         'RemoveFormat' => t('Remove format'),
         'SpecialChar' => t('Character map'),
         'About' => t('About'),
-
         'FontFormat' => t('HTML block format'), 'FontName' => t('Font'), 'FontSize' => t('Font size'), 'Style' => t('Font style'),
         'Table' => t('Table'),
         'Find' => t('Search'), 'Replace' => t('Replace'), 'SelectAll' => t('Select all'),

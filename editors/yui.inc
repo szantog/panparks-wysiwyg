@@ -1,14 +1,17 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Editor integration functions for YUI editor.
+ */
 
 /**
  * Plugin implementation of hook_editor().
  */
 function wysiwyg_yui_editor() {
-  $editor = array();
   $editor['yui'] = array(
-    'title' => 'YUI',
+    'title' => 'YUI editor',
     'vendor url' => 'http://developer.yahoo.com/yui/editor/',
     'download url' => 'http://developer.yahoo.com/yui/download/',
     'library path' => wysiwyg_get_path('yui') . '/build',
@@ -39,9 +42,9 @@ function wysiwyg_yui_editor() {
       ),
     ),
     'version callback' => 'wysiwyg_yui_version',
+    'themes callback' => 'wysiwyg_yui_themes',
     'load callback' => 'wysiwyg_yui_load',
     'settings callback' => 'wysiwyg_yui_settings',
-    'themes callback' => 'wysiwyg_yui_themes',
     'plugin callback' => 'wysiwyg_yui_plugins',
     'versions' => array(
       '2.7.0' => array(
@@ -73,6 +76,22 @@ function wysiwyg_yui_version($editor) {
     $max_lines--;
   }
   fclose($library);
+}
+
+/**
+ * Determine available editor themes or check/reset a given one.
+ *
+ * @param $editor
+ *   A processed hook_editor() array of editor properties.
+ * @param $profile
+ *   A wysiwyg editor profile.
+ *
+ * @return
+ *   An array of theme names. The first returned name should be the default
+ *   theme name.
+ */
+function wysiwyg_yui_themes($editor, $profile) {
+  return array('sam');
 }
 
 /**
@@ -248,22 +267,6 @@ function wysiwyg_yui_button_setting($editor, $plugin, $button, $extra = array())
 }
 
 /**
- * Determine available editor themes or check/reset a given one.
- *
- * @param $editor
- *   A processed hook_editor() array of editor properties.
- * @param $profile
- *   A wysiwyg editor profile.
- *
- * @return
- *   An array of theme names. The first returned name should be the default
- *   theme name.
- */
-function wysiwyg_yui_themes($editor, $profile) {
-  return array('sam');
-}
-
-/**
  * Return internal plugins for this editor; semi-implementation of hook_wysiwyg_plugin().
  */
 function wysiwyg_yui_plugins($editor) {
@@ -278,7 +281,7 @@ function wysiwyg_yui_plugins($editor) {
         'undo' => t('Undo'), 'redo' => t('Redo'),
         'createlink' => t('Link'),
         'insertimage' => t('Image'),
-        'forecolor' => t('Font Color'), 'backcolor' => t('Background Color'), 
+        'forecolor' => t('Font Color'), 'backcolor' => t('Background Color'),
         'superscript' => t('Sup'), 'subscript' => t('Sub'),
         'hiddenelements' => t('Show/hide hidden elements'),
         'removeformat' => t('Remove format'),

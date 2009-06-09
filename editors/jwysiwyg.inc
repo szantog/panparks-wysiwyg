@@ -1,12 +1,15 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Editor integration functions for jWYSIWYG.
+ */
 
 /**
  * Plugin implementation of hook_editor().
  */
 function wysiwyg_jwysiwyg_editor() {
-  $editor = array();
   $editor['jwysiwyg'] = array(
     'title' => 'jWYSIWYG',
     'vendor url' => 'http://code.google.com/p/jwysiwyg/',
@@ -52,5 +55,6 @@ function wysiwyg_jwysiwyg_version($editor) {
     fclose($script);
     return $version[1];
   }
+  fclose($script);
 }
 

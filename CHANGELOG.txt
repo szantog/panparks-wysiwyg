@@ -4,7 +4,11 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 ---------------------------
 
 
-Wysiwyg 6.x-2.x, xxxx-xx-xx
+Wysiwyg 6.x-3.x, xxxx-xx-xx
+---------------------------
+
+
+Wysiwyg 6.x-2.0, 2009-06-10
 ---------------------------
 #474908 by TwoD: Fixed Teaser break causing error in IE8.
 by sun: Major code clean-up.

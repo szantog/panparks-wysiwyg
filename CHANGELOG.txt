@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#474908 by TwoD: Fixed Teaser break causing error in IE8.
 by sun: Major code clean-up.
 #331089 by wwalc: Fixed FCKeditor toolbar buttons do not wrap.
 #407014 by sun: Fixed/removed migration from other editor integration modules.

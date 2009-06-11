@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#394068 by kswan: Fixed missing button icon names in markItUp.
 
 
 Wysiwyg 6.x-2.0, 2009-06-10

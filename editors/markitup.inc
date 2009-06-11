@@ -149,7 +149,7 @@ function wysiwyg_markitup_settings($editor, $config, $theme) {
     foreach ($config['buttons'] as $plugin) {
       foreach ($plugin as $button => $enabled) {
         if (isset($default_buttons[$button])) {
-          $settings['markupSet'][] = $default_buttons[$button];
+          $settings['markupSet'][$button] = $default_buttons[$button];
         }
       }
     }

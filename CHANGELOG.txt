@@ -4,9 +4,13 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 ---------------------------
 
 
-Wysiwyg 6.x-3.x, xxxx-xx-xx
+Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
-#394068 by kswan: Fixed missing button icon names in markItUp.
+#400482 by sun: Fixed editor.instance.prepareContent() breaks editor's native
+  markup handling. Drupal plugin authors should add the CSS class
+  'drupal-content' to prevent the editor selection to activate internal editor
+  buttons.
+#394068 by kswan: Fixed missing button icons in markItUp.
 
 
 Wysiwyg 6.x-2.0, 2009-06-10

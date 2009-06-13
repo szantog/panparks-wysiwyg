@@ -61,6 +61,6 @@ Drupal.wysiwyg.plugins['break'] = {
    * Helper function to return a HTML placeholder.
    */
   _getPlaceholder: function (settings) {
-    return '<img src="' + settings.path + '/images/spacer.gif" alt="&lt;--break-&gt;" title="&lt;--break--&gt;" class="wysiwyg-break" />';
+    return '<img src="' + settings.path + '/images/spacer.gif" alt="&lt;--break-&gt;" title="&lt;--break--&gt;" class="wysiwyg-break drupal-content" />';
   }
 };

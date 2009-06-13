@@ -88,7 +88,6 @@ function wysiwyg_openwysiwyg_themes($editor, $profile) {
 function wysiwyg_openwysiwyg_settings($editor, $config, $theme) {
   $settings = array(
     'path' => base_path() . $editor['editor path'] . '/',
-    'Toolbar' => array(),
     'Width' => '100%',
   );
 

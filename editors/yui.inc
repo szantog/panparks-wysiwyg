@@ -141,7 +141,7 @@ function wysiwyg_yui_settings($editor, $config, $theme) {
     $settings['autoHeight'] = TRUE;
   }
 
-  if (isset($config['buttons'])) {
+  if (!empty($config['buttons'])) {
     $settings += array(
       'toolbar' => array(
         'collapse' => FALSE,

@@ -144,7 +144,6 @@ function wysiwyg_markitup_settings($editor, $config, $theme) {
       'call' => 'preview',
     ),
   );
-
   if (!empty($config['buttons'])) {
     foreach ($config['buttons'] as $plugin) {
       foreach ($plugin as $button => $enabled) {

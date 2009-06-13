@@ -108,7 +108,7 @@ function wysiwyg_wymeditor_settings($editor, $config, $theme) {
     $settings['lang'] = $config['language'];
   }
 
-  if (isset($config['block_formats'])) {
+  if (!empty($config['block_formats'])) {
     $containers = array(
       'p' => 'Paragraph',
       'h1' => 'Heading_1',

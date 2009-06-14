@@ -4,7 +4,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 ---------------------------
 
 
-Wysiwyg 6.x-2.x, xxxx-xx-xx
+Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
 #490270 by sun: Fixed openWYSIWYG displays no buttons by default.
 #490266 by sun: Fixed JS error when wysiwyg profile contains no buttons.

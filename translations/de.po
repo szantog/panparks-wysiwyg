@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: German translation of WYSIWYG editor\n"
 "POT-Creation-Date: 2009-06-17 21:00+0200\n"
-"PO-Revision-Date: 2009-06-17 22:49+0100\n"
+"PO-Revision-Date: 2009-06-17 23:21+0100\n"
 "Last-Translator: Alexander Haß\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
@@ -265,9 +265,10 @@ msgstr "Nicht installiert."
 msgid "Extract the archive and copy its contents into a new folder in the following location:<br /><code>@editor-path</code>"
 msgstr "Das Archiv extrahieren und dessen Inhalt in ein neues Verzeichnis an der folgenden Stelle kopieren:<br /><code>@editor-path</code>"
 
+# not literally
 #: wysiwyg.admin.inc:387
 msgid "So the actual library can be found at:<br /><code>@library-filepath</code>"
-msgstr "Damit kann die aktuelle Bibliothek gefunden werden unter:<br /><code>@library-filepath</code>"
+msgstr "Damit lässt sich die aktuelle Bibliothek hier finden:<br /><code>@library-filepath</code>"
 
 #: wysiwyg.admin.inc:402
 msgid "Installation instructions"

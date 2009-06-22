@@ -70,10 +70,10 @@ Drupal.wysiwyg.editor.instance.fckeditor = {
       return instance.FCKDataProcessor.prototype.ConvertToHtml.call(this, data);
     };
     // Detach: Convert HTML into text.
-    wysiwygDataProcessor.prototype.ConvertToDataFormat = function(rootNode, excludeRoot) {
+    wysiwygDataProcessor.prototype.ConvertToDataFormat = function(rootNode, excludeRoot, ignoreIfEmptyParagraph, format) {
       // Called from GetData(), convert the content's DOM into a XHTML string
       // using the original data processor and detach Drupal plugins.
-      var data = instance.FCKDataProcessor.prototype.ConvertToDataFormat.call(this, rootNode, excludeRoot);
+      var data = instance.FCKDataProcessor.prototype.ConvertToDataFormat.call(this, rootNode, excludeRoot, ignoreIfEmptyParagraph, format);
       for (var plugin in Drupal.settings.wysiwyg.plugins[instance.wysiwygFormat].drupal) {
         if (typeof Drupal.wysiwyg.plugins[plugin].detach == 'function') {
           data = Drupal.wysiwyg.plugins[plugin].detach(data, Drupal.settings.wysiwyg.plugins.drupal[plugin], instance.FCK.Name);

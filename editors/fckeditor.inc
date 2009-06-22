@@ -119,10 +119,7 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
     $settings['FontFormats'] = strtr($config['block_formats'], array(',' => ';'));
   }
   if (isset($config['apply_source_formatting'])) {
-    $settings['FormatSource'] = $config['apply_source_formatting'];
-  }
-  if (isset($config['preformatted'])) {
-    $settings['FormatOutput'] = $config['preformatted'];
+    $settings['FormatOutput'] = $settings['FormatSource'] = $config['apply_source_formatting'];
   }
 
   if (isset($config['css_setting'])) {

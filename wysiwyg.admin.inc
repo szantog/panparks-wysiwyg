@@ -309,7 +309,7 @@ function wysiwyg_profile_form_submit($form, &$form_state) {
 
   // Remove FAPI values.
   // @see system_settings_form_submit()
-  unset($values['submit'], $values['form_id'], $values['op'], $values['form_token']);
+  unset($values['submit'], $values['form_id'], $values['op'], $values['form_token'], $values['form_build_id']);
 
   // Insert new profile data.
   db_query("UPDATE {wysiwyg} SET settings = '%s' WHERE format = %d", serialize($values), $format);

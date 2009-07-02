@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+by sun: Fixed form_build_id not removed from serialized profile settings.
 #496744 by TwoD: Fixed FCKeditor: "Apply source formatting" not working.
 #462146 by sun: Added CKeditor support.
 #490270 by sun: Fixed openWYSIWYG displays no buttons by default.

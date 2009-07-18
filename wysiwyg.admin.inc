@@ -413,24 +413,39 @@ function wysiwyg_profile_overview() {
 
   $formats = filter_formats();
   $profiles = wysiwyg_profile_load_all();
-  $form['formats']['#tree'] = TRUE;
+  $form['formats'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Wysiwyg profiles'),
+    '#description' => t('Once an editor has been associated with an input format, the editor association cannot be changed without first deleting the profile and then creating a new one. Delete a profile by clicking on the "delete" link and afterwards, set up a new profile as usual.'),
+    '#tree' => TRUE,
+  );
   foreach ($formats as $id => $format) {
     $form['formats'][$id]['name'] = array(
       '#value' => check_plain($format->name),
     );
-    $form['formats'][$id]['editor'] = array(
-      '#type' => 'select',
-      '#default_value' => isset($profiles[$id]) ? $profiles[$id]->editor : '',
-      '#options' => $options,
-      '#id' => "edit-editor-$id",
-      '#disabled' => isset($profiles[$id]) ? (bool) $profiles[$id]->editor : FALSE,
-    );
+    // Only display editor selection for associated input formats to avoid
+    // confusion about disabled selection.
+    if (isset($profiles[$id]) && !empty($profiles[$id]->editor)) {
+      $form['formats'][$id]['editor'] = array(
+        '#type' => 'markup',
+        '#value' => $options[$profiles[$id]->editor],
+        '#id' => "edit-editor-$id",
+      );
+    }
+    else {
+      $form['formats'][$id]['editor'] = array(
+        '#type' => 'select',
+        '#default_value' => '',
+        '#options' => $options,
+        '#id' => "edit-editor-$id",
+      );
+    }
     if (isset($profiles[$id]) && !empty($profiles[$id]->editor)) {
       $form['formats'][$id]['edit'] = array(
         '#value' => l(t('Edit'), "admin/settings/wysiwyg/profile/$id/edit"),
       );
-      $form['formats'][$id]['remove'] = array(
-        '#value' => l(t('Remove'), "admin/settings/wysiwyg/profile/$id/delete"),
+      $form['formats'][$id]['delete'] = array(
+        '#value' => l(t('Delete'), "admin/settings/wysiwyg/profile/$id/delete"),
       );
     }
   }
@@ -455,10 +470,10 @@ function theme_wysiwyg_profile_overview(&$form) {
       drupal_render($format['name']),
       drupal_render($format['editor']),
       isset($format['edit']) ? drupal_render($format['edit']) : '',
-      isset($format['remove']) ? drupal_render($format['remove']) : '',
+      isset($format['delete']) ? drupal_render($format['delete']) : '',
     );
   }
-  $output .= theme('table', $header, $rows);
+  $form['formats']['#children'] = theme('table', $header, $rows);
   $output .= drupal_render($form);
   return $output;
 }

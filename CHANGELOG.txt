@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#522440 by authentictech, sun: UX: Fixed user interface for Wysiwyg profiles.
 #507608 by jfh: Added WYMeditor instance API methods.
 by sun: Fixed form_build_id not removed from serialized profile settings.
 #496744 by TwoD: Fixed FCKeditor: "Apply source formatting" not working.

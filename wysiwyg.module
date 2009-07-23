@@ -479,7 +479,7 @@ function wysiwyg_get_editor_themes(&$profile, $selected_theme = NULL) {
   // Check optional $selected_theme argument, if given.
   if (isset($selected_theme)) {
     // If the passed theme name does not exist, use the first available.
-    if (!isset($themes[$profile->editor][$selected_theme])) {
+    if (!in_array($selected_theme, $themes[$profile->editor])) {
       $selected_theme = $profile->settings['theme'] = $themes[$profile->editor][0];
     }
   }

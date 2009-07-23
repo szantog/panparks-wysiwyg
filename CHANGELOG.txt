@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#509570 by Rob Loach, sun: Added forced detaching of editor upon form submit.
 #526644 by Darren Oh: Fixed broken editor theme validation.
 #490914 by sun: Fixed JS/CSS not updated after update with caching enabled.
 #522440 by authentictech, sun: UX: Fixed user interface for Wysiwyg profiles.

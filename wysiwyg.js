@@ -45,7 +45,7 @@ Drupal.behaviors.attachWysiwyg = function(context) {
 
   $('.wysiwyg:not(.wysiwyg-processed)', context).each(function() {
     var params = Drupal.wysiwyg.getParams(this);
-    var $this = $(this);
+    var $this = $(this).addClass('wysiwyg-processed');
     // Directly attach this editor, if the input format is enabled or there is
     // only one input format at all.
     if (($this.is(':input') && $this.is(':checked')) || $this.is('div')) {
@@ -65,7 +65,10 @@ Drupal.behaviors.attachWysiwyg = function(context) {
         });
       }
     }
-    $this.addClass('wysiwyg-processed');
+    // Detach any editor when the containing form is submitted.
+    $('#' + params.field).parents('form').submit(function () {
+      Drupal.wysiwygDetach(context, params);
+    });
   });
 };
 

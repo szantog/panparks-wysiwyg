@@ -553,7 +553,9 @@ function wysiwyg_get_css() {
   foreach (drupal_add_css() as $media => $css) {
     if ($media != 'print') {
       foreach ($css['theme'] as $filepath => $preprocess) {
-        $files[] = base_path() . $filepath;
+        if (file_exists($filepath)) {
+          $files[] = base_path() . $filepath;
+        }
       }
     }
   }

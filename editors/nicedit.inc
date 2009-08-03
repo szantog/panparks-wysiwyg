@@ -107,7 +107,7 @@ function wysiwyg_nicedit_plugins($editor) {
         'outdent' => t('Outdent'), 'indent' => t('Indent'),
         'image' => t('Image'),
         'forecolor' => t('Forecolor'), 'bgcolor' => t('Backcolor'),
-        'superscript' => t('Sup'), 'subscript' => t('Sub'),
+        'superscript' => t('Superscript'), 'subscript' => t('Subscript'),
         'hr' => t('Horizontal rule'),
         // @todo New challenge: Optional internal plugins packaged into editor
         //   library.

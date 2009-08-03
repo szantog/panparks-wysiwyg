@@ -367,7 +367,7 @@ function _wysiwyg_tinymce_plugin_name($op, $name) {
 }
 
 /**
- * Return internal plugins for TinyMCE; semi-implementation of hook_wysiwyg_plugin().
+ * Return internal plugins for this editor; semi-implementation of hook_wysiwyg_plugin().
  */
 function wysiwyg_tinymce_plugins($editor) {
   $plugins = array(
@@ -384,7 +384,7 @@ function wysiwyg_tinymce_plugins($editor) {
         'image' => t('Image'),
         'cleanup' => t('Clean-up'),
         'forecolor' => t('Forecolor'), 'backcolor' => t('Backcolor'),
-        'sup' => t('Sup'), 'sub' => t('Sub'),
+        'sup' => t('Superscript'), 'sub' => t('Subscript'),
         'blockquote' => t('Blockquote'), 'code' => t('Source code'),
         'hr' => t('Horizontal rule'),
         'cut' => t('Cut'), 'copy' => t('Copy'), 'paste' => t('Paste'),

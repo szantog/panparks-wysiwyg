@@ -169,8 +169,8 @@ function wysiwyg_markitup_plugins($editor) {
       'buttons' => array(
         'bold' => t('Bold'), 'italic' => t('Italic'),
         'stroke' => t('Strike-through'),
-        'image' => t('Image'),
         'link' => t('Link'),
+        'image' => t('Image'),
         // 'cleanup' => t('Clean-up'),
         'preview' => t('Preview'),
       ),

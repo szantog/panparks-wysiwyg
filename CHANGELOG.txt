@@ -6,6 +6,8 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#80170 by sun: Changed dialog/plugin API for Inline API compatibility.
+by sun: Fixed PHP notice.
 #514912 by Likeless, sun: Added plugin/button handling for WYMeditor.
 #538996 by darktygur: Fixed 404 errors for non-existing theme CSS files.
 #509570 by Rob Loach, sun: Added forced detaching of editor upon form submit.

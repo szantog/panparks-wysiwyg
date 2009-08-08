@@ -158,7 +158,7 @@ function wysiwyg_process_form(&$form) {
             if ($profile) {
               $editor = $profile->editor;
               $status = (int) wysiwyg_user_get_status($profile);
-              $toggle = (int) $profile->settings['show_toggle'];
+              $toggle = (int) !empty($profile->settings['show_toggle']);
               // Check editor theme (and reset it if not/no longer available).
               $theme = wysiwyg_get_editor_themes($profile, (isset($profile->settings['theme']) ? $profile->settings['theme'] : ''));
 
@@ -780,7 +780,7 @@ function wysiwyg_get_all_plugins() {
 function wysiwyg_load_includes($type = 'editors', $hook = 'editor', $file = NULL) {
   // Determine implementations.
   $directories = wysiwyg_get_directories($type);
-  $directories['wysiwyg_'] = drupal_get_path('module', 'wysiwyg') . '/' . $type;
+  $directories['wysiwyg'] = drupal_get_path('module', 'wysiwyg') . '/' . $type;
   $file_list = array();
   foreach ($directories as $module => $path) {
     $file_list[$module] = drupal_system_listing("$file" . '.inc$', $path, 'name', 0);
@@ -791,7 +791,7 @@ function wysiwyg_load_includes($type = 'editors', $hook = 'editor', $file = NULL
   foreach (array_filter($file_list) as $module => $files) {
     foreach ($files as $file) {
       include_once './' . $file->filename;
-      $result = _wysiwyg_process_include('wysiwyg', $module . $file->name, dirname($file->filename), $hook);
+      $result = _wysiwyg_process_include($module, $module . '_' . $file->name, dirname($file->filename), $hook);
       if (is_array($result)) {
         $info = array_merge($info, $result);
       }
@@ -915,7 +915,7 @@ function wysiwyg_get_directories($plugintype) {
   foreach (module_implements('wysiwyg_include_directory') as $module) {
     $result = module_invoke($module, 'wysiwyg_include_directory', $plugintype);
     if (isset($result) && is_string($result)) {
-      $directories[$module . '_'] = drupal_get_path('module', $module) . '/' . $result;
+      $directories[$module] = drupal_get_path('module', $module) . '/' . $result;
     }
   }
   return $directories;

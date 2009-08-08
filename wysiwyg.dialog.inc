@@ -22,7 +22,11 @@ function wysiwyg_dialog($plugin, $instance) {
   // Suppress admin menu.
   module_invoke('admin_menu', 'suppress');
   // Add editor instance id to Drupal.settings.
-  drupal_add_js(array('instance' => $instance), 'setting');
+  $settings = array(
+    'plugin' => $plugin,
+    'instance' => $instance,
+  );
+  drupal_add_js(array('wysiwyg' => $settings), 'setting');
 
   echo theme('wysiwyg_dialog_page', $callback($instance));
 }

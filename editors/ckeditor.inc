@@ -53,7 +53,8 @@ function wysiwyg_ckeditor_version($editor) {
   $max_lines = 8;
   while ($max_lines && $line = fgets($library, 140)) {
     // version:'CKEditor 3.0 SVN',revision:'3665'
-    if (preg_match('@version:\'CKEditor ([\d\.]+)(?: .+revision:\'([\d]+))?@', $line, $version)) {
+    // version:'3.0 RC',revision:'3753'
+    if (preg_match('@version:\'(?:CKEditor )?([\d\.]+)(?:.+revision:\'([\d]+))?@', $line, $version)) {
       fclose($library);
       return $version[1] . '.' . $version[2];
     }

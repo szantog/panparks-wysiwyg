@@ -158,7 +158,9 @@ function wysiwyg_process_form(&$form) {
             if ($profile) {
               $editor = $profile->editor;
               $status = (int) wysiwyg_user_get_status($profile);
-              $toggle = (isset($profile->settings['show_toggle']) ? (int) $profile->settings['show_toggle'] : 1);
+              if (isset($profile->settings['show_toggle'])) {
+                $toggle = (int) $profile->settings['show_toggle'];
+              }
               // Check editor theme (and reset it if not/no longer available).
               $theme = wysiwyg_get_editor_themes($profile, (isset($profile->settings['theme']) ? $profile->settings['theme'] : ''));
 
@@ -283,8 +285,6 @@ function wysiwyg_load_editor($profile) {
 
       drupal_add_js(array('wysiwyg' => array(
         'configs' => array($editor['name'] => array()),
-        // @todo Move into profile settings.
-        'showToggle' => isset($profile->settings['show_toggle']) ? $profile->settings['show_toggle'] : TRUE,
         // @todo Move into (global) editor settings.
         // If JS compression is enabled, at least TinyMCE is unable to determine
         // its own base path and exec mode since it can't find the script name.

@@ -1,4 +1,5 @@
 // $Id$
+(function($) {
 
 /**
  * Attach this editor to a target element.
@@ -17,8 +18,8 @@ Drupal.wysiwyg.editor.attach.none = function(context, params, settings) {
   if (params.resizable) {
     $('#' + params.field).addClass('resizable');
     $('#' + params.field).css({display: ''});
-    if (Drupal.behaviors.textarea) {
-      Drupal.behaviors.textarea();
+    if (Drupal.behaviors.textarea.attach) {
+      Drupal.behaviors.textarea.attach();
     }
   }
 };
@@ -36,7 +37,7 @@ Drupal.wysiwyg.editor.attach.none = function(context, params, settings) {
  */
 Drupal.wysiwyg.editor.detach.none = function(context, params) {
   if (typeof params != 'undefined') {
-    var $textarea = $('#' + params.field, context).removeClass('textarea-processed');
+    var $textarea = $('#' + params.field, context).removeOnce('textarea');
     var $div = $textarea.parents('div.resizable-textarea');
     $div.before($textarea);
     $div.remove();
@@ -68,3 +69,5 @@ Drupal.wysiwyg.editor.instance.none = {
     }
   }
 };
+
+})(jQuery);

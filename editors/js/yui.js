@@ -1,4 +1,5 @@
 // $Id$
+(function($) {
 
 /**
  * Attach this editor to a target element.
@@ -36,3 +37,4 @@ Drupal.wysiwyg.editor.detach.yui = function(context, params) {
   }
 };
 
+})(jQuery);

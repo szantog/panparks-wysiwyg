@@ -1,4 +1,5 @@
 // $Id$
+(function($) {
 
 /**
  * Attach this editor to a target element.
@@ -35,3 +36,4 @@ Drupal.wysiwyg.editor.detach.nicedit = function(context, params) {
   }
 };
 
+})(jQuery);

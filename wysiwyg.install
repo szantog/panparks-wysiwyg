@@ -5,7 +5,6 @@
  * Implementation of hook_schema().
  */
 function wysiwyg_schema() {
-  $schema = array();
   $schema['wysiwyg'] = array(
     'description' => t('Stores Wysiwyg profiles.'),
     'fields' => array(
@@ -16,20 +15,6 @@ function wysiwyg_schema() {
     'primary key' => array('format'),
   );
   return $schema;
-}
-
-/**
- * Implementation of hook_install().
- */
-function wysiwyg_install() {
-  drupal_install_schema('wysiwyg');
-}
-
-/**
- * Implementation of hook_uninstall()
- */
-function wysiwyg_uninstall() {
-  drupal_uninstall_schema('wysiwyg');
 }
 
 /**

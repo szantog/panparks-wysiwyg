@@ -1,4 +1,5 @@
 // $Id$
+(function($) {
 
 /**
  * Initialize editor instances.
@@ -196,3 +197,4 @@ Drupal.wysiwyg.editor.instance.tinymce = {
   }
 };
 
+})(jQuery);

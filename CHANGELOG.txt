@@ -4,6 +4,11 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 ---------------------------
 
 
+Wysiwyg 7.x-3.x, xxxx-xx-xx
+---------------------------
+#585932 by sun: Ported to Drupal 7.
+
+
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
 #489156 by sun: Removed orphan global 'showToggle' JS setting.

@@ -1,4 +1,5 @@
 // $Id$
+(function($) {
 
 /**
  * Attach this editor to a target element.
@@ -32,3 +33,4 @@ Drupal.wysiwyg.editor.detach.ckeditor = function(context, params) {
   }
 };
 
+})(jQuery);

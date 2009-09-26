@@ -3,6 +3,8 @@
 // Reset $() to jQuery.  Yuck!
 $ = jQuery;
 
+(function($) {
+
 /**
  * Attach this editor to a target element.
  */
@@ -95,3 +97,4 @@ WYSIWYG.viewText = function (n, id) {
   $ = jQuery;
 };
 
+})(jQuery);

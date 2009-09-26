@@ -1,4 +1,5 @@
 // $Id$
+(function($) {
 
 /**
  * Attach this editor to a target element.
@@ -52,3 +53,5 @@ Drupal.wysiwyg.editor.instance.wymeditor = {
     }
   }
 };
+
+})(jQuery);

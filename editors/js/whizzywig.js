@@ -1,4 +1,5 @@
 // $Id$
+(function($) {
 
 var wysiwygWhizzywig = { currentField: null, fields: {} };
 var buttonPath = null;
@@ -103,3 +104,4 @@ Drupal.wysiwyg.editor.detach.whizzywig = function(context, params) {
   }
 };
 
+})(jQuery);

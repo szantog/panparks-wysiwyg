@@ -59,10 +59,12 @@ Drupal.wysiwyg.editor.instance.fckeditor = {
       // Called from SetData() with stripped comments/scripts, revert those
       // manipulations and attach Drupal plugins.
       var data = instance.FCKConfig.ProtectedSource.Revert(data);
-      for (var plugin in Drupal.settings.wysiwyg.plugins[instance.wysiwygFormat].drupal) {
-        if (typeof Drupal.wysiwyg.plugins[plugin].attach == 'function') {
-          data = Drupal.wysiwyg.plugins[plugin].attach(data, Drupal.settings.wysiwyg.plugins.drupal[plugin], instance.FCK.Name);
-          data = Drupal.wysiwyg.editor.instance.fckeditor.prepareContent(data);
+      if (Drupal.settings.wysiwyg.plugins[instance.wysiwygFormat] && Drupal.settings.wysiwyg.plugins[instance.wysiwygFormat].drupal) {
+        for (var plugin in Drupal.settings.wysiwyg.plugins[instance.wysiwygFormat].drupal) {
+          if (typeof Drupal.wysiwyg.plugins[plugin].attach == 'function') {
+            data = Drupal.wysiwyg.plugins[plugin].attach(data, Drupal.settings.wysiwyg.plugins.drupal[plugin], instance.FCK.Name);
+            data = Drupal.wysiwyg.editor.instance.fckeditor.prepareContent(data);
+          }
         }
       }
       // Re-protect the source and use the original data processor to convert it
@@ -75,9 +77,11 @@ Drupal.wysiwyg.editor.instance.fckeditor = {
       // Called from GetData(), convert the content's DOM into a XHTML string
       // using the original data processor and detach Drupal plugins.
       var data = instance.FCKDataProcessor.prototype.ConvertToDataFormat.call(this, rootNode, excludeRoot, ignoreIfEmptyParagraph, format);
-      for (var plugin in Drupal.settings.wysiwyg.plugins[instance.wysiwygFormat].drupal) {
-        if (typeof Drupal.wysiwyg.plugins[plugin].detach == 'function') {
-          data = Drupal.wysiwyg.plugins[plugin].detach(data, Drupal.settings.wysiwyg.plugins.drupal[plugin], instance.FCK.Name);
+      if (Drupal.settings.wysiwyg.plugins[instance.wysiwygFormat] && Drupal.settings.wysiwyg.plugins[instance.wysiwygFormat].drupal) {
+        for (var plugin in Drupal.settings.wysiwyg.plugins[instance.wysiwygFormat].drupal) {
+          if (typeof Drupal.wysiwyg.plugins[plugin].detach == 'function') {
+            data = Drupal.wysiwyg.plugins[plugin].detach(data, Drupal.settings.wysiwyg.plugins.drupal[plugin], instance.FCK.Name);
+          }
         }
       }
       return data;

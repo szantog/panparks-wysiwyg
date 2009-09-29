@@ -1,5 +1,4 @@
 // $Id$
-(function($) {
 
 var wysiwygWhizzywig = { currentField: null, fields: {} };
 var buttonPath = null;
@@ -37,17 +36,19 @@ var o = function (id) {
   // Upon first access to "whizzy" + id, Whizzywig tries to access its IFRAME,
   // so we need to insert the editor into the DOM.
   if (id == 'whizzy' + wysiwygWhizzywig.currentField && wysiwygWhizzywig.fields[wysiwygWhizzywig.currentField]) {
-    $('#' + wysiwygWhizzywig.currentField).after('<div id="' + wysiwygWhizzywig.currentField + '-whizzywig">' + w() + '</div>');
+    jQuery('#' + wysiwygWhizzywig.currentField).after('<div id="' + wysiwygWhizzywig.currentField + '-whizzywig">' + w() + '</div>');
     // Prevent subsequent invocations from inserting the editor multiple times.
     wysiwygWhizzywig.fields[wysiwygWhizzywig.currentField] = '';
   }
   // If id exists in the regular window.document, return it.
-  if ($('#' + id).size()) {
-    return $('#' + id).get(0);
+  if (jQuery('#' + id).size()) {
+    return jQuery('#' + id).get(0);
   }
   // Otherwise return id from our container.
-  return $('#' + id, w()).get(0);
+  return jQuery('#' + id, w()).get(0);
 };
+
+(function($) {
 
 /**
  * Attach this editor to a target element.

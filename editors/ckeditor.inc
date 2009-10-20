@@ -17,11 +17,15 @@ function wysiwyg_ckeditor_editor() {
     'libraries' => array(
       '' => array(
         'title' => 'Default',
-        'files' => array('ckeditor.js'),
+        'files' => array(
+          'ckeditor.js' => array('preprocess' => FALSE),
+        ),
       ),
       'src' => array(
         'title' => 'Source',
-        'files' => array('ckeditor_source.js'),
+         'files' => array(
+          'ckeditor_source.js' => array('preprocess' => FALSE),
+        ),
       ),
     ),
     'version callback' => 'wysiwyg_ckeditor_version',
@@ -29,6 +33,13 @@ function wysiwyg_ckeditor_editor() {
     'settings callback' => 'wysiwyg_ckeditor_settings',
     'plugin callback' => 'wysiwyg_ckeditor_plugins',
     'plugin settings callback' => 'wysiwyg_ckeditor_plugin_settings',
+    'proxy plugin' => array(
+      'drupal' => array(
+        'load' => TRUE,
+        'proxy' => TRUE,
+      ),
+    ),
+    'proxy plugin settings callback' => 'wysiwyg_ckeditor_proxy_plugin_settings',
     'versions' => array(
       '3.0.3665' => array(
         'js files' => array('ckeditor-3.0.js'),
@@ -76,7 +87,17 @@ function wysiwyg_ckeditor_version($editor) {
  *   theme name.
  */
 function wysiwyg_ckeditor_themes($editor, $profile) {
-  return array('default');
+  // @todo Skins are not themes but this will do for now.
+  $path = $editor['library path'] . '/skins/';
+  $dir_handle = @opendir($path) or drupal_set_message('Unable to open ' . $path, $type = 'error');
+  $themes = array();  
+  while ($file = readdir($dir_handle)) {
+    if($file!="." && $file!=".." && $file!="CVS" && $file!=".svn") {
+      $themes[] = $file;
+    }
+  }
+  closedir($dir_handle);
+  return $themes;
 }
 
 /**
@@ -95,23 +116,27 @@ function wysiwyg_ckeditor_themes($editor, $profile) {
  */
 function wysiwyg_ckeditor_settings($editor, $config, $theme) {
   $settings = array(
-    'basePath' => base_path() . $editor['library path'] . '/',
-    'SkinPath' => base_path() . $editor['library path'] . '/editor/skins/' . $theme . '/',
-    'Width' => '100%',
-    'Height' => 420,
+    'baseHref' => base_path(),
+    'width' => '100%',
+    'height' => 420,
+    // Skin is not really the same as theme.
+    'theme' => 'default',
+    'skin' => $theme,
     // By default, CKeditor converts most characters into HTML entities. Since
     // it does not support a custom definition, but Drupal supports Unicode, we
     // disable at least the additional character sets. CKeditor always converts
     // XML default characters '&', '<', '>'.
     // @todo Check whether completely disabling ProcessHTMLEntities is an option.
-    'IncludeLatinEntities' => FALSE,
-    'IncludeGreekEntities' => FALSE,
+    'entities_latin' => FALSE,
+    'entities_greek' => FALSE,
   );
+  $extra_plugins = array();
   if (isset($config['block_formats'])) {
-    $settings['FontFormats'] = strtr($config['block_formats'], array(',' => ';'));
+    // @todo This is now format_tags and needs format_[tag] settings per tag.
+    //$settings['FontFormats'] = strtr($config['block_formats'], array(',' => ';'));
   }
   if (isset($config['apply_source_formatting'])) {
-    $settings['FormatOutput'] = $settings['FormatSource'] = $config['apply_source_formatting'];
+    $settings['apply_source_formatting'] = $config['apply_source_formatting'];
   }
 
   if (isset($config['css_setting'])) {
@@ -119,9 +144,22 @@ function wysiwyg_ckeditor_settings($editor, $config, $theme) {
       // CKeditor only supports one CSS file currently.
       $settings['contentsCss'] = reset(wysiwyg_get_css());
     }
-    else if ($config['css_setting'] == 'self' && isset($config['css_path'])) {
+    elseif ($config['css_setting'] == 'self' && isset($config['css_path'])) {
       $settings['contentsCss'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
     }
+  }
+
+  // Language
+  if (isset($config['language'])) {
+    $settings['language'] = $config['language'];
+  }
+  // Resizing button
+  if (isset($config['resizing'])) {
+    $settings['resize_enabled'] = $config['resizing'];
+  }
+  //Toolbar location
+  if (isset($config['toolbar_loc'])) {
+    $settings['toolbarLocation'] = $config['toolbar_loc'];
   }
 
   if (!empty($config['buttons'])) {
@@ -139,12 +177,31 @@ function wysiwyg_ckeditor_settings($editor, $config, $theme) {
           if ($type == 'buttons') {
             $settings['toolbar'][] = $button;
           }
+          // Add external Drupal plugins to the list of extensions.
+          if ($type == 'buttons' && !empty($plugins[$plugin]['proxy'])) {
+            $extra_plugins[] = $button;
+          }
+          // Add external plugins to the list of extensions.
+          elseif ($type == 'buttons' && empty($plugins[$plugin]['internal'])) {
+            $extra_plugins[] = $plugin;
+          }
+          // Add internal buttons that also need to be loaded as extension.
+          elseif ($type == 'buttons' && !empty($plugins[$plugin]['load'])) {
+            $extra_plugins[] = $plugin;
+          }
+          // Add plain extensions.
+          elseif ($type == 'extensions' && !empty($plugins[$plugin]['load'])) {
+            $extra_plugins[] = $plugin;
+          }
           // Allow plugins to add or override global configuration settings.
           if (!empty($plugins[$plugin]['options'])) {
             $settings = array_merge($settings, $plugins[$plugin]['options']);
           }
         }
       }
+    }
+    if (!empty($extra_plugins)) {
+      $settings['extraPlugins'] = implode(',', $extra_plugins);
     }
     // For now, all buttons are placed into one row.
     if (!empty($settings['toolbar'])) {
@@ -164,12 +221,16 @@ function wysiwyg_ckeditor_plugin_settings($editor, $profile, $plugins) {
     // Register all plugins that need to be loaded.
     if (!empty($plugin['load'])) {
       $settings[$name] = array();
-      // Add path for native external plugins; internal ones do not need a path.
+      // Add path for native external plugins.
       if (empty($plugin['internal']) && isset($plugin['path'])) {
         $settings[$name]['path'] = base_path() . $plugin['path'];
       }
-      if (!empty($plugin['languages'])) {
-        $settings[$name]['languages'] = $plugin['languages'];
+      // Force native internal plugins to use the standard path.
+      else {
+        $settings[$name]['path'] = base_path() . $editor['library path'] . '/plugins/' . $name . '/';
+      }
+      if (!empty($plugin['filename'])) {
+        $settings[$name]['fileName'] = $plugin['filename'];
       }
     }
   }
@@ -177,7 +238,29 @@ function wysiwyg_ckeditor_plugin_settings($editor, $profile, $plugins) {
 }
 
 /**
+ * Build a JS settings array for Drupal plugins loaded via the proxy plugin.
+ */
+function wysiwyg_ckeditor_proxy_plugin_settings($editor, $profile, $plugins) {
+  $settings = array();
+  foreach ($plugins as $name => $plugin) {
+    // Populate required plugin settings.
+    $settings[$name] = $plugin['dialog settings'] + array(
+      'title' => $plugin['title'],
+      'icon' => base_path() . $plugin['icon path'] . '/' . $plugin['icon file'],
+      'iconTitle' => $plugin['icon title'],
+      // @todo These should only be set if the plugin defined them.
+      'css' => base_path() . $plugin['css path'] . '/' . $plugin['css file'],
+    );
+  }
+  return $settings;
+}
+
+/**
  * Return internal plugins for this editor; semi-implementation of hook_wysiwyg_plugin().
+ *
+ * Excluded native plugins: About, Button, Checkbox, Form, HiddenField,
+ * ImageButton, NewPage, PageBreak, Print, Radio, Select, Save, TextField,
+ * Textarea, Templates.
  */
 function wysiwyg_ckeditor_plugins($editor) {
   $plugins = array(
@@ -186,7 +269,7 @@ function wysiwyg_ckeditor_plugins($editor) {
         'Bold' => t('Bold'), 'Italic' => t('Italic'), 'Underline' => t('Underline'),
         'StrikeThrough' => t('Strike-through'),
         'JustifyLeft' => t('Align left'), 'JustifyCenter' => t('Align center'), 'JustifyRight' => t('Align right'), 'JustifyFull' => t('Justify'),
-        'UnorderedList' => t('Bullet list'), 'OrderedList' => t('Numbered list'),
+        'BulletedList' => t('Bullet list'), 'NumberedList' => t('Numbered list'),
         'Outdent' => t('Outdent'), 'Indent' => t('Indent'),
         'Undo' => t('Undo'), 'Redo' => t('Redo'),
         'Link' => t('Link'), 'Unlink' => t('Unlink'), 'Anchor' => t('Anchor'),
@@ -194,20 +277,20 @@ function wysiwyg_ckeditor_plugins($editor) {
         'TextColor' => t('Forecolor'), 'BGColor' => t('Backcolor'),
         'Superscript' => t('Superscript'), 'Subscript' => t('Subscript'),
         'Blockquote' => t('Blockquote'), 'Source' => t('Source code'),
-        'Rule' => t('Horizontal rule'),
+        'HorizontalRule' => t('Horizontal rule'),
         'Cut' => t('Cut'), 'Copy' => t('Copy'), 'Paste' => t('Paste'),
         'PasteText' => t('Paste Text'), 'PasteWord' => t('Paste from Word'),
         'ShowBlocks' => t('Show blocks'),
         'RemoveFormat' => t('Remove format'),
         'SpecialChar' => t('Character map'),
         'About' => t('About'),
-        'FontFormat' => t('HTML block format'), 'FontName' => t('Font'), 'FontSize' => t('Font size'), 'Style' => t('Font style'),
+        'Format' => t('HTML block format'), 'Font' => t('Font'), 'FontSize' => t('Font size'), 'Styles' => t('Font style'),
         'Table' => t('Table'),
         'Find' => t('Search'), 'Replace' => t('Replace'), 'SelectAll' => t('Select all'),
         'CreateDiv' => t('Create DIV container'),
         'Flash' => t('Flash'), 'Smiley' => t('Smiley'),
         'FitWindow' => t('FitWindow'),
-        'SpellCheck' => t('Check spelling'),
+        'SpellChecker' => t('Check spelling'), 'Scayt' => t('Check spelling as you type'),
       ),
       'internal' => TRUE,
     ),

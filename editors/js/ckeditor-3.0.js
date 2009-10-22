@@ -2,9 +2,6 @@
 (function($) {
 
 Drupal.wysiwyg.editor.init.ckeditor = function(settings) {
-  CKEDITOR.on('focus', function(ev) {
-    Drupal.wysiwyg.activeId = ev.editor.name;
-  });
   // Plugins must only be loaded once. Only the settings from the first format
   // will be used but they're identical anyway.
   var registeredPlugins = {};
@@ -103,7 +100,10 @@ Drupal.wysiwyg.editor.attach.ckeditor = function(context, params, settings) {
             return originalToDataFormat.call(this, data, fixForBody);
           };
         });
-  		}
+      }
+    },
+    focus: function(ev) {
+      Drupal.wysiwyg.activeId = ev.editor.name;
     }
   };
 

@@ -69,7 +69,7 @@ function wysiwyg_yui_version($editor) {
   $library = fopen($library, 'r');
   $max_lines = 10;
   while ($max_lines && $line = fgets($library, 60)) {
-    if (preg_match('@version:\s([0-9\.]+)$@', $line, $version)) {
+    if (preg_match('@version:\s([0-9\.]+)@', $line, $version)) {
       fclose($library);
       return $version[1];
     }

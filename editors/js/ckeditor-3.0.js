@@ -92,12 +92,13 @@ Drupal.wysiwyg.editor.attach.ckeditor = function(context, params, settings) {
         editor.dataProcessor.toDataFormat = CKEDITOR.tools.override(editor.dataProcessor.toDataFormat, function(originalToDataFormat) {
           // Convert WYSIWYG mode content to raw data.
           return function(data, fixForBody) {
+            data = originalToDataFormat.call(this, data, fixForBody);
             for (var plugin in Drupal.settings.wysiwyg.plugins[params.format].drupal) {
               if (typeof Drupal.wysiwyg.plugins[plugin].detach == 'function') {
                 data = Drupal.wysiwyg.plugins[plugin].detach(data, Drupal.settings.wysiwyg.plugins.drupal[plugin], editor.name);
               }
             }
-            return originalToDataFormat.call(this, data, fixForBody);
+            return data;
           };
         });
       }

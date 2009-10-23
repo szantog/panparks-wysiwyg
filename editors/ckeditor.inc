@@ -41,7 +41,7 @@ function wysiwyg_ckeditor_editor() {
     ),
     'proxy plugin settings callback' => 'wysiwyg_ckeditor_proxy_plugin_settings',
     'versions' => array(
-      '3.0.3665' => array(
+      '3.0.0.3665' => array(
         'js files' => array('ckeditor-3.0.js'),
       ),
     ),
@@ -65,8 +65,11 @@ function wysiwyg_ckeditor_version($editor) {
   while ($max_lines && $line = fgets($library, 140)) {
     // version:'CKEditor 3.0 SVN',revision:'3665'
     // version:'3.0 RC',revision:'3753'
+    // version:'3.0.1',revision:'4391'
     if (preg_match('@version:\'(?:CKEditor )?([\d\.]+)(?:.+revision:\'([\d]+))?@', $line, $version)) {
       fclose($library);
+      // Version numbers need to have three parts since 3.0.1.
+      $version[1] = preg_replace('/^(\d+)\.(\d+)$/', '${1}.${2}.0', $version[1]);
       return $version[1] . '.' . $version[2];
     }
     $max_lines--;
@@ -140,12 +143,22 @@ function wysiwyg_ckeditor_settings($editor, $config, $theme) {
   }
 
   if (isset($config['css_setting'])) {
-    if ($config['css_setting'] == 'theme') {
-      // CKeditor only supports one CSS file currently.
-      $settings['contentsCss'] = reset(wysiwyg_get_css());
+    // Versions below 3.0.1 could only handle one stylesheet.
+    if (version_compare($editor['installed version'], '3.0.1.4391', '<')) {
+      if ($config['css_setting'] == 'theme') {
+        $settings['contentsCss'] = reset(wysiwyg_get_css());
+      }
+      elseif ($config['css_setting'] == 'self' && isset($config['css_path'])) {
+        $settings['contentsCss'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+      }
     }
-    elseif ($config['css_setting'] == 'self' && isset($config['css_path'])) {
-      $settings['contentsCss'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+    else {
+      if ($config['css_setting'] == 'theme') {
+        $settings['contentsCss'] = wysiwyg_get_css();
+      }
+      elseif ($config['css_setting'] == 'self' && isset($config['css_path'])) {
+        $settings['contentsCss'] = explode(',', strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme())));
+      }
     }
   }
 

@@ -98,7 +98,7 @@ function wysiwyg_profile_form($form, &$form_state, $profile) {
     '#description' => t('The language to use for the editor interface. Language codes are based on the <a href="http://www.loc.gov/standards/iso639-2/englangn.html">ISO-639-2</a> format.'),
   );
 
-  $form['buttons'] = array(
+  $form['wysiwyg_buttons'] = array(
     '#type' => 'fieldset',
     '#title' => t('Buttons and plugins'),
     '#collapsible' => TRUE,
@@ -125,7 +125,7 @@ function wysiwyg_profile_form($form, &$form_state, $profile) {
         }
         $title = (isset($meta['url']) ? l($title, $meta['url'], array('target' => '_blank')) : $title);
         $title = (!empty($icon) ? $icon . ' ' . $title : $title);
-        $form['buttons'][$name][$button] = array(
+        $form['wysiwyg_buttons'][$name][$button] = array(
           '#type' => 'checkbox',
           '#title' => $title,
           '#default_value' => !empty($profile->settings['buttons'][$name][$button]) ? $profile->settings['buttons'][$name][$button] : FALSE,
@@ -134,7 +134,7 @@ function wysiwyg_profile_form($form, &$form_state, $profile) {
     }
     else if (isset($meta['extensions']) && is_array($meta['extensions'])) {
       foreach ($meta['extensions'] as $extension => $title) {
-        $form['buttons'][$name][$extension] = array(
+        $form['wysiwyg_buttons'][$name][$extension] = array(
           '#type' => 'checkbox',
           '#title' => isset($meta['url']) ? l($title, $meta['url'], array('target' => '_blank')) : $title,
           '#default_value' => !empty($profile->settings['buttons'][$name][$extension]) ? $profile->settings['buttons'][$name][$extension] : FALSE,
@@ -292,10 +292,10 @@ function wysiwyg_profile_form($form, &$form_state, $profile) {
  */
 function wysiwyg_profile_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  if (isset($values['buttons'])) {
+  if (isset($values['wysiwyg_buttons'])) {
     // Store only enabled buttons for each plugin.
-    foreach ($values['buttons'] as $plugin => $buttons) {
-      $values['buttons'][$plugin] = array_filter($values['buttons'][$plugin]);
+    foreach ($values['wysiwyg_buttons'] as $plugin => $buttons) {
+      $values['buttons'][$plugin] = array_filter($values['wysiwyg_buttons'][$plugin]);
     }
     // Store only enabled plugins.
     $values['buttons'] = array_filter($values['buttons']);
@@ -321,7 +321,8 @@ function wysiwyg_profile_form_submit($form, &$form_state) {
 /**
  * Layout for the buttons in the Wysiwyg Editor profile form.
  */
-function theme_wysiwyg_admin_button_table($form) {
+function theme_wysiwyg_admin_button_table($variables) {
+  $form = $variables['form'];
   $buttons = array();
 
   // Flatten forms array.
@@ -346,7 +347,7 @@ function theme_wysiwyg_admin_button_table($form) {
     $rows[] = $row;
   }
 
-  $output = theme('table', array(), $rows, array('width' => '100%'));
+  $output = theme('table', array('rows' => $rows, 'attributes' => array('width' => '100%')));
 
   return $output;
 }
@@ -362,6 +363,9 @@ function wysiwyg_profile_overview($form, &$form_state) {
   $count = count($editors);
   $status = array();
   $options = array('' => t('No editor'));
+
+  // D7's seven theme displays links in table headers as block elements.
+  drupal_add_css('table.system-status-report th a {display: inline;}', 'inline');
 
   foreach ($editors as $name => $editor) {
     $status[$name] = array(
@@ -403,7 +407,7 @@ function wysiwyg_profile_overview($form, &$form_state) {
     '#description' => (!$count ? t('There are no editor libraries installed currently. The following list contains a list of currently supported editors:') : ''),
     '#weight' => 10,
   );
-  $form['status']['report'] = array('#markup' => theme('status_report', $status));
+  $form['status']['report'] = array('#markup' => theme('status_report', array('requirements' => $status)));
 
   if (!$count) {
     return $form;
@@ -416,6 +420,8 @@ function wysiwyg_profile_overview($form, &$form_state) {
     '#description' => t('To assign a different editor to a text format, click "delete" to remove the existing first.'),
     '#tree' => TRUE,
   );
+
+  $enable_save = FALSE;
   foreach ($formats as $id => $format) {
     $form['formats'][$id]['name'] = array(
       '#markup' => check_plain($format->name),
@@ -433,6 +439,7 @@ function wysiwyg_profile_overview($form, &$form_state) {
         '#default_value' => '',
         '#options' => $options,
       );
+      $enable_save = TRUE;
     }
     if (isset($profiles[$id]) && !empty($profiles[$id]->editor)) {
       $form['formats'][$id]['edit'] = array(
@@ -444,14 +451,18 @@ function wysiwyg_profile_overview($form, &$form_state) {
     }
   }
 
-  $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  // Submitting the form when no editors can be selected causes errors.
+  if ($enable_save) {
+    $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  }
   return $form;
 }
 
 /**
  * Return HTML for the Wysiwyg profile overview form.
  */
-function theme_wysiwyg_profile_overview($form) {
+function theme_wysiwyg_profile_overview($variables) {
+  $form = $variables['form'];
   if (!isset($form['formats'])) {
     return;
   }
@@ -467,7 +478,7 @@ function theme_wysiwyg_profile_overview($form) {
       isset($format['delete']) ? drupal_render($format['delete']) : '',
     );
   }
-  $form['formats']['table']['#markup'] = theme('table', $header, $rows);
+  $form['formats']['table']['#markup'] = theme('table', array('header' => $header, 'rows' => $rows));
   $output .= drupal_render_children($form);
   return $output;
 }

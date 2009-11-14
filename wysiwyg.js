@@ -46,7 +46,7 @@ Drupal.behaviors.attachWysiwyg = {
     }
 
     $('.wysiwyg', context).once('wysiwyg', function() {
-      if (!this.id || !this.value || typeof Drupal.settings.wysiwyg.triggers[this.id] === undefined) {
+      if (!this.id || !this.value || typeof Drupal.settings.wysiwyg.triggers[this.id] === 'undefined') {
         return;
       }
       var $this = $(this);

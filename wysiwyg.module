@@ -62,13 +62,13 @@ function wysiwyg_menu() {
 function wysiwyg_theme() {
   return array(
     'wysiwyg_profile_overview' => array(
-      'arguments' => array('form' => NULL),
+      'render element' => 'form',
     ),
     'wysiwyg_admin_button_table' => array(
-      'arguments' => array('form' => NULL),
+      'render element' => 'form',
     ),
     'wysiwyg_dialog_page' => array(
-      'arguments' => array('content' => NULL, 'show_messages' => TRUE),
+      'variables' => array('content' => NULL, 'show_messages' => TRUE),
       'file' => 'wysiwyg.dialog.inc',
       'template' => 'wysiwyg-dialog-page',
     ),
@@ -248,7 +248,7 @@ function wysiwyg_load_editor($profile) {
       foreach ($files as $file => $options) {
         if (is_array($options)) {
           $options += array('type' => 'file', 'scope' => 'header', 'defer' => FALSE, 'cache' => TRUE, 'preprocess' => TRUE);
-          drupal_add_js($editor['library path'] . '/' . $file, $options['type'], $options['scope'], $options['defer'], $options['cache'], $options['preprocess']);
+          drupal_add_js($editor['library path'] . '/' . $file, $options);
         }
         else {
           drupal_add_js($editor['library path'] . '/' . $options);

@@ -36,13 +36,16 @@ Drupal.wysiwyg.editor.attach.ckeditor = function(context, params, settings) {
   CKEDITOR.config.customConfig = '';
 
   settings.on = {
-    // Event handlers.
     instanceReady: function(ev) {
       var editor = ev.editor;
+      // Get a list of block, list and table tags from CKEditor's XHTML DTD.
+      // @see http://docs.cksource.com/CKEditor_3.x/Developers_Guide/Output_Formatting.
       var dtd = CKEDITOR.dtd;
-      var tags = CKEDITOR.tools.extend( {}, dtd.$block, dtd.$listItem, dtd.$tableContent );
+      var tags = CKEDITOR.tools.extend({}, dtd.$block, dtd.$listItem, dtd.$tableContent);
+      // Set source formatting rules for each listed tag except <pre>.
+      // Linebreaks can be inserted before or after opening and closing tags.
       if (settings.apply_source_formatting) {
-        // Mimic FCKeditor output.
+        // Mimic FCKeditor output, by breaking lines between tags.
         for (var tag in tags) {
           if (tag == 'pre') {
             continue;
@@ -58,7 +61,7 @@ Drupal.wysiwyg.editor.attach.ckeditor = function(context, params, settings) {
       }
       else {
         // No indents or linebreaks;
-        for (var key in tags) {
+        for (var tag in tags) {
           if (tag == 'pre') {
             continue;
           }
@@ -76,7 +79,7 @@ Drupal.wysiwyg.editor.attach.ckeditor = function(context, params, settings) {
     pluginsLoaded: function(ev) {
       // Override the conversion methods to let Drupal plugins modify the data.
       var editor = ev.editor;
-      if (editor.dataProcessor) {
+      if (editor.dataProcessor && Drupal.settings.wysiwyg.plugins[params.format]) {
         editor.dataProcessor.toHtml = CKEDITOR.tools.override(editor.dataProcessor.toHtml, function(originalToHtml) {
           // Convert raw data for display in WYSIWYG mode.
           return function(data, fixForBody) {

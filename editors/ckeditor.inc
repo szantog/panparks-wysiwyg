@@ -23,7 +23,7 @@ function wysiwyg_ckeditor_editor() {
       ),
       'src' => array(
         'title' => 'Source',
-         'files' => array(
+        'files' => array(
           'ckeditor_source.js' => array('preprocess' => FALSE),
         ),
       ),
@@ -92,15 +92,19 @@ function wysiwyg_ckeditor_version($editor) {
 function wysiwyg_ckeditor_themes($editor, $profile) {
   // @todo Skins are not themes but this will do for now.
   $path = $editor['library path'] . '/skins/';
-  $dir_handle = @opendir($path) or drupal_set_message('Unable to open ' . $path, $type = 'error');
-  $themes = array();  
-  while ($file = readdir($dir_handle)) {
-    if($file!="." && $file!=".." && $file!="CVS" && $file!=".svn") {
-      $themes[] = $file;
+  if (file_exists($path) && ($dir_handle = opendir($path))) {
+    $themes = array();
+    while ($file = readdir($dir_handle)) {
+      if (is_dir($path . $file) && substr($file, 0, 1) != '.' && $file != 'CVS') {
+        $themes[] = $file;
+      }
     }
+    closedir($dir_handle);
+    return !empty($themes) ? $themes : array('default');
   }
-  closedir($dir_handle);
-  return $themes;
+  else {
+    return array('default');
+  }
 }
 
 /**
@@ -122,9 +126,9 @@ function wysiwyg_ckeditor_settings($editor, $config, $theme) {
     'baseHref' => base_path(),
     'width' => '100%',
     'height' => 420,
-    // Skin is not really the same as theme.
+    // @todo Do not use skins as themes and add separate skin handling.
     'theme' => 'default',
-    'skin' => $theme,
+    'skin' => !empty($theme) ? $theme : 'kama',
     // By default, CKeditor converts most characters into HTML entities. Since
     // it does not support a custom definition, but Drupal supports Unicode, we
     // disable at least the additional character sets. CKeditor always converts
@@ -162,15 +166,12 @@ function wysiwyg_ckeditor_settings($editor, $config, $theme) {
     }
   }
 
-  // Language
   if (isset($config['language'])) {
     $settings['language'] = $config['language'];
   }
-  // Resizing button
   if (isset($config['resizing'])) {
     $settings['resize_enabled'] = $config['resizing'];
   }
-  //Toolbar location
   if (isset($config['toolbar_loc'])) {
     $settings['toolbarLocation'] = $config['toolbar_loc'];
   }
@@ -270,18 +271,14 @@ function wysiwyg_ckeditor_proxy_plugin_settings($editor, $profile, $plugins) {
 
 /**
  * Return internal plugins for this editor; semi-implementation of hook_wysiwyg_plugin().
- *
- * Excluded native plugins: About, Button, Checkbox, Form, HiddenField,
- * ImageButton, NewPage, PageBreak, Print, Radio, Select, Save, TextField,
- * Textarea, Templates.
  */
 function wysiwyg_ckeditor_plugins($editor) {
   $plugins = array(
     'default' => array(
       'buttons' => array(
         'Bold' => t('Bold'), 'Italic' => t('Italic'), 'Underline' => t('Underline'),
-        'StrikeThrough' => t('Strike-through'),
-        'JustifyLeft' => t('Align left'), 'JustifyCenter' => t('Align center'), 'JustifyRight' => t('Align right'), 'JustifyFull' => t('Justify'),
+        'Strike' => t('Strike-through'),
+        'JustifyLeft' => t('Align left'), 'JustifyCenter' => t('Align center'), 'JustifyRight' => t('Align right'), 'JustifyBlock' => t('Justify'),
         'BulletedList' => t('Bullet list'), 'NumberedList' => t('Numbered list'),
         'Outdent' => t('Outdent'), 'Indent' => t('Indent'),
         'Undo' => t('Undo'), 'Redo' => t('Redo'),
@@ -292,7 +289,7 @@ function wysiwyg_ckeditor_plugins($editor) {
         'Blockquote' => t('Blockquote'), 'Source' => t('Source code'),
         'HorizontalRule' => t('Horizontal rule'),
         'Cut' => t('Cut'), 'Copy' => t('Copy'), 'Paste' => t('Paste'),
-        'PasteText' => t('Paste Text'), 'PasteWord' => t('Paste from Word'),
+        'PasteText' => t('Paste Text'), 'PasteFromWord' => t('Paste from Word'),
         'ShowBlocks' => t('Show blocks'),
         'RemoveFormat' => t('Remove format'),
         'SpecialChar' => t('Character map'),
@@ -300,9 +297,8 @@ function wysiwyg_ckeditor_plugins($editor) {
         'Format' => t('HTML block format'), 'Font' => t('Font'), 'FontSize' => t('Font size'), 'Styles' => t('Font style'),
         'Table' => t('Table'),
         'Find' => t('Search'), 'Replace' => t('Replace'), 'SelectAll' => t('Select all'),
-        'CreateDiv' => t('Create DIV container'),
         'Flash' => t('Flash'), 'Smiley' => t('Smiley'),
-        'FitWindow' => t('FitWindow'),
+        'Maximize' => t('Maximize'),
         'SpellChecker' => t('Check spelling'), 'Scayt' => t('Check spelling as you type'),
       ),
       'internal' => TRUE,

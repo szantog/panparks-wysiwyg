@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 7.x-3.x, xxxx-xx-xx
 ---------------------------
+#597852 by sun: Fixed missing Turkish in language list.
 #620176 by sun: Fixed missing Ukrainian in language list.
 #612954 by TwoD: Fixed broken editor settings.
 #585932 by sun: Ported to Drupal 7.

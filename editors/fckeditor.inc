@@ -121,6 +121,9 @@ function wysiwyg_fckeditor_settings($editor, $config, $theme) {
   if (isset($config['apply_source_formatting'])) {
     $settings['FormatOutput'] = $settings['FormatSource'] = $config['apply_source_formatting'];
   }
+  if (isset($config['paste_auto_cleanup_on_paste'])) {
+    $settings['AutoDetectPasteFromWord'] = $config['paste_auto_cleanup_on_paste'];
+  }
 
   if (isset($config['css_setting'])) {
     if ($config['css_setting'] == 'theme') {

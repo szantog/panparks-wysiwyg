@@ -14,7 +14,7 @@ function wysiwyg_wymeditor_editor() {
     'title' => 'WYMeditor',
     'vendor url' => 'http://www.wymeditor.org/',
     'download url' => 'http://www.wymeditor.org/download/',
-    'library path' => wysiwyg_get_path('wymeditor/wymeditor'),
+    'library path' => wysiwyg_get_path('wymeditor') . '/wymeditor'),
     'libraries' => array(
       'min' => array(
         'title' => 'Minified',

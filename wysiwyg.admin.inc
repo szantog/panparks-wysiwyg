@@ -383,7 +383,7 @@ function wysiwyg_profile_overview($form, &$form_state) {
       $library = (isset($editor['library']) ? $editor['library'] : key($editor['libraries']));
       $targs = array(
         '@editor-path' => $editor['editor path'],
-        '@library-filepath' => $editor['library path'] . '/' . $editor['libraries'][$library]['files'][0],
+        '@library-filepath' => $editor['library path'] . '/' . (isset($editor['libraries'][$library]['files'][0]) ? $editor['libraries'][$library]['files'][0] : key($editor['libraries'][$library]['files'])),
       );
       $instructions = '<p>' . t('Extract the archive and copy its contents into a new folder in the following location:<br /><code>@editor-path</code>', $targs) . '</p>';
       $instructions .= '<p>' . t('So the actual library can be found at:<br /><code>@library-filepath</code>', $targs) . '</p>';

@@ -65,7 +65,7 @@ function wysiwyg_yui_editor() {
  *   The installed editor version.
  */
 function wysiwyg_yui_version($editor) {
-  $library = $editor['library path'] . '/editor/editor.js';
+  $library = $editor['library path'] . '/editor/editor-min.js';
   $library = fopen($library, 'r');
   $max_lines = 10;
   while ($max_lines && $line = fgets($library, 60)) {

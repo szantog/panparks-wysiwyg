@@ -19,7 +19,6 @@ Wysiwyg 6.x-3.x, xxxx-xx-xx
 #557090 by TwoD: Fixed Whizzywig 56 instance not removed on detach().
 #667848 by TwoD, kaakuu: Fixed FCKeditor is not properly detached in IE.
 #695768 by sun: Fixed #resizable removed when no editor profiles are loaded.
-#659194 by dkg: Changed YUI Editor should check the version in editor-min.js.
 #631494 by TwoD: Fixed multi-site libraries directory failure for WYMeditor.
 #660080 by TwoD: Fixed Notice: Undefined offset.
 #462146 by TwoD: Cleaned up CKEditor implementation.

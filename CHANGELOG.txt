@@ -15,6 +15,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#594928 by ericbellot, TwoD, sun: Fixed 'attribs' button missing in TinyMCE.
 #557090 by TwoD: Fixed Whizzywig 56 instance not removed on detach().
 #667848 by TwoD, kaakuu: Fixed FCKeditor is not properly detached in IE.
 #695768 by sun: Fixed #resizable removed when no editor profiles are loaded.

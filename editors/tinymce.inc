@@ -552,7 +552,7 @@ function wysiwyg_tinymce_plugins($editor) {
     );
     $plugins['xhtmlxtras'] = array(
       'path' => $editor['library path'] . '/plugins/xhtmlxtras',
-      'buttons' => array('cite' => t('Citation'), 'del' => t('Deleted'), 'abbr' => t('Abbreviation'), 'acronym' => t('Acronym'), 'ins' => t('Inserted')),
+      'buttons' => array('cite' => t('Citation'), 'del' => t('Deleted'), 'abbr' => t('Abbreviation'), 'acronym' => t('Acronym'), 'ins' => t('Inserted'), 'attribs' => t('HTML attributes')),
       'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/xhtmlxtras',
       'internal' => TRUE,
       'load' => TRUE,

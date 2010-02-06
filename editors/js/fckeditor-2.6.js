@@ -35,11 +35,19 @@ Drupal.wysiwyg.editor.detach.fckeditor = function(context, params) {
   }
 
   for (var instanceName in instances) {
-    instances[instanceName].UpdateLinkedField();
+    var instance = instances[instanceName];
+    instance.UpdateLinkedField();
+    // Since we already detach the editor and update the textarea, the submit
+    // event handler needs to be removed to prevent data loss (in IE).
+    // FCKeditor uses 2 nested iFrames; instance.EditingArea.Window is the
+    // deepest. Its parent is the iFrame containing the editor.
+    var instanceScope = instance.EditingArea.Window.parent;
+    instanceScope.FCKTools.RemoveEventListener(instance.GetParentForm(), 'submit', instance.UpdateLinkedField); 
+    // Remove the editor instance.
     $('#' + instanceName + '___Config').remove();
     $('#' + instanceName + '___Frame').remove();
     $('#' + instanceName).show();
-    delete instances[instanceName];
+    delete instance;
   }
 };
 

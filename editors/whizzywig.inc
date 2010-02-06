@@ -27,6 +27,9 @@ function wysiwyg_whizzywig_editor() {
       '55' => array(
         'js files' => array('whizzywig.js'),
       ),
+      '56' => array(
+        'js files' => array('whizzywig-56.js'),
+      ),
     ),
   );
   return $editor;
@@ -72,6 +75,9 @@ function wysiwyg_whizzywig_settings($editor, $config, $theme) {
   // Add path to button images, if available.
   if (is_dir($editor['library path'] . '/btn')) {
     $settings['buttonPath'] = base_path() . $editor['library path'] . '/btn/';
+  }
+  if (file_exists($editor['library path'] . '/WhizzywigToolbar.png')) {
+    $settings['toolbarImagePath'] = base_path() . $editor['library path'] . '/WhizzywigToolbar.png';
   }
 
   // Add configured buttons or all available.

@@ -280,6 +280,11 @@ function wysiwyg_profile_form($form, &$form_state, $profile) {
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
+    '#weight' => 100,
+  );
+  $form['cancel'] = array(
+    '#value' => l(t('Cancel'), 'admin/config/content/wysiwyg'),
+    '#weight' => 110,
   );
 
   return $form;

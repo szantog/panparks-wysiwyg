@@ -15,6 +15,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#696040 by Dave Reid: Fixed missing Cancel link on profile form.
 #594322 by TwoD: Added insert method for NicEdit.
 #659200 by TwoD: Fixed YUI Editor content lost in IE.
 #594928 by ericbellot, TwoD, sun: Fixed 'attribs' button missing in TinyMCE.

@@ -287,11 +287,13 @@ function wysiwyg_load_editor($profile) {
       }
 
       drupal_add_js(array('wysiwyg' => array(
-        // @todo Move into (global) editor settings.
-        // If JS compression is enabled, at least TinyMCE is unable to determine
-        // its own base path and exec mode since it can't find the script name.
-        'editorBasePath' => base_path() . $editor['library path'],
-        'execMode' => $library,
+        'configs' => array($editor['name'] => array('global' => array(
+          // @todo Move into (global) editor settings.
+          // If JS compression is enabled, at least TinyMCE is unable to determine
+          // its own base path and exec mode since it can't find the script name.
+          'editorBasePath' => base_path() . $editor['library path'],
+          'execMode' => $library,
+        ))),
       )), 'setting');
 
       $loaded[$name] = TRUE;

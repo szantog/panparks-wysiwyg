@@ -1,6 +1,6 @@
 // $Id$
-
 (function ($) {
+
 // @todo Array syntax required; 'break' is a predefined token in JavaScript.
 Drupal.wysiwyg.plugins['break'] = {
 
@@ -65,4 +65,5 @@ Drupal.wysiwyg.plugins['break'] = {
     return '<img src="' + settings.path + '/images/spacer.gif" alt="&lt;--break-&gt;" title="&lt;--break--&gt;" class="wysiwyg-break drupal-content" />';
   }
 };
+
 })(jQuery);

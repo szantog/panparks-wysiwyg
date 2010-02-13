@@ -6,9 +6,6 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 7.x-3.x, xxxx-xx-xx
 ---------------------------
-#582298 by dereine: Added auto-paste from Word detection for FCKeditor.
-#597852 by sun: Fixed missing Turkish in language list.
-#620176 by sun: Fixed missing Ukrainian in language list.
 #612954 by TwoD: Fixed broken editor settings.
 #585932 by sun: Ported to Drupal 7.
 
@@ -25,6 +22,11 @@ Wysiwyg 6.x-3.x, xxxx-xx-xx
 #695768 by sun: Fixed #resizable removed when no editor profiles are loaded.
 #631494 by TwoD: Fixed multi-site libraries directory failure for WYMeditor.
 #660080 by TwoD: Fixed Notice: Undefined offset.
+#613922 by TwoD, sun: Fixed PHP warning when saving profiles.
+#582298 by dereine: Added auto-paste from Word detection for FCKeditor.
+#597852 by sun: Fixed missing Turkish in language list.
+#620176 by sun: Fixed missing Ukrainian in language list.
+#613480 by TwoD, Dave Reid: Fixed PHP 5.3 compatibility.
 #462146 by TwoD: Cleaned up CKEditor implementation.
 #380586 by SimonEast: Updated YUI editor: Version detection not working.
 #610132 by TwoD: Updated CKEditor 3.0.1, stylesheets and version check.

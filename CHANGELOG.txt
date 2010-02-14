@@ -12,6 +12,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#689218 by wwalc, TwoD, sun: Improved support for CKEditor.
 #695398 by TwoD: Updated support for TinyMCE 3.3.
 #696040 by Dave Reid: Fixed missing Cancel link on profile form.
 #594322 by TwoD: Added insert method for NicEdit.

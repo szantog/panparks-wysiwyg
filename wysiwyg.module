@@ -538,6 +538,10 @@ function wysiwyg_get_editor_config($profile, $theme) {
   $settings = array();
   if (!empty($editor['settings callback']) && function_exists($editor['settings callback'])) {
     $settings = $editor['settings callback']($editor, $profile->settings, $theme);
+
+    // Allow other modules to alter the editor settings for this format.
+    $context = array('editor' => $editor, 'profile' => $profile, 'theme' => $theme);
+    drupal_alter('wysiwyg_editor_settings', $settings, $context);
   }
   return $settings;
 }

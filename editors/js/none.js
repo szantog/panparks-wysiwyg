@@ -16,8 +16,8 @@
  */
 Drupal.wysiwyg.editor.attach.none = function(context, params, settings) {
   if (params.resizable) {
-    $('#' + params.field).addClass('resizable');
-    $('#' + params.field).css({display: ''});
+    var $wrapper = $('#' + params.field).parents('.form-textarea-wrapper:first');
+    $wrapper.addClass('resizable');
     if (Drupal.behaviors.textarea.attach) {
       Drupal.behaviors.textarea.attach();
     }
@@ -37,10 +37,9 @@ Drupal.wysiwyg.editor.attach.none = function(context, params, settings) {
  */
 Drupal.wysiwyg.editor.detach.none = function(context, params) {
   if (typeof params != 'undefined') {
-    var $textarea = $('#' + params.field, context).removeOnce('textarea');
-    var $div = $textarea.parents('div.resizable-textarea');
-    $div.before($textarea);
-    $div.remove();
+    var $wrapper = $('#' + params.field).parents('.form-textarea-wrapper:first');
+    $wrapper.removeOnce('textarea').removeClass('.resizable-textarea')
+      .find('.grippie').remove();
   }
 };
 

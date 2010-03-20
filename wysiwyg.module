@@ -88,17 +88,8 @@ function wysiwyg_help($path, $arg) {
 
 /**
  * Implementation of hook_form_alter().
- *
- * Before Drupal 7, there is no way to easily identify form fields that are
- * input format enabled. As a workaround, we assign a form #after_build
- * processing callback that is executed on all forms after they have been
- * completely built, so form elements are in their effective order
- * and position already.
- *
- * @see wysiwyg_process_form()
  */
 function wysiwyg_form_alter(&$form, &$form_state) {
-  $form['#after_build'][] = 'wysiwyg_process_form';
   // Teaser splitter is unconditionally removed and NOT supported.
   if (isset($form['body_field'])) {
     unset($form['body_field']['teaser_js']);
@@ -106,97 +97,98 @@ function wysiwyg_form_alter(&$form, &$form_state) {
 }
 
 /**
- * Process a form to attach wysiwyg editors.
- *
- * Recurse into the form and if an text format-enabled element is found, use its
- * #id for attaching client-side editors.
- *
- * @see form_process_text_format()
+ * Implements hook_element_info_alter().
  */
-function wysiwyg_process_form(&$form) {
-  foreach (element_children($form) as $item) {
-    // filter_form() always uses the key 'format'.
-    if (isset($form[$item]['#text_format'])) {
-      $element = &$form[$item]['format'];
-      $field = &$form[$item]['value'];
-      $settings = array(
-        'field' => $field['#id'],
-      );
+function wysiwyg_element_info_alter(&$types) {
+  $types['text_format']['#pre_render'][] = 'wysiwyg_pre_render_text_format';
+}
 
-      // If this textarea is #resizable and we will load at least one
-      // editor, then only load the behavior and let the 'none' editor
-      // attach/detach it to avoid hi-jacking the UI. Due to our CSS class
-      // parsing, we can add arbitrary parameters for each input format.
-      // The #resizable property will be removed below, if at least one
-      // profile has been loaded.
-      $resizable = 0;
-      if (!empty($field['#resizable'])) {
-        $resizable = 1;
-        drupal_add_js('misc/textarea.js');
-      }
-      // Determine the available input formats.
-      foreach ($element['format']['#options'] as $format_id => $format_name) {
-        $format = 'format' . $format_id;
-        // Initialize default settings, defaulting to 'none' editor.
-        $settings[$format]['editor'] = 'none';
-        $settings[$format]['status'] = 1;
-        $settings[$format]['toggle'] = 1;
-        $settings[$format]['resizable'] = $resizable;
-        // Fetch the profile associated to this text format.
-        $profile = wysiwyg_get_profile($format_id);
-        if ($profile) {
-          $loaded = TRUE;
-          $settings[$format]['editor'] = $profile->editor;
-          $settings[$format]['status'] = (int) wysiwyg_user_get_status($profile);
-          if (isset($profile->settings['show_toggle'])) {
-            $settings[$format]['toggle'] = (int) $profile->settings['show_toggle'];
-          }
-          // Check editor theme (and reset it if not/no longer available).
-          $theme = wysiwyg_get_editor_themes($profile, (isset($profile->settings['theme']) ? $profile->settings['theme'] : ''));
-
-          // Add plugin settings (first) for this text format.
-          wysiwyg_add_plugin_settings($profile);
-          // Add profile settings for this text format.
-          wysiwyg_add_editor_settings($profile, $theme);
-          
-        }
-      }
-      // Use a prefix/suffix for a single text format, or attach to text
-      // format selector radio buttons.
-      if (!$element['format']['#access']) {
-        $element['format_guidelines']['format'] = array(
-          '#type' => 'hidden',
-          '#name' => $element['format']['#name'],
-          '#id' => $element['format']['#id'],
-          '#value' => $format_id,
-          '#attributes' => array('class' => array('wysiwyg')),
-        );
-        $element['format_guidelines']['#attached']['js'][] = array(
-          'data' => array('wysiwyg' => array('triggers' => array($element['format']['#id'] => $settings))),
-          'type' => 'setting',
-        );
-      }
-      else {
-        $element['format']['#attributes']['class'][] = 'wysiwyg';
-        $element['format']['#attached']['js'][] = array(
-          'data' => array('wysiwyg' => array('triggers' => array($element['format']['#id'] => $settings))),
-          'type' => 'setting',
-        );
-      }
-
-      // If we loaded at least one editor, then the 'none' editor will
-      // handle resizable textareas instead of core.
-      if (isset($loaded) && $resizable) {
-        $field['#resizable'] = FALSE;
-      }
-
-      // If this element has '#text_format', do not recurse further.
-      continue;
-    }
-    // Recurse into children.
-    wysiwyg_process_form($form[$item]);
+/**
+ * Process a text format widget to load and attach editors.
+ *
+ * The element's #id is used as reference to attach client-side editors.
+ */
+function wysiwyg_pre_render_text_format($element) {
+  // filter_process_format() copies properties to the expanded 'value' child
+  // element.
+  if (!isset($element['format'])) {
+    return $element;
   }
-  return $form;
+
+  $format_field = &$element['format'];
+  $field = &$element['value'];
+  $settings = array(
+    'field' => $field['#id'],
+  );
+
+  // If this textarea is #resizable and we will load at least one
+  // editor, then only load the behavior and let the 'none' editor
+  // attach/detach it to avoid hi-jacking the UI. Due to our CSS class
+  // parsing, we can add arbitrary parameters for each input format.
+  // The #resizable property will be removed below, if at least one
+  // profile has been loaded.
+  $resizable = 0;
+  if (!empty($field['#resizable'])) {
+    $resizable = 1;
+    drupal_add_js('misc/textarea.js');
+  }
+  // Determine the available text formats.
+  foreach ($format_field['format']['#options'] as $format_id => $format_name) {
+    $format = 'format' . $format_id;
+    // Initialize default settings, defaulting to 'none' editor.
+    $settings[$format]['editor'] = 'none';
+    $settings[$format]['status'] = 1;
+    $settings[$format]['toggle'] = 1;
+    $settings[$format]['resizable'] = $resizable;
+
+    // Fetch the profile associated to this text format.
+    $profile = wysiwyg_get_profile($format_id);
+    if ($profile) {
+      $loaded = TRUE;
+      $settings[$format]['editor'] = $profile->editor;
+      $settings[$format]['status'] = (int) wysiwyg_user_get_status($profile);
+      if (isset($profile->settings['show_toggle'])) {
+        $settings[$format]['toggle'] = (int) $profile->settings['show_toggle'];
+      }
+      // Check editor theme (and reset it if not/no longer available).
+      $theme = wysiwyg_get_editor_themes($profile, (isset($profile->settings['theme']) ? $profile->settings['theme'] : ''));
+
+      // Add plugin settings (first) for this text format.
+      wysiwyg_add_plugin_settings($profile);
+      // Add profile settings for this text format.
+      wysiwyg_add_editor_settings($profile, $theme);
+    }
+  }
+  // Use a hidden element for a single text format.
+  if (!$format_field['format']['#access']) {
+    $format_field['guidelines']['format'] = array(
+      '#type' => 'hidden',
+      '#name' => $format_field['format']['#name'],
+      '#id' => $format_field['format']['#id'],
+      '#value' => $format_id,
+      '#attributes' => array('class' => array('wysiwyg')),
+    );
+    $format_field['guidelines']['format']['#attached']['js'][] = array(
+      'data' => array('wysiwyg' => array('triggers' => array($format_field['format']['#id'] => $settings))),
+      'type' => 'setting',
+    );
+  }
+  // Otherwise, attach to text format selector.
+  else {
+    $format_field['format']['#attributes']['class'][] = 'wysiwyg';
+    $format_field['format']['#attached']['js'][] = array(
+      'data' => array('wysiwyg' => array('triggers' => array($format_field['format']['#id'] => $settings))),
+      'type' => 'setting',
+    );
+  }
+
+  // If we loaded at least one editor, then the 'none' editor will
+  // handle resizable textareas instead of core.
+  if (isset($loaded) && $resizable) {
+    $field['#resizable'] = FALSE;
+  }
+
+  return $element;
 }
 
 /**

@@ -13,6 +13,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#753536 by TwoD: Fixed version detection for Whizzywig.
 #752516 by nquocbao, sun: Fixed file stream warnings in version callbacks.
 #628110 by quicksketch, sun, markus_petrux: Added editor settings alter hook.
 #689218 by wwalc, TwoD, sun: Improved support for CKEditor.

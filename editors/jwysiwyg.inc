@@ -48,6 +48,9 @@ function wysiwyg_jwysiwyg_editor() {
  */
 function wysiwyg_jwysiwyg_version($editor) {
   $script = $editor['library path'] . '/jquery.wysiwyg.js';
+  if (!file_exists($script)) {
+    return;
+  }
   $script = fopen($script, 'r');
   fgets($script);
   $line = fgets($script);

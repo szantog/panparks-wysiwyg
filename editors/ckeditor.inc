@@ -60,6 +60,9 @@ function wysiwyg_ckeditor_editor() {
  */
 function wysiwyg_ckeditor_version($editor) {
   $library = $editor['library path'] . '/ckeditor.js';
+  if (!file_exists($library)) {
+    return;
+  }
   $library = fopen($library, 'r');
   $max_lines = 8;
   while ($max_lines && $line = fgets($library, 140)) {

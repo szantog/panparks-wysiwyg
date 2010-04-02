@@ -52,6 +52,9 @@ function wysiwyg_fckeditor_editor() {
  */
 function wysiwyg_fckeditor_version($editor) {
   $library = $editor['library path'] . '/fckeditor.js';
+  if (!file_exists($library)) {
+    return;
+  }
   $library = fopen($library, 'r');
   $max_lines = 100;
   while ($max_lines && $line = fgets($library, 60)) {

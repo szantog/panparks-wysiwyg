@@ -45,7 +45,10 @@ function wysiwyg_openwysiwyg_editor() {
  *   The installed editor version.
  */
 function wysiwyg_openwysiwyg_version($editor) {
-  $changelog = $editor['editor path'] . '/changelog';
+  $changelog = $editor['library path'] . '/changelog';
+  if (!file_exists($changelog)) {
+    return;
+  }
   $changelog = fopen($changelog, 'r');
   $line = fgets($changelog, 20);
   if (preg_match('@v([\d\.]+)@', $line, $version)) {

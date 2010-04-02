@@ -46,6 +46,9 @@ function wysiwyg_whizzywig_editor() {
  */
 function wysiwyg_whizzywig_version($editor) {
   $script = $editor['library path'] . '/whizzywig.js';
+  if (!file_exists($script)) {
+    return;
+  }
   $script = fopen($script, 'r');
   $line = fgets($script, 43);
   if (preg_match('@Whizzywig v([0-9]+)@', $line, $version)) {

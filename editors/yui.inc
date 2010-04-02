@@ -66,6 +66,9 @@ function wysiwyg_yui_editor() {
  */
 function wysiwyg_yui_version($editor) {
   $library = $editor['library path'] . '/editor/editor.js';
+  if (!file_exists($library)) {
+    return;
+  }
   $library = fopen($library, 'r');
   $max_lines = 10;
   while ($max_lines && $line = fgets($library, 60)) {

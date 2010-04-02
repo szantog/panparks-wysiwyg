@@ -82,6 +82,9 @@ function wysiwyg_tinymce_editor() {
  */
 function wysiwyg_tinymce_version($editor) {
   $script = $editor['library path'] . '/tiny_mce.js';
+  if (!file_exists($script)) {
+    return;
+  }
   $script = fopen($script, 'r');
   // Version is contained in the first 100 chars.
   $line = fgets($script, 100);

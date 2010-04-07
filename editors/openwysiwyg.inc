@@ -45,7 +45,8 @@ function wysiwyg_openwysiwyg_editor() {
  *   The installed editor version.
  */
 function wysiwyg_openwysiwyg_version($editor) {
-  $changelog = $editor['library path'] . '/changelog';
+  // 'library path' has '/scripts' appended already.
+  $changelog = $editor['editor path'] . '/changelog';
   if (!file_exists($changelog)) {
     return;
   }

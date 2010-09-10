@@ -103,6 +103,7 @@ function wysiwyg_ckeditor_themes($editor, $profile) {
       }
     }
     closedir($dir_handle);
+    natcasesort($themes);
     return !empty($themes) ? $themes : array('default');
   }
   else {

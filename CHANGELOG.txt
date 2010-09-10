@@ -13,6 +13,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#737318 by dboune: Fixed CKEditor default skin depends on filesystem order.
 #775608 by TwoD: Fixed FCKEditor crashes IE on save.
 #824710 by TwoD: CKEditor not disabled upon enabling.
 #752516 by nquocbao, sun: Fixed openwysiwyg version callback.

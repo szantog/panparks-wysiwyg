@@ -6,7 +6,6 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 7.x-3.x, xxxx-xx-xx
 ---------------------------
-#752516 by nquocbao, sun: Fixed openwysiwyg version callback.
 #739558 by sun, TwoD: Updated for new #type text_format.
 #612954 by TwoD: Fixed broken editor settings.
 #585932 by sun: Ported to Drupal 7.
@@ -14,6 +13,8 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#824710 by TwoD: CKEditor not disabled upon enabling.
+#752516 by nquocbao, sun: Fixed openwysiwyg version callback.
 #753536 by TwoD: Fixed version detection for Whizzywig.
 #752516 by nquocbao, sun: Fixed file stream warnings in version callbacks.
 #628110 by quicksketch, sun, markus_petrux: Added editor settings alter hook.

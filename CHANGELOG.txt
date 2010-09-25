@@ -13,6 +13,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#651490 by TwoD: Fixed Whizzywig width.
 #715228 by TwoD: Fixed TinyMCE image popups not launching for existing images.
 #606952 by TwoD: Fixed inserting content in fullscreen TinyMCE.
 #593008 by TwoD: Fixed third-party scripts breaking Wysiwyg.

@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 7.x-3.x, xxxx-xx-xx
 ---------------------------
+#695398 by RichieB, Cl1mh4224rd, mcpuddin: Fixed TinyMCE 3.3.9.1 detection.
 #739558 by sun, TwoD: Updated for new #type text_format.
 #612954 by TwoD: Fixed broken editor settings.
 #585932 by sun: Ported to Drupal 7.

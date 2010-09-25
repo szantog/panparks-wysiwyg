@@ -60,6 +60,11 @@ Drupal.wysiwyg.editor.attach.tinymce = function(context, params, settings) {
     $('#' + ed.editorContainer + ' table.mceLayout td.mceToolbar').append($toolbar);
     $('#' + ed.editorContainer + ' table.mceToolbar').remove();
   });
+
+  // #715228: Remove extra mceItem class added by Wysiwyg < v2.1.
+  $field = $('#' + params.field);
+  $field.val($field.val().replace(/class=(['"].*?)\bmceItem\b(.*?['"])/ig, 'class=$1$2'));
+
   // Attach editor.
   ed.render();
 };

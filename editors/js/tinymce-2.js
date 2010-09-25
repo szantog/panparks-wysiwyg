@@ -48,6 +48,11 @@ Drupal.wysiwyg.editor.attach.tinymce = function(context, params, settings) {
   for (var setting in settings) {
     tinyMCE.settings[setting] = settings[setting];
   }
+
+  // #715228: Remove extra mceItem class added by Wysiwyg < v2.1.
+  $field = $('#' + params.field);
+  $field.val($field.val().replace(/class=(['"].*?)\bmceItem\b(.*?['"])/ig, 'class=$1$2'));
+
   // Attach editor.
   tinyMCE.execCommand('mceAddControl', true, params.field);
 };

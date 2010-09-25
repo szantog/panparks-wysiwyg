@@ -13,6 +13,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#606952 by TwoD: Fixed inserting content in fullscreen TinyMCE.
 #593008 by TwoD: Fixed third-party scripts breaking Wysiwyg.
 #695398 by RichieB, Cl1mh4224rd, mcpuddin: Fixed TinyMCE 3.3.9.1 detection.
 #737318 by dboune: Fixed CKEditor default skin depends on filesystem order.

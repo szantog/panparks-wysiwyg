@@ -13,6 +13,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#767628 by TwoD: Fixed 'The version of markItUp could not be detected' error.
 #651490 by TwoD: Fixed Whizzywig width.
 #715228 by TwoD: Fixed TinyMCE image popups not launching for existing images.
 #606952 by TwoD: Fixed inserting content in fullscreen TinyMCE.

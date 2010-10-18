@@ -294,11 +294,9 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
   unset($settings['buttons']);
 
   // Convert the config values into the form expected by TinyMCE.
-  foreach ($settings as $key => $value) {
-    if (is_bool($value)) {
-      continue;
-    }
-    if (is_array($value)) {
+  $csv_settings = array('plugins', 'extended_valid_elements', 'theme_advanced_buttons1', 'theme_advanced_buttons2', 'theme_advanced_buttons3');
+  foreach ($csv_settings as $key) {
+    if (isset($settings[$key]) && is_array($settings[$key])) {
       $settings[$key] = implode(',', $settings[$key]);
     }
   }

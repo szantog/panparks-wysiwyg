@@ -578,6 +578,15 @@ function wysiwyg_tinymce_plugins($editor) {
       );
     }
   }
+  if (version_compare($editor['installed version'], '3.2.5', '>=')) {
+    $plugins['autoresize'] = array(
+      'path' => $editor['library path'] . '/plugins/autoresize',
+      'extensions' => array('autoresize' => t('Auto resize')),
+      'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/autoresize',
+      'internal' => TRUE,
+      'load' => TRUE,
+    );
+  }
   if (version_compare($editor['installed version'], '3.3', '>=')) {
     $plugins['advlist'] = array(
       'path' => $editor['library path'] . '/plugins/advlist',

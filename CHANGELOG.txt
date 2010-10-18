@@ -13,6 +13,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#803466 by hotspoons: Fixed TinyMCE image map support in advimage plugin.
 #922436 by TwoD: Fixed Whizzywig Uncaught TypeError in Chrome.
 #922520 by TwoD: Fixed Whizzywig is not detached properly.
 #907186 by TwoD: Fixed Whizzywig v60+ compatibility.

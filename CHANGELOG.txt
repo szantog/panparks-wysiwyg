@@ -13,6 +13,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#765292 by TwoD: Added TinyMCE WordCount plugin.
 #768726 by TwoD: Added TinyMCE AutoResize plugin.
 #781086 by TwoD: Fixed TinyMCE plugin options merged wrongly.
 #767628 by TwoD: Fixed 'The version of markItUp could not be detected' error.

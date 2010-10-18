@@ -596,6 +596,15 @@ function wysiwyg_tinymce_plugins($editor) {
       'load' => TRUE,
     );
   }
+  if (version_compare($editor['installed version'], '3.2.6', '>=')) {
+    $plugins['wordcount'] = array(
+      'path' => $editor['library path'] . '/plugins/wordcount',
+      'extensions' => array('wordcount' => t('Word count')),
+      'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/wordcount',
+      'internal' => TRUE,
+      'load' => TRUE,
+    );
+  }
   return $plugins;
 }
 

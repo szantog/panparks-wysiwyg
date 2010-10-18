@@ -13,6 +13,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#907186 by TwoD: Fixed Whizzywig v60+ compatibility.
 #765292 by TwoD: Added TinyMCE WordCount plugin.
 #768726 by TwoD: Added TinyMCE AutoResize plugin.
 #781086 by TwoD: Fixed TinyMCE plugin options merged wrongly.

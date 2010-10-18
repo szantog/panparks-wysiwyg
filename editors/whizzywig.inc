@@ -30,6 +30,9 @@ function wysiwyg_whizzywig_editor() {
       '56' => array(
         'js files' => array('whizzywig-56.js'),
       ),
+      '60' => array(
+        'js files' => array('whizzywig-60.js'),
+      ),
     ),
   );
   return $editor;

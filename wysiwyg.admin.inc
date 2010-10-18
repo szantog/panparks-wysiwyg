@@ -317,6 +317,7 @@ function wysiwyg_profile_form_submit($form, &$form_state) {
 
   // Insert new profile data.
   db_query("UPDATE {wysiwyg} SET settings = :settings WHERE format = :format", array(':settings' => serialize($values), ':format' => $format));
+  cache_clear_all('wysiwyg_profiles', 'cache');
 
   drupal_set_message(t('Wysiwyg profile for %format has been saved.', array('%format' => $input_format)));
 
@@ -500,6 +501,7 @@ function wysiwyg_profile_overview_submit($form, &$form_state) {
       ))
       ->execute();
   }
+  cache_clear_all('wysiwyg_profiles', 'cache');
 }
 
 /**
@@ -525,6 +527,8 @@ function wysiwyg_profile_delete_confirm($form, &$form_state, $profile) {
 function wysiwyg_profile_delete_confirm_submit($form, &$form_state) {
   $format = $form_state['values']['format'];
   wysiwyg_profile_delete($format->format);
+  cache_clear_all('wysiwyg_profiles', 'cache');
+
   drupal_set_message(t('Wysiwyg profile for %name has been deleted.', array('%name' => $format->name)));
   $form_state['redirect'] = 'admin/config/content/wysiwyg';
 }

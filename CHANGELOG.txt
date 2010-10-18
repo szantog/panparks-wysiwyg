@@ -6,6 +6,7 @@ Wysiwyg x.x-x.x, xxxx-xx-xx
 
 Wysiwyg 7.x-3.x, xxxx-xx-xx
 ---------------------------
+#826914 by catch, sun: Added database cache for wysiwyg_profile_load().
 #941230 by sun: Fixed missing Configuration link on Modules page.
 #739558 by sun, TwoD: Updated for new #type text_format.
 #612954 by TwoD: Fixed broken editor settings.

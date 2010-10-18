@@ -36,7 +36,9 @@ var o = function (id) {
   // Upon first access to "whizzy" + id, Whizzywig tries to access its IFRAME,
   // so we need to insert the editor into the DOM.
   if (id == 'whizzy' + wysiwygWhizzywig.currentField && wysiwygWhizzywig.fields[wysiwygWhizzywig.currentField]) {
-    jQuery('#' + wysiwygWhizzywig.currentField).after('<div id="' + wysiwygWhizzywig.currentField + '-whizzywig">' + w() + '</div>');
+    jQuery('#' + wysiwygWhizzywig.currentField).after('<div id="' + wysiwygWhizzywig.currentField + '-whizzywig"></div>');
+    // Iframe's .contentWindow becomes null in Webkit if inserted via .after().
+    jQuery('#' + wysiwygWhizzywig.currentField + '-whizzywig').html(w());
     // Prevent subsequent invocations from inserting the editor multiple times.
     wysiwygWhizzywig.fields[wysiwygWhizzywig.currentField] = '';
   }

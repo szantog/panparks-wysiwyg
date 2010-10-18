@@ -13,6 +13,7 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 
 Wysiwyg 6.x-3.x, xxxx-xx-xx
 ---------------------------
+#922436 by TwoD: Fixed Whizzywig Uncaught TypeError in Chrome.
 #922520 by TwoD: Fixed Whizzywig is not detached properly.
 #907186 by TwoD: Fixed Whizzywig v60+ compatibility.
 #765292 by TwoD: Added TinyMCE WordCount plugin.

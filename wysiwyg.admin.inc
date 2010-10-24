@@ -13,7 +13,7 @@ function wysiwyg_profile_form($form, &$form_state, $profile) {
   // Merge in defaults.
   $profile = (array) $profile;
   $profile += array(
-    'format' => 0,
+    'format' => '',
     'editor' => '',
   );
   if (empty($profile['settings'])) {

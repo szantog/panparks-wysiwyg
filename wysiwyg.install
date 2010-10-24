@@ -50,6 +50,19 @@ function wysiwyg_enable() {
 }
 
 /**
+ * Implements hook_update_dependencies().
+ */
+function wysiwyg_update_dependencies() {
+  // Ensure that format columns are only changed after Filter module has changed
+  // the primary records.
+  $dependencies['wysiwyg'][7000] = array(
+    'filter' => 7010,
+  );
+
+  return $dependencies;
+}
+
+/**
  * Retrieve a list of input formats to associate profiles to.
  */
 function _wysiwyg_install_get_formats() {
@@ -161,19 +174,6 @@ function wysiwyg_update_6200() {
     'query' => 'Caches have been flushed.',
   );
   return $ret;
-}
-
-/**
- * Implementation of hook_update_dependencies().
- */
-function wysiwyg_update_dependencies() {
-  // Ensure that format columns are only changed after Filter module has changed
-  // the primary records.
-  $dependencies['wysiwyg'][7000] = array(
-    'filter' => 7010,
-  );
-
-  return $dependencies;
 }
 
 /**

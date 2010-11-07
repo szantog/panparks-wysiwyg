@@ -1,10 +1,6 @@
 // $Id$
 
-Wysiwyg x.x-x.x, xxxx-xx-xx
----------------------------
-
-
-Wysiwyg 7.x-3.x, xxxx-xx-xx
+Wysiwyg 7.x-2.x, xxxx-xx-xx
 ---------------------------
 #931374 by TwoD, ksenzee: Updated for text format schema change.
 #826914 by catch, sun: Added database cache for wysiwyg_profile_load().
@@ -14,13 +10,9 @@ Wysiwyg 7.x-3.x, xxxx-xx-xx
 #585932 by sun: Ported to Drupal 7.
 
 
-Wysiwyg 6.x-3.x, xxxx-xx-xx
----------------------------
-#80170 by sun: Changed dialog/plugin API for Inline API compatibility.
-
-
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#80170 by sun: Changed dialog/plugin API for Inline API compatibility.
 #803466 by hotspoons: Fixed TinyMCE image map support in advimage plugin.
 #922436 by TwoD: Fixed Whizzywig Uncaught TypeError in Chrome.
 #922520 by TwoD: Fixed Whizzywig is not detached properly.

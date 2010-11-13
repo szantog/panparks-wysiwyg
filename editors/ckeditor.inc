@@ -190,9 +190,9 @@ function wysiwyg_ckeditor_settings($editor, $config, $theme) {
     $settings['toolbarLocation'] = $config['toolbar_loc'];
   }
 
+  $settings['toolbar'] = array();
   if (!empty($config['buttons'])) {
     $extra_plugins = array();
-    $settings['toolbar'] = array();
     $plugins = wysiwyg_get_plugins($editor['name']);
     foreach ($config['buttons'] as $plugin => $buttons) {
       foreach ($buttons as $button => $enabled) {
@@ -232,11 +232,9 @@ function wysiwyg_ckeditor_settings($editor, $config, $theme) {
     if (!empty($extra_plugins)) {
       $settings['extraPlugins'] = implode(',', $extra_plugins);
     }
-    // For now, all buttons are placed into one row.
-    if (!empty($settings['toolbar'])) {
-      $settings['toolbar'] = array($settings['toolbar']);
-    }
   }
+  // For now, all buttons are placed into one row.
+  $settings['toolbar'] = array($settings['toolbar']);
 
   return $settings;
 }

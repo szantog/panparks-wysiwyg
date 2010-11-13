@@ -108,6 +108,7 @@ function wysiwyg_openwysiwyg_settings($editor, $config, $theme) {
     }
   }
 
+  $settings['Toolbar'] = array();
   if (!empty($config['buttons'])) {
     $plugins = wysiwyg_get_plugins($editor['name']);
     foreach ($config['buttons'] as $plugin => $buttons) {

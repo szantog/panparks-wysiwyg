@@ -113,10 +113,10 @@ function wysiwyg_wymeditor_settings($editor, $config, $theme) {
   }
 
   // Add configured buttons.
+  $settings['toolsItems'] = array();
   if (!empty($config['buttons'])) {
     $buttoninfo = _wysiwyg_wymeditor_button_info();
     $plugins = wysiwyg_get_plugins($editor['name']);
-    $settings['toolsItems'] = array();
     foreach ($config['buttons'] as $plugin => $buttons) {
       foreach ($buttons as $button => $enabled) {
         // Iterate separately over buttons and extensions properties.

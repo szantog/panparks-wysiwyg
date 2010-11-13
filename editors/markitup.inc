@@ -152,6 +152,7 @@ function wysiwyg_markitup_settings($editor, $config, $theme) {
       'call' => 'preview',
     ),
   );
+  $settings['markupSet'] = array();
   if (!empty($config['buttons'])) {
     foreach ($config['buttons'] as $plugin) {
       foreach ($plugin as $button => $enabled) {
@@ -160,9 +161,6 @@ function wysiwyg_markitup_settings($editor, $config, $theme) {
         }
       }
     }
-  }
-  else {
-    $settings['markupSet'] = $default_buttons;
   }
 
   return $settings;

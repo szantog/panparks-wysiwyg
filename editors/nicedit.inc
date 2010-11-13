@@ -66,15 +66,13 @@ function wysiwyg_nicedit_settings($editor, $config, $theme) {
   );
 
   // Add configured buttons or all available.
+  $settings['buttonList'] = array();
   if (!empty($config['buttons'])) {
     $buttons = array();
     foreach ($config['buttons'] as $plugin) {
       $buttons = array_merge($buttons, $plugin);
     }
     $settings['buttonList'] = array_keys($buttons);
-  }
-  else {
-    $settings['fullPanel'] = TRUE;
   }
 
   // Add editor content stylesheet.

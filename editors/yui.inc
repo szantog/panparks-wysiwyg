@@ -144,14 +144,15 @@ function wysiwyg_yui_settings($editor, $config, $theme) {
     $settings['autoHeight'] = TRUE;
   }
 
+  $settings += array(
+    'toolbar' => array(
+      'collapse' => FALSE,
+      'draggable' => TRUE,
+      'buttonType' => 'advanced',
+      'buttons' => array(),
+    ),
+  );
   if (!empty($config['buttons'])) {
-    $settings += array(
-      'toolbar' => array(
-        'collapse' => FALSE,
-        'draggable' => TRUE,
-        'buttonType' => 'advanced',
-      ),
-    );
     $buttons = array();
     foreach ($config['buttons'] as $plugin => $enabled_buttons) {
       foreach ($enabled_buttons as $button => $enabled) {

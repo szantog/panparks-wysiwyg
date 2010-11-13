@@ -12,6 +12,7 @@ Wysiwyg 7.x-2.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#735624 by sun: Fixed enabling one button removes default editor toolbar.
 #755610 by sun, TwoD, BrightBold: Fixed white-space in block formats setting
   breaks editors.
 #713942 by sun: Fixed jQuery closure breaks OpenWYSIWYG.

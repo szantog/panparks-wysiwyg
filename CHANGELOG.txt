@@ -12,6 +12,7 @@ Wysiwyg 7.x-2.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#735186 by TwoD, torbs: Fixed missing Norwegian language code.
 #678580 by TwoD, sun: Fixed Drupal.wysiwygAttachToggleLink breaks click events.
 #497654 by TwoD: Fixed Drupal plugins disabled in FCKeditor/WebKit browsers.
 #735624 by sun: Fixed enabling one button removes default editor toolbar.

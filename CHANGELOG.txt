@@ -12,6 +12,8 @@ Wysiwyg 7.x-2.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#755610 by sun, TwoD, BrightBold: Fixed white-space in block formats setting
+  breaks editors.
 #713942 by sun: Fixed jQuery closure breaks OpenWYSIWYG.
 #679056 by sun, TwoD: Fixed pressing enter in autocomplete detaches editors.
 #80170 by sun: Changed dialog/plugin API for Inline API compatibility.

@@ -305,6 +305,10 @@ function wysiwyg_profile_form_submit($form, &$form_state) {
     // Store only enabled plugins.
     $values['buttons'] = array_filter($values['buttons']);
   }
+  // Remove any white-space from 'block_formats' setting, since editor
+  // implementations rely on a comma-separated list to explode().
+  $values['block_formats'] = preg_replace('@\s+@', '', $values['block_formats']);
+
   // Remove input format name.
   $format = $values['format'];
   $input_format = $values['input_format'];

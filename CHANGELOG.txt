@@ -12,6 +12,7 @@ Wysiwyg 7.x-2.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#679056 by sun, TwoD: Fixed pressing enter in autocomplete detaches editors.
 #80170 by sun: Changed dialog/plugin API for Inline API compatibility.
 #803466 by hotspoons: Fixed TinyMCE image map support in advimage plugin.
 #922436 by TwoD: Fixed Whizzywig Uncaught TypeError in Chrome.

@@ -2,6 +2,7 @@
 
 Wysiwyg 7.x-2.x, xxxx-xx-xx
 ---------------------------
+#974604 by CrookedNumber, Gábor Hojtsy: Fixed theme CSS not loaded in editors.
 #931374 by TwoD, ksenzee: Updated for text format schema change.
 #826914 by catch, sun: Added database cache for wysiwyg_profile_load().
 #941230 by sun: Fixed missing Configuration link on Modules page.

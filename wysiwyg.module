@@ -307,7 +307,7 @@ function wysiwyg_load_editor($profile) {
     $path = drupal_get_path('module', 'wysiwyg');
     // Initialize our namespaces in the *header* to do not force editor
     // integration scripts to check and define Drupal.wysiwyg on its own.
-    drupal_add_js($path . '/wysiwyg.init.js', array('weight' => JS_LIBRARY));
+    drupal_add_js($path . '/wysiwyg.init.js', array('group' => JS_LIBRARY));
 
     // The 'none' editor is a special editor implementation, allowing us to
     // attach and detach regular Drupal behaviors just like any other editor.
@@ -964,4 +964,3 @@ function _wysiwyg_process_include($module, $identifier, $path, $hook) {
 /**
  * @} End of "defgroup wysiwyg_api".
  */
-

@@ -14,6 +14,7 @@ Wysiwyg 7.x-2.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#973808 by David_Rothstein: Fixed CKEditor incorrectly formatting the <br> tag.
 #773856 by Roi Danton: Added CSS path and file documentation.
 #735186 by TwoD, torbs: Fixed missing Norwegian language code.
 #678580 by TwoD, sun: Fixed Drupal.wysiwygAttachToggleLink breaks click events.

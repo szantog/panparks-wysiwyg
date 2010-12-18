@@ -60,6 +60,9 @@ Drupal.wysiwyg.editor.attach.ckeditor = function(context, params, settings) {
         }
       }
       else {
+        // CKEditor adds default formatting to <br>, so we want to remove that
+        // here too.
+        tags.br = 1;
         // No indents or linebreaks;
         for (var tag in tags) {
           if (tag == 'pre') {

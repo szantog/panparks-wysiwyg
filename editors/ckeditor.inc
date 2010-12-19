@@ -250,12 +250,13 @@ function wysiwyg_ckeditor_plugin_settings($editor, $profile, $plugins) {
       $settings[$name] = array();
       // Add path for native external plugins.
       if (empty($plugin['internal']) && isset($plugin['path'])) {
-        $settings[$name]['path'] = base_path() . $plugin['path'];
+        $settings[$name]['path'] = base_path() . $plugin['path'] . '/';
       }
       // Force native internal plugins to use the standard path.
       else {
         $settings[$name]['path'] = base_path() . $editor['library path'] . '/plugins/' . $name . '/';
       }
+      // CKEditor defaults to 'plugin.js' on its own when filename is not set.
       if (!empty($plugin['filename'])) {
         $settings[$name]['fileName'] = $plugin['filename'];
       }

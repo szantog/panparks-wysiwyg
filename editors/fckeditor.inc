@@ -180,7 +180,8 @@ function wysiwyg_fckeditor_plugin_settings($editor, $profile, $plugins) {
       $settings[$name] = array();
       // Add path for native external plugins; internal ones do not need a path.
       if (empty($plugin['internal']) && isset($plugin['path'])) {
-        $settings[$name]['path'] = base_path() . $plugin['path'];
+        // All native FCKeditor plugins use the filename fckplugin.js.
+        $settings[$name]['path'] = base_path() . $plugin['path'] . '/';
       }
       if (!empty($plugin['languages'])) {
         $settings[$name]['languages'] = $plugin['languages'];

@@ -16,6 +16,8 @@ Wysiwyg 7.x-2.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#767550 by TwoD, sun, ungeek: Fixed invalid API docs and logic for
+  $plugin['filename'].
 #988200 by sun: Changed static language list to ISO 639 defaults of Drupal core.
 #973808 by David_Rothstein: Fixed CKEditor incorrectly formatting the <br> tag.
 #773856 by Roi Danton: Added CSS path and file documentation.

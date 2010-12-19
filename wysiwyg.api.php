@@ -44,8 +44,13 @@ function hook_wysiwyg_plugin($editor, $version) {
           'myplugin' => array(
             // A URL to the plugin's homepage.
             'url' => 'http://drupal.org/project/img_assist',
-            // The full path to the native editor plugin.
-            'path' => drupal_get_path('module', 'img_assist') . '/drupalimage/editor_plugin.js',
+            // The full path to the native editor plugin, no trailing slash.
+            // Ignored when 'internal' is set to TRUE below.
+            'path' => drupal_get_path('module', 'img_assist') . '/drupalimage',
+            // The name of the plugin's main JavaScript file.
+            // Ignored when 'internal' is set to TRUE below.
+            // Default value depends on which editor the plugin is for.
+            'filename' => 'editor_plugin.js',
             // A list of buttons provided by this native plugin. The key has to
             // match the corresponding JavaScript implementation. The value is
             // is displayed on the editor configuration form only.
@@ -72,7 +77,8 @@ function hook_wysiwyg_plugin($editor, $version) {
             'load' => TRUE,
             // Boolean whether this plugin is a native plugin, i.e. shipped with
             // the editor. Definition must be ommitted for plugins provided by
-            // other modules.
+            // other modules. TRUE means 'path' and 'filename' above are ignored
+            // and the plugin is instead loaded from the editor's plugin folder.
             'internal' => TRUE,
             // TinyMCE-specific: Additional HTML elements to allow in the markup.
             'extended_valid_elements' => array(

@@ -110,8 +110,9 @@ function wysiwyg_element_info_alter(&$types) {
  */
 function wysiwyg_pre_render_text_format($element) {
   // filter_process_format() copies properties to the expanded 'value' child
-  // element.
-  if (!isset($element['format'])) {
+  // element. Skip this text format widget, if it contains no 'format' or when
+  // the current user does not have access to edit the value.
+  if (!isset($element['format']) || !empty($element['value']['#disabled'])) {
     return $element;
   }
 

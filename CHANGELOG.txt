@@ -2,6 +2,7 @@
 
 Wysiwyg 7.x-2.x, xxxx-xx-xx
 ---------------------------
+#659428 by TwoD, sun: Fixed editor is attached to disabled text format widgets.
 #975490 by Gábor Hojtsy: Updated for 'group' API change in drupal_add_js().
 #974604 by CrookedNumber, Gábor Hojtsy: Fixed theme CSS not loaded in editors.
 #931374 by TwoD, ksenzee: Updated for text format schema change.

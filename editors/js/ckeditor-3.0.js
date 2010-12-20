@@ -166,10 +166,28 @@ Drupal.wysiwyg.editor.instance.ckeditor = {
         }
         if (typeof Drupal.wysiwyg.plugins[pluginName].invoke == 'function') {
           var pluginCommand = {
-            exec: function(editor) {
-              var data = { format: 'html', node: editor.getSelection().getSelectedElement() };
-              // @todo This is NOT the same as data.node.
-              data.content = data.node ? data.node.innerHTML : '';
+            exec: function (editor) {
+              var data = { format: 'html' };
+              var selection = editor.getSelection();
+              if (selection) {
+                data.node = selection.getSelectedElement();
+                if (selection.getType() == CKEDITOR.SELECTION_TEXT) {
+                  if (CKEDITOR.env.ie) {
+                    data.content = selection.getNative().createRange().text;
+                  }
+                  else {
+                    data.content = selection.getNative().toString();
+                  }
+                }
+                else {
+                  // content is supposed to contain the "outerHTML".
+                  data.content = data.node.$.parentNode.innerHTML;
+                }
+                data.node = data.node.$;
+              }
+              else {
+                data.content = '';
+              }
               Drupal.wysiwyg.plugins[pluginName].invoke(data, pluginSettings, editor.name);
             }
           };

@@ -16,6 +16,7 @@ Wysiwyg 7.x-2.x, xxxx-xx-xx
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#613944 by TwoD, sun: Fixed data.node not available in CKEditor.
 #748888 by TwoD, sun: Fixed isNode() not called in CKEditor.
 #767550 by TwoD, sun, ungeek: Fixed invalid API docs and logic for
   $plugin['filename'].

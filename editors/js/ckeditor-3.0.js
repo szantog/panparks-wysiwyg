@@ -167,10 +167,13 @@ Drupal.wysiwyg.editor.instance.ckeditor = {
         if (typeof Drupal.wysiwyg.plugins[pluginName].invoke == 'function') {
           var pluginCommand = {
             exec: function (editor) {
-              var data = { format: 'html' };
+              var data = { format: 'html', node: null, content: '' };
               var selection = editor.getSelection();
               if (selection) {
                 data.node = selection.getSelectedElement();
+                if (data.node) {
+                  data.node = data.node.$;
+                }
                 if (selection.getType() == CKEDITOR.SELECTION_TEXT) {
                   if (CKEDITOR.env.ie) {
                     data.content = selection.getNative().createRange().text;
@@ -179,14 +182,10 @@ Drupal.wysiwyg.editor.instance.ckeditor = {
                     data.content = selection.getNative().toString();
                   }
                 }
-                else {
+                else if (data.node) {
                   // content is supposed to contain the "outerHTML".
-                  data.content = data.node.$.parentNode.innerHTML;
+                  data.content = data.node.parentNode.innerHTML;
                 }
-                data.node = data.node.$;
-              }
-              else {
-                data.content = '';
               }
               Drupal.wysiwyg.plugins[pluginName].invoke(data, pluginSettings, editor.name);
             }

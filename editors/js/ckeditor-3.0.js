@@ -111,14 +111,16 @@ Drupal.wysiwyg.editor.attach.ckeditor = function(context, params, settings) {
     },
 
     selectionChange: function (event) {
-      $.each(Drupal.settings.wysiwyg.plugins[params.format].drupal, function (name) {
-        var plugin = Drupal.wysiwyg.plugins[name];
-        if ($.isFunction(plugin.isNode)) {
-          var node = event.data.selection.getSelectedElement();
-          var state = plugin.isNode(node ? node.$ : null) ? CKEDITOR.TRISTATE_ON : CKEDITOR.TRISTATE_OFF;
-          event.editor.getCommand(name).setState(state);
-        }
-      });
+      if (Drupal.settings.wysiwyg.plugins[params.format]) {
+        $.each(Drupal.settings.wysiwyg.plugins[params.format].drupal, function (name) {
+          var plugin = Drupal.wysiwyg.plugins[name];
+          if ($.isFunction(plugin.isNode)) {
+            var node = event.data.selection.getSelectedElement();
+            var state = plugin.isNode(node ? node.$ : null) ? CKEDITOR.TRISTATE_ON : CKEDITOR.TRISTATE_OFF;
+            event.editor.getCommand(name).setState(state);
+          }
+        });
+      }
     },
 
     focus: function(ev) {

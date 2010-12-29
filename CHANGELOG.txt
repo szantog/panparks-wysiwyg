@@ -18,6 +18,7 @@ Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
 #1007066 by TwoD, penguin25: Fixed CKEditor ignores resizable option.
 #613944 by TwoD, sun: Fixed data.node not always present in CKEditor.
+#1009880 by TwoD: Fixed selection handling broken in CKEditor.
 
 
 Wysiwyg 6.x-2.2, 2010-12-20

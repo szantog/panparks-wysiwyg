@@ -2,6 +2,10 @@
 
 Wysiwyg 7.x-2.x, xxxx-xx-xx
 ---------------------------
+
+
+Wysiwyg 7.x-2.0, 2010-01-06
+---------------------------
 #950216 by TwoD, sun: Fixed missing editor for a single text format.
 #1007630 by aspilicious: Removed files[] declarations from .info file.
 #612954 by sun: Reverted 'buttons' change in profile configuration form.

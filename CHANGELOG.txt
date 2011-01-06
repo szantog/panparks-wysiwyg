@@ -2,6 +2,7 @@
 
 Wysiwyg 7.x-2.x, xxxx-xx-xx
 ---------------------------
+#950216 by TwoD, sun: Fixed missing editor for a single text format.
 #1007630 by aspilicious: Removed files[] declarations from .info file.
 #612954 by sun: Reverted 'buttons' change in profile configuration form.
 #975546 by TwoD, sun: Fixed markItUp CSS loaded with wrong weight.

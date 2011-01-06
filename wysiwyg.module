@@ -137,10 +137,12 @@ function wysiwyg_pre_render_text_format($element) {
   foreach ($format_field['format']['#options'] as $format_id => $format_name) {
     $format = 'format' . $format_id;
     // Initialize default settings, defaulting to 'none' editor.
-    $settings[$format]['editor'] = 'none';
-    $settings[$format]['status'] = 1;
-    $settings[$format]['toggle'] = 1;
-    $settings[$format]['resizable'] = $resizable;
+    $settings[$format] = array(
+      'editor' => 'none',
+      'status' => 1,
+      'toggle' => 1,
+      'resizable' => $resizable,
+    );
 
     // Fetch the profile associated to this text format.
     $profile = wysiwyg_get_profile($format_id);
@@ -162,15 +164,23 @@ function wysiwyg_pre_render_text_format($element) {
   }
   // Use a hidden element for a single text format.
   if (!$format_field['format']['#access']) {
-    $format_field['guidelines']['format'] = array(
+    $format_field['wysiwyg'] = array(
       '#type' => 'hidden',
       '#name' => $format_field['format']['#name'],
-      '#id' => $format_field['format']['#id'],
       '#value' => $format_id,
-      '#attributes' => array('class' => array('wysiwyg')),
+      '#attributes' => array(
+        'id' => $format_field['format']['#id'],
+        'class' => array('wysiwyg'),
+      ),
     );
-    $format_field['guidelines']['format']['#attached']['js'][] = array(
-      'data' => array('wysiwyg' => array('triggers' => array($format_field['format']['#id'] => $settings))),
+    $format_field['wysiwyg']['#attached']['js'][] = array(
+      'data' => array(
+        'wysiwyg' => array(
+          'triggers' => array(
+            $format_field['format']['#id'] => $settings,
+          ),
+        ),
+      ),
       'type' => 'setting',
     );
   }
@@ -178,7 +188,13 @@ function wysiwyg_pre_render_text_format($element) {
   else {
     $format_field['format']['#attributes']['class'][] = 'wysiwyg';
     $format_field['format']['#attached']['js'][] = array(
-      'data' => array('wysiwyg' => array('triggers' => array($format_field['format']['#id'] => $settings))),
+      'data' => array(
+        'wysiwyg' => array(
+          'triggers' => array(
+            $format_field['format']['#id'] => $settings,
+          ),
+        ),
+      ),
       'type' => 'setting',
     );
   }

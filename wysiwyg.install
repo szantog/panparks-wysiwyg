@@ -9,6 +9,7 @@ function wysiwyg_schema() {
     'description' => 'Stores Wysiwyg profiles.',
     'fields' => array(
       'format' => array(
+        'description' => 'The {filter_format}.format of the text format.',
         'type' => 'varchar',
         'length' => 255,
         // Primary keys are implicitly not null.

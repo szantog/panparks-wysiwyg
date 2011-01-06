@@ -8,11 +8,31 @@ function wysiwyg_schema() {
   $schema['wysiwyg'] = array(
     'description' => t('Stores Wysiwyg profiles.'),
     'fields' => array(
-      'format' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
-      'editor' => array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => ''),
-      'settings' => array('type' => 'text', 'size' => 'normal'),
+      'format' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'editor' => array(
+        'description' => 'Internal name of the editor attached to the text format.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'settings' => array(
+        'description' => 'Configuration settings for the editor.',
+        'type' => 'text',
+        'size' => 'normal',
+      ),
     ),
     'primary key' => array('format'),
+    'foreign keys' => array(
+      'format' => array(
+        'table' => 'filter_formats',
+        'columns' => array('format' => 'format'),
+      ),
+    ),
   );
   return $schema;
 }

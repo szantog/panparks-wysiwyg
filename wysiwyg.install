@@ -6,11 +6,12 @@
  */
 function wysiwyg_schema() {
   $schema['wysiwyg'] = array(
-    'description' => t('Stores Wysiwyg profiles.'),
+    'description' => 'Stores Wysiwyg profiles.',
     'fields' => array(
       'format' => array(
         'type' => 'varchar',
         'length' => 255,
+        // Primary keys are implicitly not null.
         'not null' => TRUE,
       ),
       'editor' => array(
@@ -29,7 +30,47 @@ function wysiwyg_schema() {
     'primary key' => array('format'),
     'foreign keys' => array(
       'format' => array(
-        'table' => 'filter_formats',
+        'table' => 'filter_format',
+        'columns' => array('format' => 'format'),
+      ),
+    ),
+  );
+  $schema['wysiwyg_user'] = array(
+    'description' => 'Stores user preferences for wysiwyg profiles.',
+    'fields' => array(
+      'uid' => array(
+        'description' => 'The {users}.uid of the user.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'format' => array(
+        'description' => 'The {filter_format}.format of the text format.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+      'status' => array(
+        'description' => 'Boolean indicating whether the format is enabled by default.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'size' => 'tiny',
+      ),
+    ),
+    'indexes' => array(
+      'uid' => array('uid'),
+      'format' => array('format'),
+    ),
+    'foreign keys' => array(
+      'uid' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+      'format' => array(
+        'table' => 'filter_format',
         'columns' => array('format' => 'format'),
       ),
     ),
@@ -207,4 +248,60 @@ function wysiwyg_update_7000() {
     'not null' => TRUE,
   ));
   db_add_primary_key('wysiwyg', array('format'));
+}
+
+/**
+ * Create the {wysiwyg_user} table.
+ */
+function wysiwyg_update_7200() {
+  if (!db_table_exists('wysiwyg_user')) {
+    db_create_table('wysiwyg_user', array(
+      'description' => 'Stores user preferences for wysiwyg profiles.',
+      'fields' => array(
+        'uid' => array(
+          'description' => 'The {users}.uid of the user.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+        'format' => array(
+          'description' => 'The {filter_format}.format of the text format.',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => FALSE,
+        ),
+        'status' => array(
+          'description' => 'Boolean indicating whether the format is enabled by default.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+          'size' => 'tiny',
+        ),
+      ),
+      'indexes' => array(
+        'uid' => array('uid'),
+        'format' => array('format'),
+      ),
+      'foreign keys' => array(
+        'uid' => array(
+          'table' => 'users',
+          'columns' => array('uid' => 'uid'),
+        ),
+        'format' => array(
+          'table' => 'filter_format',
+          'columns' => array('format' => 'format'),
+        ),
+      ),
+    ));
+  }
+  else {
+    db_change_field('wysiwyg_user', 'format', 'format', array(
+      'description' => 'The {filter_format}.format of the text format.',
+      'type' => 'varchar',
+      'length' => 255,
+      'not null' => FALSE,
+    ));
+  }
 }

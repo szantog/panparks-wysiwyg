@@ -111,7 +111,7 @@ function wysiwyg_profile_form($form, &$form_state, $profile) {
   asort($predefined);
   $form['basic']['language']['#options'] = $predefined;
 
-  $form['wysiwyg_buttons'] = array(
+  $form['buttons'] = array(
     '#type' => 'fieldset',
     '#title' => t('Buttons and plugins'),
     '#collapsible' => TRUE,
@@ -138,7 +138,7 @@ function wysiwyg_profile_form($form, &$form_state, $profile) {
         }
         $title = (isset($meta['url']) ? l($title, $meta['url'], array('target' => '_blank')) : $title);
         $title = (!empty($icon) ? $icon . ' ' . $title : $title);
-        $form['wysiwyg_buttons'][$name][$button] = array(
+        $form['buttons'][$name][$button] = array(
           '#type' => 'checkbox',
           '#title' => $title,
           '#default_value' => !empty($profile->settings['buttons'][$name][$button]) ? $profile->settings['buttons'][$name][$button] : FALSE,
@@ -147,7 +147,7 @@ function wysiwyg_profile_form($form, &$form_state, $profile) {
     }
     else if (isset($meta['extensions']) && is_array($meta['extensions'])) {
       foreach ($meta['extensions'] as $extension => $title) {
-        $form['wysiwyg_buttons'][$name][$extension] = array(
+        $form['buttons'][$name][$extension] = array(
           '#type' => 'checkbox',
           '#title' => isset($meta['url']) ? l($title, $meta['url'], array('target' => '_blank')) : $title,
           '#default_value' => !empty($profile->settings['buttons'][$name][$extension]) ? $profile->settings['buttons'][$name][$extension] : FALSE,
@@ -310,10 +310,10 @@ function wysiwyg_profile_form($form, &$form_state, $profile) {
  */
 function wysiwyg_profile_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  if (isset($values['wysiwyg_buttons'])) {
+  if (isset($values['buttons'])) {
     // Store only enabled buttons for each plugin.
-    foreach ($values['wysiwyg_buttons'] as $plugin => $buttons) {
-      $values['buttons'][$plugin] = array_filter($values['wysiwyg_buttons'][$plugin]);
+    foreach ($values['buttons'] as $plugin => $buttons) {
+      $values['buttons'][$plugin] = array_filter($values['buttons'][$plugin]);
     }
     // Store only enabled plugins.
     $values['buttons'] = array_filter($values['buttons']);

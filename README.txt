@@ -21,15 +21,14 @@ To submit bug reports and feature suggestions, or to track changes:
 
 * Install as usual, see http://drupal.org/node/70151 for further information.
 
-* Go to Administer > Configuration and modules > Content authoring > Wysiwyg,
+* Go to Administration » Configuration » Content authoring » Wysiwyg,
   and follow the displayed installation instructions to download and install one
   of the supported editors.
 
 
 -- CONFIGURATION --
 
-* Go to Administer > Configuration and modules > Content authoring > Text
-  formats and
+* Go to Administration » Configuration » Content authoring » Text formats, and
 
   - either configure the Full HTML format, assign it to trusted roles, and
     disable "HTML filter", "Line break converter", and (optionally) "URL filter".
@@ -37,8 +36,8 @@ To submit bug reports and feature suggestions, or to track changes:
   - or add a new text format, assign it to trusted roles, and ensure that above
     mentioned input filters are disabled.
 
-* Setup editor profiles in Administer > Configuration and modules > Content
-  authoring > Wysiwyg.
+* Setup editor profiles in Administration » Configuration » Content authoring
+  » Wysiwyg.
 
 
 -- CONTACT --

@@ -2,6 +2,7 @@
 
 Wysiwyg 7.x-2.x, xxxx-xx-xx
 ---------------------------
+#1026088 by sun: Fixed installation instructions in README.txt.
 by sun: Merged in module baseline to facilitate testing.
 #1034476 by quartsize, sun: Changed Wysiwyg profiles into entities.
 

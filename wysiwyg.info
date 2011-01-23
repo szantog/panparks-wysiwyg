@@ -8,3 +8,4 @@ package = User interface
 ;dependencies[] = debug
 core = 7.x
 configure = admin/config/content/wysiwyg
+files[] = wysiwyg.module

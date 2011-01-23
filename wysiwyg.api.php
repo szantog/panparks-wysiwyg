@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Wysiwyg API documentation.
+ * API documentation for Wysiwyg module.
  *
  * To implement a "Drupal plugin" button, you need to write a Wysiwyg plugin:
  * - Implement hook_wysiwyg_include_directory() to register the directory

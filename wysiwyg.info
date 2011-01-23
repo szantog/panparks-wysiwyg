@@ -1,11 +1,11 @@
 ; $Id$
 name = Wysiwyg
-description = Allows users to edit contents with client-side editors.
+description = Allows to edit content with client-side editors.
 package = User interface
 ;dependencies[] = libraries
 ;dependencies[] = ctools
-;dependencies[] = popups
 ;dependencies[] = debug
 core = 7.x
 configure = admin/config/content/wysiwyg
 files[] = wysiwyg.module
+files[] = tests/wysiwyg.test

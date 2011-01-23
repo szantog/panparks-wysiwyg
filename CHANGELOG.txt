@@ -2,6 +2,7 @@
 
 Wysiwyg 7.x-2.x, xxxx-xx-xx
 ---------------------------
+by sun: Merged in module baseline to facilitate testing.
 #1034476 by quartsize, sun: Changed Wysiwyg profiles into entities.
 
 

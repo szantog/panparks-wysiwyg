@@ -2,6 +2,7 @@
 
 Wysiwyg 7.x-2.x, xxxx-xx-xx
 ---------------------------
+#1036900 by mattyoung: Minor code clean-up in wysiwyg_tinymce_version().
 #524126 by sun: Re-added #wysiwyg property to enforce no editor via code.
 #1026088 by sun: Fixed installation instructions in README.txt.
 by sun: Merged in module baseline to facilitate testing.

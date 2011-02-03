@@ -476,8 +476,8 @@ function wysiwyg_tinymce_plugins($editor) {
       'path' => $editor['library path'] . '/plugins/insertdatetime',
       'buttons' => array('insertdate' => t('Insert date'), 'inserttime' => t('Insert time')),
       'options' => array(
-        'plugin_insertdate_dateFormat' => array('%Y-%m-%d'),
-        'plugin_insertdate_timeFormat' => array('%H:%M:%S'),
+        'plugin_insertdate_dateFormat' => '%Y-%m-%d',
+        'plugin_insertdate_timeFormat' => '%H:%M:%S',
       ),
       'url' => 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/insertdatetime',
       'internal' => TRUE,

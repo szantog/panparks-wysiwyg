@@ -29,6 +29,7 @@ Wysiwyg 7.x-2.0, 2010-01-06
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#1009880 by AndyF: Fixed another CKEditor selection handling issue.
 #1048556 by cousin_itt, TwoD: Fixed TinyMCE insertdatetime plugin setting.
 #1025296 by TwoD: Updated CKEditor to support iFrame button.
 #737318 by TwoD: Fixed CKEditor default skin array not being reindexed.

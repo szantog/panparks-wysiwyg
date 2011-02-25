@@ -1,4 +1,3 @@
-// $Id$
 
 Drupal.wysiwyg = Drupal.wysiwyg || { 'instances': {} };
 

@@ -1,4 +1,3 @@
-// $Id$
 (function($) {
 
 Drupal.wysiwyg.editor.init.ckeditor = function(settings) {

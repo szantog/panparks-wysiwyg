@@ -1,4 +1,3 @@
-// $Id$
 
 /**
  * Wysiwyg plugin button implementation for Awesome plugin.

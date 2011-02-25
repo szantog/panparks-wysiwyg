@@ -1,4 +1,3 @@
-# $Id$
 #
 # LANGUAGE translation of Drupal (wysiwyg_editor.module)
 # Copyright YEAR NAME <EMAIL@ADDRESS>

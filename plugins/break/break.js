@@ -1,4 +1,3 @@
-// $Id$
 (function ($) {
 
 // @todo Array syntax required; 'break' is a predefined token in JavaScript.

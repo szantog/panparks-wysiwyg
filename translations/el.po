@@ -1,6 +1,5 @@
 # translation of el.po to Greek
 # Greek translation of Drupal (wysiwyg_editor.module)
-# $Id$
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from file: wysiwyg_editor.module,v 1.91 2007/02/22 22:41:06 nedjo

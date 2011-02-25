@@ -1,4 +1,3 @@
-// $Id$
 
 // Backup $ and reset it to jQuery.
 Drupal.wysiwyg._openwysiwyg = $;

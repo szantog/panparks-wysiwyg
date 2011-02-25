@@ -1,4 +1,3 @@
-// $Id$
 
 tinyMCE.addToLang('break', {
   title: 'Inserir marcador de document retallat',

@@ -1,4 +1,3 @@
-// $Id$
 
 tinyMCE.addToLang('break', {
   title: 'Insert teaser break',

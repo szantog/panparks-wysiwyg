@@ -1,4 +1,3 @@
-; $Id$
 name = Wysiwyg
 description = Allows to edit content with client-side editors.
 package = User interface

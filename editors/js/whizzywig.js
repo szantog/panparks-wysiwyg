@@ -1,4 +1,3 @@
-// $Id$
 
 var wysiwygWhizzywig = { currentField: null, fields: {} };
 var buttonPath = null;

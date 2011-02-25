@@ -1,4 +1,3 @@
-// $Id$
 
 Drupal = window.parent.Drupal;
 

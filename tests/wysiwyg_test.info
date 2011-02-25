@@ -1,4 +1,3 @@
-; $Id$
 name = Wysiwyg testing
 description = Tests Wysiwyg module functionality. Do not enable.
 core = 7.x

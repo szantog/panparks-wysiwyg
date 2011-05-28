@@ -28,6 +28,7 @@ Wysiwyg 7.x-2.0, 2010-01-06
 
 Wysiwyg 6.x-2.x, xxxx-xx-xx
 ---------------------------
+#1153458 by Deciphered: Fixed TinyMCE 'Verify HTML' setting being ignored.
 #1079694 by TwoD: Fixed Whizzywig not restoring textarea styles when detached.
 #1132142 by tacituseu, TwoD, sun: Fixed nicEdit not removing its submit handler.
 #1143104 by EugenMayer: Fixed CKEditor 3.5.4 version detection.

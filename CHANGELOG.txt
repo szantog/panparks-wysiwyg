@@ -1,6 +1,7 @@
 
 Wysiwyg 7.x-2.x, xxxx-xx-xx
 ---------------------------
+#1173476 by jim0203, sun: Fixed installation instructions in README.txt.
 
 
 Wysiwyg 7.x-2.1, 2011-06-19

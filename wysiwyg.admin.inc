@@ -495,7 +495,7 @@ function theme_wysiwyg_profile_overview($variables) {
     return;
   }
   $output = '';
-  $header = array(t('Input format'), t('Editor'), array('data' => t('Operations'), 'colspan' => 2));
+  $header = array(t('Text format'), t('Editor'), array('data' => t('Operations'), 'colspan' => 2));
   $rows = array();
   foreach (element_children($form['formats']) as $item) {
     $format = &$form['formats'][$item];

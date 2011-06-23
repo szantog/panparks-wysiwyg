@@ -117,7 +117,7 @@ function wysiwyg_theme() {
 function wysiwyg_help($path, $arg) {
   switch ($path) {
     case 'admin/config/content/wysiwyg':
-      $output = '<p>' . t('A Wysiwyg profile is associated with an input format. A Wysiwyg profile defines which client-side editor is loaded with a particular input format, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor-specific functions.') . '</p>';
+      $output = '<p>' . t('A Wysiwyg profile is associated with a text format. A Wysiwyg profile defines which client-side editor is loaded with a particular text format, what buttons or themes are enabled for the editor, how the editor is displayed, and a few other editor-specific functions.') . '</p>';
       return $output;
   }
 }

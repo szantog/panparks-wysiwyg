@@ -363,14 +363,11 @@ function theme_wysiwyg_admin_button_table($variables) {
   // Split checkboxes into rows with 3 columns.
   $total = count($buttons);
   $rows = array();
-  for ($i = 0; $i < $total; $i++) {
+  for ($i = 0; $i < $total; $i += 3) {
     $row = array();
-    $row[] = array('data' => $buttons[$i]);
-    if (isset($buttons[++$i])) {
-      $row[] = array('data' => $buttons[$i]);
-    }
-    if (isset($buttons[++$i])) {
-      $row[] = array('data' => $buttons[$i]);
+    $row_buttons = array_slice($buttons, $i, 3) + array_fill(0, 3, array());
+    foreach ($row_buttons as $row_button) {
+      $row[] = array('data' => $row_button);
     }
     $rows[] = $row;
   }
@@ -554,4 +551,3 @@ function wysiwyg_profile_delete_confirm_submit($form, &$form_state) {
   drupal_set_message(t('Wysiwyg profile for %name has been deleted.', array('%name' => $format->name)));
   $form_state['redirect'] = 'admin/config/content/wysiwyg';
 }
-

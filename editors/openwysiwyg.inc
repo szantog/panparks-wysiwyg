@@ -103,7 +103,8 @@ function wysiwyg_openwysiwyg_settings($editor, $config, $theme) {
       $settings['CSSFile'] = reset(wysiwyg_get_css());
     }
     elseif ($config['css_setting'] == 'self' && isset($config['css_path'])) {
-      $settings['CSSFile'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+      global $theme;
+      $settings['CSSFile'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => drupal_get_path('theme', $theme)));
     }
   }
 
@@ -126,7 +127,7 @@ function wysiwyg_openwysiwyg_settings($editor, $config, $theme) {
     }
   }
 
-  // @todo 
+  // @todo
 //  if (isset($config['block_formats'])) {
 //    $settings['DropDowns']['headings']['elements'] = explode(',', $config['block_formats']);
 //  }

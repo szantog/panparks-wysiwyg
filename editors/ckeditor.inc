@@ -118,14 +118,14 @@ function wysiwyg_ckeditor_themes($editor, $profile) {
  *   A processed hook_editor() array of editor properties.
  * @param $config
  *   An array containing wysiwyg editor profile settings.
- * @param $theme
+ * @param $editor_theme
  *   The name of a theme/GUI/skin to use.
  *
  * @return
  *   A settings array to be populated in
  *   Drupal.settings.wysiwyg.configs.{editor}
  */
-function wysiwyg_ckeditor_settings($editor, $config, $theme) {
+function wysiwyg_ckeditor_settings($editor, $config, $editor_theme) {
   $settings = array(
     'baseHref' => $GLOBALS['base_url'] . '/',
     'width' => '100%',
@@ -134,7 +134,7 @@ function wysiwyg_ckeditor_settings($editor, $config, $theme) {
     'height' => 420,
     // @todo Do not use skins as themes and add separate skin handling.
     'theme' => 'default',
-    'skin' => !empty($theme) ? $theme : 'kama',
+    'skin' => !empty($editor_theme) ? $editor_theme : 'kama',
     // By default, CKEditor converts most characters into HTML entities. Since
     // it does not support a custom definition, but Drupal supports Unicode, we
     // disable at least the additional character sets. CKEditor always converts
@@ -167,7 +167,8 @@ function wysiwyg_ckeditor_settings($editor, $config, $theme) {
         $settings['contentsCss'] = reset(wysiwyg_get_css());
       }
       elseif ($config['css_setting'] == 'self' && isset($config['css_path'])) {
-        $settings['contentsCss'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+        global $theme;
+        $settings['contentsCss'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => drupal_get_path('theme', $theme)));
       }
     }
     else {
@@ -175,7 +176,8 @@ function wysiwyg_ckeditor_settings($editor, $config, $theme) {
         $settings['contentsCss'] = wysiwyg_get_css();
       }
       elseif ($config['css_setting'] == 'self' && isset($config['css_path'])) {
-        $settings['contentsCss'] = explode(',', strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme())));
+        global $theme;
+        $settings['contentsCss'] = explode(',', strtr($config['css_path'], array('%b' => base_path(), '%t' => drupal_get_path('theme', $theme))));
       }
     }
   }

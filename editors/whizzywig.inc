@@ -69,14 +69,14 @@ function wysiwyg_whizzywig_version($editor) {
  *   A processed hook_editor() array of editor properties.
  * @param $config
  *   An array containing wysiwyg editor profile settings.
- * @param $theme
+ * @param $editor_theme
  *   The name of a theme/GUI/skin to use.
  *
  * @return
  *   A settings array to be populated in
  *   Drupal.settings.wysiwyg.configs.{editor}
  */
-function wysiwyg_whizzywig_settings($editor, $config, $theme) {
+function wysiwyg_whizzywig_settings($editor, $config, $editor_theme) {
   $settings = array();
 
   // Add path to button images, if available.
@@ -104,13 +104,15 @@ function wysiwyg_whizzywig_settings($editor, $config, $theme) {
   // Add editor content stylesheet.
   if (isset($config['css_setting'])) {
     if ($config['css_setting'] == 'theme') {
-      $css = path_to_theme() . '/style.css';
+      global $theme;
+      $css = drupal_get_path('theme', $theme) . '/style.css';
       if (file_exists($css)) {
         $settings['externalCSS'] = base_path() . $css;
       }
     }
     elseif ($config['css_setting'] == 'self' && isset($config['css_path'])) {
-      $settings['externalCSS'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => path_to_theme()));
+      global $theme;
+      $settings['externalCSS'] = strtr($config['css_path'], array('%b' => base_path(), '%t' => drupal_get_path('theme', $theme)));
     }
   }
 

@@ -195,12 +195,12 @@ function wysiwyg_pre_render_text_format($element) {
         $settings[$format]['toggle'] = (int) $profile->settings['show_toggle'];
       }
       // Check editor theme (and reset it if not/no longer available).
-      $theme = wysiwyg_get_editor_themes($profile, (isset($profile->settings['theme']) ? $profile->settings['theme'] : ''));
+      $editor_theme = wysiwyg_get_editor_themes($profile, (isset($profile->settings['theme']) ? $profile->settings['theme'] : ''));
 
       // Add plugin settings (first) for this text format.
       wysiwyg_add_plugin_settings($profile);
       // Add profile settings for this text format.
-      wysiwyg_add_editor_settings($profile, $theme);
+      wysiwyg_add_editor_settings($profile, $editor_theme);
     }
   }
   // Use a hidden element for a single text format.
@@ -388,11 +388,11 @@ function wysiwyg_load_editor($profile) {
 /**
  * Add editor settings for a given input format.
  */
-function wysiwyg_add_editor_settings($profile, $theme) {
+function wysiwyg_add_editor_settings($profile, $editor_theme) {
   static $formats = array();
 
   if (!isset($formats[$profile->format])) {
-    $config = wysiwyg_get_editor_config($profile, $theme);
+    $config = wysiwyg_get_editor_config($profile, $editor_theme);
     // drupal_to_js() does not properly convert numeric array keys, so we need
     // to use a string instead of the format id.
     if ($config) {
@@ -583,14 +583,14 @@ function wysiwyg_get_plugins($editor_name) {
 /**
  * Return an array of initial editor settings for a Wysiwyg profile.
  */
-function wysiwyg_get_editor_config($profile, $theme) {
+function wysiwyg_get_editor_config($profile, $editor_theme) {
   $editor = wysiwyg_get_editor($profile->editor);
   $settings = array();
   if (!empty($editor['settings callback']) && function_exists($editor['settings callback'])) {
-    $settings = $editor['settings callback']($editor, $profile->settings, $theme);
+    $settings = $editor['settings callback']($editor, $profile->settings, $editor_theme);
 
     // Allow other modules to alter the editor settings for this format.
-    $context = array('editor' => $editor, 'profile' => $profile, 'theme' => $theme);
+    $context = array('editor' => $editor, 'profile' => $profile, 'theme' => $editor_theme);
     drupal_alter('wysiwyg_editor_settings', $settings, $context);
   }
   return $settings;

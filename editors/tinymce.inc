@@ -132,20 +132,20 @@ function wysiwyg_tinymce_themes($editor, $profile) {
  *   A processed hook_editor() array of editor properties.
  * @param $config
  *   An array containing wysiwyg editor profile settings.
- * @param $theme
+ * @param $editor_theme
  *   The name of a theme/GUI/skin to use.
  *
  * @return
  *   A settings array to be populated in
  *   Drupal.settings.wysiwyg.configs.{editor}
  */
-function wysiwyg_tinymce_settings($editor, $config, $theme) {
+function wysiwyg_tinymce_settings($editor, $config, $editor_theme) {
   $settings = array(
     'button_tile_map' => TRUE, // @todo Add a setting for this.
     'document_base_url' => base_path(),
     'mode' => 'none',
     'plugins' => array(),
-    'theme' => $theme,
+    'theme' => $editor_theme,
     'width' => '100%',
     // Strict loading mode must be enabled; otherwise TinyMCE would use
     // document.write() in IE and Chrome.
@@ -262,7 +262,7 @@ function wysiwyg_tinymce_settings($editor, $config, $theme) {
   }
 
   // Add theme-specific settings.
-  switch ($theme) {
+  switch ($editor_theme) {
     case 'advanced':
       $settings += array(
         'theme_advanced_resize_horizontal' => FALSE,

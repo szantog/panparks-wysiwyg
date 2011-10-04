@@ -88,14 +88,14 @@ function wysiwyg_wymeditor_themes($editor, $profile) {
  *   A processed hook_editor() array of editor properties.
  * @param $config
  *   An array containing wysiwyg editor profile settings.
- * @param $theme
+ * @param $editor_theme
  *   The name of a theme/GUI/skin to use.
  *
  * @return
  *   A settings array to be populated in
  *   Drupal.settings.wysiwyg.configs.{editor}
  */
-function wysiwyg_wymeditor_settings($editor, $config, $theme) {
+function wysiwyg_wymeditor_settings($editor, $config, $editor_theme) {
   // @todo Setup $library in wysiwyg_load_editor() already.
   $library = (isset($editor['library']) ? $editor['library'] : key($editor['libraries']));
   $settings = array(
@@ -104,7 +104,7 @@ function wysiwyg_wymeditor_settings($editor, $config, $theme) {
     // @todo Does not work in Drupal; jQuery can live anywhere.
     'jQueryPath' => base_path() . 'misc/jquery.js',
     'updateSelector' => '.form-submit',
-    'skin' => $theme,
+    'skin' => $editor_theme,
   );
 
   if (isset($config['language'])) {

@@ -89,17 +89,17 @@ function wysiwyg_fckeditor_themes($editor, $profile) {
  *   A processed hook_editor() array of editor properties.
  * @param $config
  *   An array containing wysiwyg editor profile settings.
- * @param $theme
+ * @param $editor_theme
  *   The name of a theme/GUI/skin to use.
  *
  * @return
  *   A settings array to be populated in
  *   Drupal.settings.wysiwyg.configs.{editor}
  */
-function wysiwyg_fckeditor_settings($editor, $config, $theme) {
+function wysiwyg_fckeditor_settings($editor, $config, $editor_theme) {
   $settings = array(
     'EditorPath' => base_path() . $editor['library path'] . '/',
-    'SkinPath' => base_path() . $editor['library path'] . '/editor/skins/' . $theme . '/',
+    'SkinPath' => base_path() . $editor['library path'] . '/editor/skins/' . $editor_theme . '/',
     'CustomConfigurationsPath' => base_path() . drupal_get_path('module', 'wysiwyg') . '/editors/js/fckeditor.config.js',
     'Width' => '100%',
     'Height' => 420,

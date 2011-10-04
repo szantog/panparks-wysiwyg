@@ -88,24 +88,24 @@ function wysiwyg_markitup_themes($editor, $profile) {
  *   A processed hook_editor() array of editor properties.
  * @param $config
  *   An array containing wysiwyg editor profile settings.
- * @param $theme
+ * @param $editor_theme
  *   The name of a theme/GUI/skin to use.
  *
  * @return
  *   A settings array to be populated in
  *   Drupal.settings.wysiwyg.configs.{editor}
  */
-function wysiwyg_markitup_settings($editor, $config, $theme) {
-  drupal_add_css($editor['library path'] . '/markitup/skins/' . $theme . '/style.css', array(
+function wysiwyg_markitup_settings($editor, $config, $editor_theme) {
+  drupal_add_css($editor['library path'] . '/markitup/skins/' . $editor_theme . '/style.css', array(
     // Specify an alternate basename; otherwise, style.css would override a
     // commonly used style.css file of the theme.
-    'basename' => 'markitup.' . $theme . '.style.css',
+    'basename' => 'markitup.' . $editor_theme . '.style.css',
     'group' => CSS_THEME,
   ));
 
   $settings = array(
     'root' => base_path() . $editor['library path'] . '/markitup/',
-    'nameSpace' => $theme,
+    'nameSpace' => $editor_theme,
     'markupSet' => array(),
   );
 

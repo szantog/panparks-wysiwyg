@@ -119,16 +119,16 @@ function wysiwyg_yui_load($editor, $library) {
  *   A processed hook_editor() array of editor properties.
  * @param $config
  *   An array containing wysiwyg editor profile settings.
- * @param $theme
+ * @param $editor_theme
  *   The name of a theme/GUI/skin to use.
  *
  * @return
  *   A settings array to be populated in
  *   Drupal.settings.wysiwyg.configs.{editor}
  */
-function wysiwyg_yui_settings($editor, $config, $theme) {
+function wysiwyg_yui_settings($editor, $config, $editor_theme) {
   $settings = array(
-    'theme' => $theme,
+    'theme' => $editor_theme,
     'animate' => TRUE,
     'handleSubmit' => TRUE,
     'markup' => 'xhtml',
